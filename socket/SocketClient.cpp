@@ -248,13 +248,34 @@ void SocketClient::receiveChars() {
 	return;
 }
 
-int SocketClient::recvImage(cv::Mat& image, int height, int width, int channels) {
+int SocketClient::recvFloats(float* recv_floats, const int length) {
+	int recv_info = recv(_socket, (char*)(recv_floats), length*sizeof(float), 0);
+	if (recv_info < 0) {
+		ALOGE("recvFloats failed");
+		return -1;
+	}
+	return 1;
+}
 
-	const int sz_image = height * height * channels;
+int SocketClient::sendFloats(const float* send_floats, const int length) {
+	float* buffer = new float[length];
+	memcpy(buffer, send_floats, length*sizeof(float));
+	int send_info = send(_socket, (char *)(buffer), length*sizeof(float), 0);
+	if (send_info < 0) {
+		ALOGE("send failed");
+		delete buffer;
+		return -1;
+	}
+	return send_info;	
+}
+
+int SocketClient::recvDepth(cv::Mat& image, int height, int width) {
+
+	const int sz_image = height * height * sizeof(ushort);
 	char buffer[sz_image];
 
 	int recv_info = recv(_socket, (char*)(&buffer), sz_image, 0); 
-	cv::Mat mat(height,width,CV_8UC1,&buffer[0]);
+	cv::Mat mat(height,width,CV_16UC1,&buffer[0]);
 	image = mat.clone();
 
 	if (recv_info < 0){

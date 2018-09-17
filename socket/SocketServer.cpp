@@ -392,13 +392,13 @@ int SocketServer::sendFloats(const float* send_floats, const int length) {
 }
 
 
-int SocketServer::sendImage(cv::Mat image) {
+int SocketServer::sendDepth(cv::Mat image) {
 	if (image.empty()){
 		ALOGW("failed to send empty image");
 		return -1;
 	}
 
-	if (send(_process_socket, (char *)(image.data), sizeof(image.data) + 1, 0) < 0)  
+	if (send(_process_socket, (char *)(image.data), image.cols * image.rows * image.channels() * sizeof(ushort), 0) < 0)  
 	{  
 		ALOGW("failed to send image through socket");
 		return -1;  

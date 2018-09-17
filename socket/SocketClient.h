@@ -26,7 +26,10 @@ public:
 	void receiveMessage();
 	void sendChars();
 	void receiveChars();
-	int recvImage(cv::Mat& image, int height, int width, int channels);
+
+	int recvFloats(float* recv_floats, const int length);
+	int sendFloats(const float* send_floats, const int length);	
+	int recvDepth(cv::Mat& image, int height, int width);
 
 private:
 

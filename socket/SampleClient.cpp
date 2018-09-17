@@ -44,16 +44,22 @@ int getch(void) {
 void stepClient(SocketClient* client) {
 
 	// Misc 
-	int cnt_send = 0;
+	int cnt_char_recv = 0;
+	int cnt_image_recv = 0;
 	int cnt_sent = 0;
 	int cnt_err = 0;
 
 	// Create variables 
 	const int length_recv = 3;
-	char* chars_recv = new char[length_recv];
+	float* floats_recv = new float[length_recv];
 	const int length_send = 3;
 	char* chars_send = new char[length_send];
 	cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE );// Create a window for display.
+
+	std::string foldername = "images";
+	std::string cmd_str_mk = "mkdir \"" + foldername + "\"";
+	system(cmd_str_mk.c_str());
+	ALOGD("Command %s was executed. ", cmd_str_mk.c_str());	
 
 	while (true) {
 		std::cout << "--- client ---" << std::endl;
@@ -64,24 +70,35 @@ void stepClient(SocketClient* client) {
 		}
 
 		//Receive
-		// int recv_info = client->recvChars(chars_recv,length_recv);
-		cv::Mat image;
-		image.setTo(cv::Scalar(0));
-		int recv_info = client->recvImage(image,3,3,1);
-		std::cout << "recv image = "<< std::endl << " "  << image << std::endl;
+		int recv_floats_info = client->recvFloats(floats_recv,length_recv);
+		if (recv_floats_info < 0){
+			std::cout << "recv char failed\n" << std::endl;
+			client->stopSocket();
+			break;
+		}	
+		else {
+			cnt_char_recv++;
+			std::cout << "received char #" << cnt_char_recv << std::endl;
+			std::cout << "received floats = (" << floats_recv[0] << "," << floats_recv[1] << "," << floats_recv[2] << ")" << std::endl << std::endl;
+		}
 
-		if (recv_info < 0){
+		cv::Mat depth;
+		depth.setTo(cv::Scalar(0));
+		int recv_image_info = client->recvDepth(depth,3,3);
+		std::cout << "recv depth = "<< std::endl << " "  << depth << std::endl;
+
+		if (recv_image_info < 0){
 			std::cout << "recv failed\n" << std::endl;
 			client->stopSocket();
 			break;
-		}
+		}	
 		else {
-			cnt_send++;
-			std::cout << "received #" << cnt_send << std::endl;
-
+			cnt_image_recv++;
+			std::cout << "received #" << cnt_image_recv << std::endl;
 			// cv::Mat img_resize;
-			// cv::resize(image, img_resize, cv::Size(100, 100));
-		 	// cv::imshow( "Display window", image );                   // Show our image inside it.		
+			// cv::resize(depth, img_resize, cv::Size(800, 800));
+			// cv::imshow( "Display window", img_resize );                   // Show our depth inside it.		
+		 	cv::imwrite( foldername + "/recv"+ std::to_string(cnt_image_recv) + ".jpg", depth);
 		}
 
 		/* compute command */
@@ -103,7 +120,7 @@ void stepClient(SocketClient* client) {
 	}
 
 	// Delete variable 
-	delete chars_recv;
+	delete floats_recv;
 	delete chars_send;
 
 	return;
