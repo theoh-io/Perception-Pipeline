@@ -6,6 +6,12 @@
 #include <string>
 #include <opencv2/opencv.hpp>
 
+namespace ninebot_algo
+{
+/*! namespace of this algorithm  */
+namespace socket_algo
+{
+
 class SocketServer {
 public :
 	SocketServer(int port = 8081);
@@ -53,4 +59,8 @@ private:
 	bool m_is_send_timeout;
 	bool m_is_recv_timeout;
 };
+
+}
+}
+
 #endif  

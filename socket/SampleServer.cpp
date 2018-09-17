@@ -21,6 +21,9 @@
 
 #include "SocketServer.h"
 
+using namespace ninebot_algo;
+using namespace socket_algo;
+
 #ifndef WIN32
 /* reads from keypress, doesn't echo */
 int getch(void) {

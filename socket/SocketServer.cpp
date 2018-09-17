@@ -20,6 +20,12 @@
 #include <unistd.h>
 #endif
 
+namespace ninebot_algo
+{
+/*! namespace of this algorithm  */
+namespace socket_algo
+{
+
 const int TIMEOUT = 3; // this unit of time is second.
 
 SocketServer::SocketServer(int port) {
@@ -405,4 +411,7 @@ int SocketServer::sendDepth(cv::Mat image) {
 	}
 
 	return 1;
+}
+
+}
 }
