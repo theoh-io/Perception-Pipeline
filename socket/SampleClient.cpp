@@ -22,9 +22,9 @@
 #include <unistd.h>
 #endif
 
-// #define IP_ADDRESS "128.179.136.242"
+#define IP_ADDRESS "128.179.138.242"
 
-#define IP_ADDRESS "127.0.0.1"
+// #define IP_ADDRESS "127.0.0.1"
 
 #ifndef WIN32
 /* reads from keypress, doesn't echo */
@@ -57,6 +57,8 @@ void stepClient(SocketClient* client) {
 	cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE );// Create a window for display.
 
 	std::string foldername = "images";
+	std::string cmd_str_rm = "rm -rf \"" + foldername + "\"";
+	system(cmd_str_rm.c_str());
 	std::string cmd_str_mk = "mkdir \"" + foldername + "\"";
 	system(cmd_str_mk.c_str());
 	ALOGD("Command %s was executed. ", cmd_str_mk.c_str());	
@@ -78,27 +80,41 @@ void stepClient(SocketClient* client) {
 		}	
 		else {
 			cnt_char_recv++;
-			std::cout << "received char #" << cnt_char_recv << std::endl;
+			// std::cout << "received float #" << cnt_char_recv << std::endl;
 			std::cout << "received floats = (" << floats_recv[0] << "," << floats_recv[1] << "," << floats_recv[2] << ")" << std::endl << std::endl;
 		}
 
 		cv::Mat depth;
 		depth.setTo(cv::Scalar(0));
-		int recv_image_info = client->recvDepth(depth,3,3);
-		std::cout << "recv depth = "<< std::endl << " "  << depth << std::endl;
+		int recv_image_info = client->recvDepth(depth,240,320);
+
+		/* test */
+		if (IP_ADDRESS == "127.0.0.1") {
+			cv::Mat raw_depth; 
+			raw_depth = cv::imread("sample.png", CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_ANYCOLOR ); // Read the file 
+			cv::Mat diff_depth = depth - raw_depth;
+			double min, max;
+			cv::minMaxLoc(diff_depth, &min, &max);
+			std::cout << "diff_depth range = [" << min << ", " << max << "]" << std::endl;
+		}
 
 		if (recv_image_info < 0){
 			std::cout << "recv failed\n" << std::endl;
 			client->stopSocket();
 			break;
-		}	
+		}
 		else {
 			cnt_image_recv++;
-			std::cout << "received #" << cnt_image_recv << std::endl;
+			std::cout << "received image #" << cnt_image_recv << std::endl;
 			// cv::Mat img_resize;
 			// cv::resize(depth, img_resize, cv::Size(800, 800));
-			// cv::imshow( "Display window", img_resize );                   // Show our depth inside it.		
-		 	cv::imwrite( foldername + "/recv"+ std::to_string(cnt_image_recv) + ".jpg", depth);
+			// cv::imshow( "Display window", img_resize );                   // Show our depth inside it.	
+
+	        cv::Mat tdepth8, tdepth8color;
+	        tdepth8 = depth/10;
+	        tdepth8.convertTo(tdepth8, CV_8U);
+	        cv::applyColorMap(tdepth8, tdepth8color, cv::COLORMAP_JET);
+		 	cv::imwrite( foldername + "/recv"+ std::to_string(cnt_image_recv) + ".jpg", tdepth8color);
 		}
 
 		/* compute command */
@@ -113,6 +129,7 @@ void stepClient(SocketClient* client) {
 		// 	cnt_err++;
 		// 	std::cout << "sent failed" << std::endl;
 		// }
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
 		if (client->isStopped())
 			break;

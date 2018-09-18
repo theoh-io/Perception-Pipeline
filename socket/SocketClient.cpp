@@ -271,8 +271,10 @@ int SocketClient::sendFloats(const float* send_floats, const int length) {
 
 int SocketClient::recvDepth(cv::Mat& image, int height, int width) {
 
-	const int sz_image = height * height * sizeof(ushort);
+	const int sz_image = height * width * sizeof(uint16_t);
 	char buffer[sz_image];
+	
+	ALOGD("sz image = %d", sz_image);
 
 	int recv_info = recv(_socket, (char*)(&buffer), sz_image, 0); 
 	cv::Mat mat(height,width,CV_16UC1,&buffer[0]);

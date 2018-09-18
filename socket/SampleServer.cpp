@@ -20,6 +20,7 @@
 #endif
 
 #include "SocketServer.h"
+#include "alog.h"
 
 using namespace ninebot_algo;
 using namespace socket_algo;
@@ -70,9 +71,34 @@ void stepServer(SocketServer* server){
 		std::cout << "send floats = (" << floats_send[0] << "," << floats_send[1] << "," << floats_send[2] << ")" << std::endl << std::endl;
 
 		// Image 
-		cv::Mat1w random_image(3,3);
-		cv::randu(random_image, cv::Scalar(200), cv::Scalar(400));		
-		std::cout << "send image = "<< std::endl << " "  << random_image << std::endl << std::endl;
+		// cv::Mat1w random_image(3,3);
+		// cv::randu(random_image, cv::Scalar(200), cv::Scalar(400));		
+		// std::cout << "send image = "<< std::endl << " "  << random_image << std::endl << std::endl;
+		cv::Mat raw_depth; 
+		raw_depth = cv::imread("sample.png", CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_ANYCOLOR ); // Read the file 
+		// cv::resize(raw_depth, raw_depth, cv::Size(), 0.25, 0.25);
+
+        int type = raw_depth.type();
+        std::string r;
+        {
+          uchar depth = type & CV_MAT_DEPTH_MASK;
+          uchar chans = 1 + (type >> CV_CN_SHIFT);
+          switch ( depth ) {
+            case CV_8U:  r = "8U"; break;
+            case CV_8S:  r = "8S"; break;
+            case CV_16U: r = "16U"; break;
+            case CV_16S: r = "16S"; break;
+            case CV_32S: r = "32S"; break;
+            case CV_32F: r = "32F"; break;
+            case CV_64F: r = "64F"; break;
+            default:     r = "User"; break;
+          }
+          r += "C";
+          r += (chans+'0');
+        }            
+
+        std::string contents = "depth: type: "  + r + ", size:" + std::to_string(raw_depth.rows) + "x" + std::to_string(raw_depth.cols) + ", " + std::to_string(raw_depth.rows*raw_depth.cols*sizeof(uint16_t));
+		std::cout << contents << std::endl;
 
 		// Send
 		int send_info_floats = server->sendFloats(floats_send, length_send);
@@ -85,7 +111,7 @@ void stepServer(SocketServer* server){
 			std::cout << "sent chars #" << cnt_float_send << std::endl;
 		}
 
-		int send_info_image = server->sendDepth(random_image);
+		int send_info_image = server->sendDepth(raw_depth);
 		if (send_info_image < 0) {
 			cnt_err++;
 			std::cout << "send image failed\n" << std::endl;

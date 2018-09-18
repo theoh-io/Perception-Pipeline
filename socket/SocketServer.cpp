@@ -404,7 +404,7 @@ int SocketServer::sendDepth(cv::Mat image) {
 		return -1;
 	}
 
-	if (send(_process_socket, (char *)(image.data), image.cols * image.rows * image.channels() * sizeof(ushort), 0) < 0)  
+	if (send(_process_socket, (char *)(image.data), image.cols * image.rows * image.channels() * sizeof(uint16_t), 0) < 0)  
 	{  
 		ALOGW("failed to send image through socket");
 		return -1;  
