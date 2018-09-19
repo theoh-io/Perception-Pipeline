@@ -1,4 +1,6 @@
 #include <Python.h>
+#include "PyUtils.h"
+#include <iostream>
 
 int
 main(int argc, char *argv[])
@@ -8,7 +10,7 @@ main(int argc, char *argv[])
     int i;
 
     if (argc < 3) {
-        fprintf(stderr,"Usage: call pythonfile funcname [args]\n");
+        fprintf(stderr,"Usage: call python file function name [args]\n");
         return 1;
     }
 
@@ -16,6 +18,7 @@ main(int argc, char *argv[])
     pName = PyUnicode_DecodeFSDefault(argv[1]);
     /* Error checking of pName left out */
 
+    PyImport_ImportModule("threading");
     pModule = PyImport_Import(pName);
     Py_DECREF(pName);
 
@@ -39,7 +42,9 @@ main(int argc, char *argv[])
             pValue = PyObject_CallObject(pFunc, pArgs);
             Py_DECREF(pArgs);
             if (pValue != NULL) {
-                printf("Result of call: %ld\n", PyLong_AsLong(pValue));
+//                printf("Result of call: %ld\n", PyLong_AsLong(pValue));
+                vector<float> action = listTupleToVector_Float(pValue);
+                cout << action[0] << '\t' << action[1];
                 Py_DECREF(pValue);
             }
             else {

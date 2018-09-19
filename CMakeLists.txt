@@ -13,6 +13,6 @@ SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS
 include_directories(/usr/include/python3.6/)
 link_directories(//usr/lib/python3.6/config-3.6m-x86_64-linux-gnu/)
 
-add_executable(dynav-loomo main.cpp pyhelper.hpp)
+add_executable(dynav-loomo main.cpp PyUtils.cpp)
 
 target_link_libraries(dynav-loomo libpython3.6.so)

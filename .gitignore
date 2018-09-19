@@ -2,3 +2,4 @@
 cmake-build-debug/
 __pycache__/
 build/
+data/
