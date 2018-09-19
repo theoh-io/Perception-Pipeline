@@ -10,6 +10,11 @@ MESSAGE("@ Source path: " ${PROJECT_SOURCE_DIR})
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 find_package( OpenCV REQUIRED )
 
+SET(GCC_COVERAGE_COMPILE_FLAGS "-fPIC")
+SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
+include_directories(/usr/include/python3.5/)
+link_directories(/usr/lib/python3.5/config-3.5m-x86_64-linux-gnu/)
+
 # General 
 # include_directories(/usr/include /usr/local/include)
 
@@ -23,11 +28,14 @@ IF (USE_CLIENT)
 	add_executable( client
 		${PROJECT_SOURCE_DIR}/SocketClient.cpp
 		${PROJECT_SOURCE_DIR}/SampleClient.cpp
+		${PROJECT_SOURCE_DIR}/policy/PolicyWrapper.cpp
+		${PROJECT_SOURCE_DIR}/policy/PyUtils.cpp
 	)
 	# Dependency 
 	target_link_libraries( client 
 		pthread 
 		${OpenCV_LIBS}
+		libpython3.5.so
 	)
 ENDIF()
 
@@ -47,5 +55,3 @@ IF(USE_SERVER)
 		${OpenCV_LIBS}
 	)
 ENDIF()
-
-

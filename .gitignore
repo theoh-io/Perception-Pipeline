@@ -1,2 +1,7 @@
 socket/images/
+.idea/
+cmake-build-debug/
+__pycache__/
+build/
 data/
+bin/

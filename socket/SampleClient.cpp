@@ -13,6 +13,7 @@
 
 #include "SocketClient.h"
 #include "alog.h"
+#include "policy/PolicyWrapper.h"
 
 #ifdef WIN32
 #include <conio.h>
@@ -118,7 +119,7 @@ void stepClient(SocketClient* client) {
 		}
 
 		/* compute command */
-
+		policy_wrapper();
 		// int send_info = client->sendChars(chars_send, length_send);
 		// if (send_info>0)
 		// {
