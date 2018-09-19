@@ -1,6 +1,7 @@
 #include <Python.h>
-#include "PyUtils.h"
 #include <iostream>
+#include <ctime>
+#include "PyUtils.h"
 
 int
 main(int argc, char *argv[])
@@ -18,7 +19,6 @@ main(int argc, char *argv[])
     pName = PyUnicode_DecodeFSDefault(argv[1]);
     /* Error checking of pName left out */
 
-    PyImport_ImportModule("threading");
     pModule = PyImport_Import(pName);
     Py_DECREF(pName);
 
@@ -39,12 +39,15 @@ main(int argc, char *argv[])
                 /* pValue reference stolen here: */
                 PyTuple_SetItem(pArgs, i, pValue);
             }
+            clock_t begin = clock();
             pValue = PyObject_CallObject(pFunc, pArgs);
+            clock_t end = clock();
+            double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+            cout << "Elapsed time(s): " << elapsed_secs << endl;
             Py_DECREF(pArgs);
             if (pValue != NULL) {
-//                printf("Result of call: %ld\n", PyLong_AsLong(pValue));
                 vector<float> action = listTupleToVector_Float(pValue);
-                cout << action[0] << '\t' << action[1];
+                cout << action[0] << '\t' << action[1] << endl;
                 Py_DECREF(pValue);
             }
             else {
@@ -68,8 +71,6 @@ main(int argc, char *argv[])
         fprintf(stderr, "Failed to load \"%s\"\n", argv[1]);
         return 1;
     }
-    if (Py_FinalizeEx() < 0) {
-        return 120;
-    }
+    Py_Finalize();
     return 0;
 }
