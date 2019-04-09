@@ -1,3 +1,4 @@
 dependency/
 socket/bin/
 socket/build/
+socket/test/
