@@ -70,7 +70,7 @@ void stepServer(SocketServer* server){
 		std::cout << "send floats = (" << floats_send[0] << "," << floats_send[1] << "," << floats_send[2] << ")" << std::endl << std::endl;
 
 		// Image 
-		cv::Mat1w random_image(3,3);
+		cv::Mat1w random_image(10,10);
 		cv::randu(random_image, cv::Scalar(200), cv::Scalar(400));		
 		std::cout << "send image = "<< std::endl << " "  << random_image << std::endl << std::endl;
 

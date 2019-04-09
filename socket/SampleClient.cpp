@@ -84,7 +84,7 @@ void stepClient(SocketClient* client) {
 
 		cv::Mat depth;
 		depth.setTo(cv::Scalar(0));
-		int recv_image_info = client->recvDepth(depth,3,3);
+		int recv_image_info = client->recvDepth(depth,10,10);
 		std::cout << "recv depth = "<< std::endl << " "  << depth << std::endl;
 
 		if (recv_image_info < 0){
@@ -95,9 +95,10 @@ void stepClient(SocketClient* client) {
 		else {
 			cnt_image_recv++;
 			std::cout << "received #" << cnt_image_recv << std::endl;
-			// cv::Mat img_resize;
-			// cv::resize(depth, img_resize, cv::Size(800, 800));
-			// cv::imshow( "Display window", img_resize );                   // Show our depth inside it.		
+			cv::Mat img_resize;
+			cv::resize(depth, img_resize, cv::Size(200, 200));
+			cv::imshow( "Display window", img_resize );                   // Show our depth inside it.		
+		 	cv::waitKey(25);
 		 	cv::imwrite( foldername + "/recv"+ std::to_string(cnt_image_recv) + ".jpg", depth);
 		}
 
