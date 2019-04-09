@@ -8,7 +8,7 @@ SET(USE_SERVER 1)
 SET(PROJECT_NAME socket)
 MESSAGE("@ Source path: " ${PROJECT_SOURCE_DIR})
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-find_package( OpenCV REQUIRED )
+find_package(OpenCV 3.4 REQUIRED PATHS ${PROJECT_SOURCE_DIR}/../dependency)
 
 # General 
 # include_directories(/usr/include /usr/local/include)
