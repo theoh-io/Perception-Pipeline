@@ -54,7 +54,8 @@ void stepClient(SocketClient* client) {
 	float* floats_recv = new float[length_recv];
 	const int length_send = 3;
 	char* chars_send = new char[length_send];
-	cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE );// Create a window for display.
+	cv::namedWindow( "Depth window", cv::WINDOW_AUTOSIZE );// Create a window for display.
+	// cv::namedWindow( "Color window", cv::WINDOW_AUTOSIZE );// Create a window for display.
 
 	std::string foldername = "images";
 	std::string cmd_str_mk = "mkdir \"" + foldername + "\"";
@@ -97,7 +98,7 @@ void stepClient(SocketClient* client) {
 			std::cout << "received #" << cnt_image_recv << std::endl;
 			cv::Mat img_resize;
 			cv::resize(depth, img_resize, cv::Size(200, 200));
-			cv::imshow( "Display window", img_resize );                   // Show our depth inside it.		
+			cv::imshow( "Depth window", img_resize );                   // Show our depth inside it.		
 		 	cv::waitKey(25);
 		 	cv::imwrite( foldername + "/recv"+ std::to_string(cnt_image_recv) + ".jpg", depth);
 		}

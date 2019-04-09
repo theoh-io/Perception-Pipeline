@@ -52,6 +52,8 @@ void stepServer(SocketServer* server){
 	const int length_send = 3;
 	float* floats_send = new float[length_send];
 
+	cv::namedWindow( "Input", cv::WINDOW_AUTOSIZE );// Create a window for display.
+
 	while (true) {
 		std::cout << "--- server ---" << std::endl;
 
@@ -69,10 +71,21 @@ void stepServer(SocketServer* server){
 		floats_send[2] = (float)cnt_float_send + 0.3;
 		std::cout << "send floats = (" << floats_send[0] << "," << floats_send[1] << "," << floats_send[2] << ")" << std::endl << std::endl;
 
-		// Image 
+		// Depth 
 		cv::Mat1w random_image(10,10);
-		cv::randu(random_image, cv::Scalar(200), cv::Scalar(400));		
+		cv::randu(random_image, cv::Scalar(100), cv::Scalar(200));		
 		std::cout << "send image = "<< std::endl << " "  << random_image << std::endl << std::endl;
+
+		// Color 
+		cv::Mat image = cv::imread("../test/input.jpg", CV_LOAD_IMAGE_COLOR);   // Read the file
+	    if(! image.data )                              // Check for invalid input
+	    {
+	        std::cout <<  "Could not open or find the image" << std::endl ;
+	    }
+	    cv::imshow( "Input", image );                   // Show our image inside it.
+	    cv::waitKey(25); 
+
+		cv::imwrite("../test/send.jpg", image);
 
 		// Send
 		int send_info_floats = server->sendFloats(floats_send, length_send);
@@ -94,17 +107,6 @@ void stepServer(SocketServer* server){
 			cnt_image_send++;
 			std::cout << "sent image #" << cnt_image_send << std::endl;
 		}
-
-		// int recv_info = server->recvChars(chars_recv,length_recv);
-		// if (recv_info>0)
-		// {
-		// 	cnt_recv++;
-		// 	std::cout << "policy_receive #" << cnt_recv << std::endl;
-		// }
-		// else {
-		// 	cnt_err++;
-		// 	std::cout << "received failed\n" << std::endl;
-		// }
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 	}
