@@ -37,6 +37,7 @@ public :
 	int sendFloats(const float* send_floats, const int length);
 	int sendDepth(cv::Mat image);
 	int sendColor(cv::Mat image);
+	int sendImage(cv::Mat image, const int width, const int height, const int channels=3, const int bags=1);
 
 private :
 	int run();

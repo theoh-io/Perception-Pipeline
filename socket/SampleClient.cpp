@@ -54,8 +54,7 @@ void stepClient(SocketClient* client) {
 	float* floats_recv = new float[length_recv];
 	const int length_send = 3;
 	char* chars_send = new char[length_send];
-	cv::namedWindow( "Depth window", cv::WINDOW_AUTOSIZE );// Create a window for display.
-	// cv::namedWindow( "Color window", cv::WINDOW_AUTOSIZE );// Create a window for display.
+	cv::namedWindow( "Test window", cv::WINDOW_AUTOSIZE );// Create a window for display.
 
 	std::string foldername = "images";
 	std::string cmd_str_mk = "mkdir \"" + foldername + "\"";
@@ -83,16 +82,11 @@ void stepClient(SocketClient* client) {
 			std::cout << "received floats = (" << floats_recv[0] << "," << floats_recv[1] << "," << floats_recv[2] << ")" << std::endl << std::endl;
 		}
 
-		cv::Mat depth;
-		depth.setTo(cv::Scalar(0));
-		int recv_image_info = client->recvDepth(depth,10,10);
-		std::cout << "recv depth = "<< std::endl << " "  << depth << std::endl;
+		cv::Mat test_image;
+		int recv_test_info = client->receiveImage(test_image,640,480);
+		std::cout << "recv test = "<< std::endl << " "  << std::endl;
 
-		cv::Mat color;
-		int recv_color_info = client->recvColor(color,480,640);
-		std::cout << "recv color = "<< std::endl << " "  << std::endl;
-
-		if (recv_image_info < 0){
+		if (recv_test_info < 0){
 			std::cout << "recv failed\n" << std::endl;
 			client->stopSocket();
 			break;
@@ -100,25 +94,10 @@ void stepClient(SocketClient* client) {
 		else {
 			cnt_image_recv++;
 			std::cout << "received #" << cnt_image_recv << std::endl;
-			cv::Mat img_resize;
-			cv::resize(depth, img_resize, cv::Size(200, 200));
-			cv::imshow( "Depth window", img_resize );                   // Show our depth inside it.		
-		 	cv::waitKey(25);
-		 	cv::imwrite( foldername + "/recv"+ std::to_string(cnt_image_recv) + ".jpg", depth);
+			cv::imshow( "Test window", test_image );                   // Show our depth inside it.		
+		 	cv::waitKey(5);
+		 	cv::imwrite( foldername + "/recv"+ std::to_string(cnt_image_recv) + ".jpg", test_image);
 		}
-
-		/* compute command */
-
-		// int send_info = client->sendChars(chars_send, length_send);
-		// if (send_info>0)
-		// {
-		// 	cnt_sent++;
-		// 	std::cout << "sent command #" << cnt_sent << std::endl;
-		// }
-		// else {
-		// 	cnt_err++;
-		// 	std::cout << "sent failed" << std::endl;
-		// }
 
 		if (client->isStopped())
 			break;
