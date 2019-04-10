@@ -72,20 +72,20 @@ void stepServer(SocketServer* server){
 		std::cout << "send floats = (" << floats_send[0] << "," << floats_send[1] << "," << floats_send[2] << ")" << std::endl << std::endl;
 
 		// Depth 
-		cv::Mat1w random_image(10,10);
-		cv::randu(random_image, cv::Scalar(100), cv::Scalar(200));		
-		std::cout << "send image = "<< std::endl << " "  << random_image << std::endl << std::endl;
+		cv::Mat1w depth_image(10,10);
+		cv::randu(depth_image, cv::Scalar(100), cv::Scalar(200));		
+		std::cout << "send image = "<< std::endl << " "  << depth_image << std::endl << std::endl;
 
 		// Color 
-		cv::Mat image = cv::imread("../test/input.jpg", CV_LOAD_IMAGE_COLOR);   // Read the file
-	    if(! image.data )                              // Check for invalid input
+		cv::Mat color_image = cv::imread("../test/input.jpg", CV_LOAD_IMAGE_COLOR);   // Read the file
+	    if(! color_image.data )                              // Check for invalid input
 	    {
-	        std::cout <<  "Could not open or find the image" << std::endl ;
+	        std::cout <<  "Could not open or find the color_image" << std::endl ;
 	    }
-	    cv::imshow( "Input", image );                   // Show our image inside it.
+	    cv::imshow( "Input", color_image );                   // Show our image inside it.
 	    cv::waitKey(25); 
 
-		cv::imwrite("../test/send.jpg", image);
+		cv::imwrite("../test/send.jpg", color_image);
 
 		// Send
 		int send_info_floats = server->sendFloats(floats_send, length_send);
@@ -98,7 +98,7 @@ void stepServer(SocketServer* server){
 			std::cout << "sent chars #" << cnt_float_send << std::endl;
 		}
 
-		int send_info_image = server->sendDepth(random_image);
+		int send_info_image = server->sendDepth(depth_image);
 		if (send_info_image < 0) {
 			cnt_err++;
 			std::cout << "send image failed\n" << std::endl;
@@ -107,6 +107,16 @@ void stepServer(SocketServer* server){
 			cnt_image_send++;
 			std::cout << "sent image #" << cnt_image_send << std::endl;
 		}
+
+		int send_info_image = server->sendColor(color_image);
+		if (send_info_image < 0) {
+			cnt_err++;
+			std::cout << "send color_image failed\n" << std::endl;
+		}
+		else {
+			cnt_image_send++;
+			std::cout << "sent color_image #" << cnt_image_send << std::endl;
+		}		
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 	}

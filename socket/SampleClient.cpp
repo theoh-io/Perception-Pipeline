@@ -88,6 +88,10 @@ void stepClient(SocketClient* client) {
 		int recv_image_info = client->recvDepth(depth,10,10);
 		std::cout << "recv depth = "<< std::endl << " "  << depth << std::endl;
 
+		cv::Mat color;
+		int recv_color_info = client->recvColor(color,480,640);
+		std::cout << "recv color = "<< std::endl << " "  << std::endl;
+
 		if (recv_image_info < 0){
 			std::cout << "recv failed\n" << std::endl;
 			client->stopSocket();

@@ -36,6 +36,7 @@ public :
 	int recvFloats(float* recv_floats, const int length);
 	int sendFloats(const float* send_floats, const int length);
 	int sendDepth(cv::Mat image);
+	int sendColor(cv::Mat image);
 
 private :
 	int run();

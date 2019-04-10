@@ -3,6 +3,8 @@ Run pytorch pretrained model on loomo
 
 1. opencv 
 ```
+mkdir depencency 
+cd dependency
 wget https://github.com/opencv/opencv/archive/3.4.5.zip
 unzip 3.4.5.zip
 mkdir opencv 

@@ -278,6 +278,29 @@ int SocketClient::recvDepth(cv::Mat& image, int height, int width) {
 	cv::Mat mat(height,width,CV_16UC1,&buffer[0]);
 	image = mat.clone();
 
+	std::cout << "depth recv size = " << sz_image << std::endl;
+	std::cout << "depth image size = " << sizeof(image.data) << std::endl;
+
+	if (recv_info < 0){
+		ALOGW("failed to recv image");
+		return -1;
+	}
+
+	return 1;
+}
+
+int SocketClient::recvColor(cv::Mat& image, int height, int width) {
+
+	const int sz_image = height * height * sizeof(ushort);
+	char buffer[sz_image];
+
+	int recv_info = recv(_socket, (char*)(&buffer), sz_image, 0); 
+	cv::Mat mat(height,width,CV_16UC3,&buffer[0]);
+	image = mat.clone();
+
+	std::cout << "color recv size = " << sz_image << std::endl;
+	std::cout << "color image size = " << sizeof(image.data) << std::endl;
+
 	if (recv_info < 0){
 		ALOGW("failed to recv image");
 		return -1;

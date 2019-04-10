@@ -410,6 +410,27 @@ int SocketServer::sendDepth(cv::Mat image) {
 		return -1;  
 	}
 
+	std::cout << "depth image size = " << sizeof(image.data) << std::endl;
+	std::cout << "depth send size = " << image.cols * image.rows * image.channels() * sizeof(ushort) << std::endl;
+
+	return 1;
+}
+
+int SocketServer::sendColor(cv::Mat image) {
+	if (image.empty()){
+		ALOGW("failed to send empty image");
+		return -1;
+	}
+
+	if (send(_process_socket, (char *)(image.data), image.cols * image.rows * image.channels() * sizeof(ushort), 0) < 0)  
+	{  
+		ALOGW("failed to send image through socket");
+		return -1;  
+	}
+
+	std::cout << "color image size = " << sizeof(image.data) << std::endl;
+	std::cout << "color send size = " << image.cols * image.rows * image.channels() * sizeof(ushort) << std::endl;
+
 	return 1;
 }
 
