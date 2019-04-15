@@ -76,20 +76,6 @@ void stepServer(SocketServer* server){
 	        std::cout <<  "Could not open or find the color_image" << std::endl ;
 	    }
 
-	 //    const int TEST_SIZE = 800;
-		// cv::Mat test_image(TEST_SIZE, TEST_SIZE, CV_8UC3, cv::Scalar(10, 100, 150));
-
-		// // Send
-		// int send_info_floats = server->sendFloats(floats_send, length_send);
-		// if (send_info_floats < 0) {
-		// 	cnt_err++;
-		// 	std::cout << "send chars failed\n" << std::endl;
-		// }
-		// else {
-		// 	cnt_float_send++;
-		// 	std::cout << "sent chars #" << cnt_float_send << std::endl;
-		// }
-
 	    cv::resize(color_image, color_image, cv::Size(128,96));
 
 		int send_info_test = server->sendImage(color_image, 128, 96);
