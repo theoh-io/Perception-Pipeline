@@ -90,7 +90,8 @@ void stepServer(SocketServer* server){
 		// 	std::cout << "sent chars #" << cnt_float_send << std::endl;
 		// }
 
-	    cv::resize(color_image,color_image,128,96);
+	    cv::resize(color_image, color_image, cv::Size(128,96));
+
 		int send_info_test = server->sendImage(color_image, 128, 96);
 
 		if (send_info_test < 0) {
