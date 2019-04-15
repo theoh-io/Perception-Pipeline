@@ -63,11 +63,11 @@ void stepServer(SocketServer* server){
 			continue;
 		}
 
-		// Float 
-		floats_send[0] = (float)cnt_float_send + 0.1;
-		floats_send[1] = (float)cnt_float_send + 0.2;
-		floats_send[2] = (float)cnt_float_send + 0.3;
-		std::cout << "send floats = (" << floats_send[0] << "," << floats_send[1] << "," << floats_send[2] << ")" << std::endl << std::endl;
+		// // Float 
+		// floats_send[0] = (float)cnt_float_send + 0.1;
+		// floats_send[1] = (float)cnt_float_send + 0.2;
+		// floats_send[2] = (float)cnt_float_send + 0.3;
+		// std::cout << "send floats = (" << floats_send[0] << "," << floats_send[1] << "," << floats_send[2] << ")" << std::endl << std::endl;
 
 		// Color 
 		cv::Mat color_image = cv::imread("../test/input.jpg", CV_LOAD_IMAGE_COLOR);   // Read the file
@@ -76,21 +76,22 @@ void stepServer(SocketServer* server){
 	        std::cout <<  "Could not open or find the color_image" << std::endl ;
 	    }
 
-	    const int TEST_SIZE = 800;
-		cv::Mat test_image(TEST_SIZE, TEST_SIZE, CV_8UC3, cv::Scalar(10, 100, 150));
+	 //    const int TEST_SIZE = 800;
+		// cv::Mat test_image(TEST_SIZE, TEST_SIZE, CV_8UC3, cv::Scalar(10, 100, 150));
 
-		// Send
-		int send_info_floats = server->sendFloats(floats_send, length_send);
-		if (send_info_floats < 0) {
-			cnt_err++;
-			std::cout << "send chars failed\n" << std::endl;
-		}
-		else {
-			cnt_float_send++;
-			std::cout << "sent chars #" << cnt_float_send << std::endl;
-		}
+		// // Send
+		// int send_info_floats = server->sendFloats(floats_send, length_send);
+		// if (send_info_floats < 0) {
+		// 	cnt_err++;
+		// 	std::cout << "send chars failed\n" << std::endl;
+		// }
+		// else {
+		// 	cnt_float_send++;
+		// 	std::cout << "sent chars #" << cnt_float_send << std::endl;
+		// }
 
-		int send_info_test = server->sendImage(color_image, 640, 480);
+		int send_info_test = server->sendImage(color_image, 128, 96);
+		
 		if (send_info_test < 0) {
 			cnt_err++;
 			std::cout << "send test image failed\n" << std::endl;

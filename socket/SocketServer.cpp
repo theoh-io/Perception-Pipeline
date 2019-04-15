@@ -472,42 +472,6 @@ int SocketServer::sendImage(cv::Mat image, const int width, const int height, co
 	}
 
 	return 1;
-
-	// // const int BUFFER_MAX = width * height * channels; 
-	// const int BUFFER_MAX = 1000;
-	// struct imagebuf{
-	// 	char* buf = new char[BUFFER_MAX]; 
-	// 	int flag;
-	// };
-
-	// // send to client
-	// imagebuf data;
-
-	// for (int k = 0; k < bags; ++k)   
-	// {
-	// 	int num1 = height / bags * k;  
-	// 	for (int i = 0; i < height / bags; ++i)
-	// 	{  
-	// 		int num2 = i * width * channels;  
-	// 		uchar* ucdata = image.ptr<uchar>(i + num1);  
-	// 		for (int j = 0; j < width * channels; ++j)  
-	// 		{  
-	// 			data.buf[num2 + j] = ucdata[j];  
-	// 		}  
-	// 	}  
-
-	// 	if(k == bags - 1)  
-	// 		data.flag = 2;  
-	// 	else  
-	// 		data.flag = 1;  
-
-	// 	if (send(_process_socket, (char *)(&data), sizeof(data), 0) < 0)  
-	// 	{  
-	// 		std::cout << "send image failed\n";  
-	// 		return -1;  
-	// 	}  
-	// }
-
 }
 
 }
