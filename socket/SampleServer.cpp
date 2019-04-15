@@ -1,9 +1,3 @@
-/*! define the server to test class SocketServer.
-* Filename: server.cpp
-* Version: 0.20
-* Algo team, Ninebot Inc., 2017
-*/
-
 #include <stdlib.h>
 #include <string>
 #include <string.h>

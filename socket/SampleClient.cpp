@@ -1,8 +1,3 @@
-/********************************************************************************* 
-  *Copyright(C),Ninebot
-  *Description: Executable file on server, including communicating and processing
-**********************************************************************************/  
-
 #include <stdlib.h>
 #include <string>
 #include <string.h>
