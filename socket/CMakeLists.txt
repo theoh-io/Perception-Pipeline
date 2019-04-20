@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.5)
 
 # Tags 
 SET(USE_CLIENT 1)
@@ -9,7 +9,7 @@ SET(PROJECT_NAME socket)
 SET(CMAKE_CXX_STANDARD 11)
 MESSAGE("@ Source path: " ${PROJECT_SOURCE_DIR})
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-find_package(OpenCV 3.4 REQUIRED PATHS ${PROJECT_SOURCE_DIR}/../dependency)
+find_package(OpenCV 2.4 REQUIRED PATHS ${PROJECT_SOURCE_DIR}/../dependency)
 
 # General 
 # include_directories(/usr/include /usr/local/include)

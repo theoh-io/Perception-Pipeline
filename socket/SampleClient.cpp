@@ -64,33 +64,33 @@ void stepClient(SocketClient* client) {
 		}
 
 		//Receive
-		// int recv_floats_info = client->recvFloats(floats_recv,length_recv);
-		// if (recv_floats_info < 0){
-		// 	std::cout << "recv char failed\n" << std::endl;
-		// 	client->stopSocket();
-		// 	break;
-		// }	
-		// else {
-		// 	cnt_char_recv++;
-		// 	std::cout << "received char #" << cnt_char_recv << std::endl;
-		// 	std::cout << "received floats = (" << floats_recv[0] << "," << floats_recv[1] << "," << floats_recv[2] << ")" << std::endl << std::endl;
-		// }
-
-		cv::Mat test_image;
-		int recv_test_info = client->receiveImage(test_image,128,96);
-
-		if (recv_test_info < 0){
-			std::cout << "recv failed\n" << std::endl;
+		int recv_floats_info = client->recvFloats(floats_recv,length_recv);
+		if (recv_floats_info < 0){
+			std::cout << "recv char failed\n" << std::endl;
 			client->stopSocket();
 			break;
 		}	
 		else {
-			cnt_image_recv++;
-			std::cout << "received #" << cnt_image_recv << std::endl;
-			cv::imshow( "Test window", test_image );                   // Show our depth inside it.		
-		 	cv::waitKey(50);
-		 	// cv::imwrite( foldername + "/recv"+ std::to_string(cnt_image_recv) + ".jpg", test_image);
+			cnt_char_recv++;
+			std::cout << "received char #" << cnt_char_recv << std::endl;
+			std::cout << "received floats = (" << floats_recv[0] << "," << floats_recv[1] << "," << floats_recv[2] << ")" << std::endl << std::endl;
 		}
+
+		// cv::Mat test_image;
+		// int recv_test_info = client->receiveImage(test_image,128,96);
+
+		// if (recv_test_info < 0){
+		// 	std::cout << "recv failed\n" << std::endl;
+		// 	client->stopSocket();
+		// 	break;
+		// }	
+		// else {
+		// 	cnt_image_recv++;
+		// 	std::cout << "received #" << cnt_image_recv << std::endl;
+		// 	cv::imshow( "Test window", test_image );                   // Show our depth inside it.		
+		//  	cv::waitKey(50);
+		//  	// cv::imwrite( foldername + "/recv"+ std::to_string(cnt_image_recv) + ".jpg", test_image);
+		// }
 
 		if (client->isStopped())
 			break;
