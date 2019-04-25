@@ -26,5 +26,5 @@
 
 <root>
     <LEVEL>3</LEVEL>
-	<LOG_FILENAME>/sdcard/log.txt</LOG_FILENAME>
+	<!-- <LOG_FILENAME>/sdcard/log.txt</LOG_FILENAME> -->
 </root>

@@ -22,8 +22,8 @@
 #include <unistd.h>
 #endif
 
-// #define IP_ADDRESS "128.179.163.19"
-#define IP_ADDRESS "127.0.0.1" 
+#define IP_ADDRESS "128.179.161.119"
+// #define IP_ADDRESS "127.0.0.1" 
 
 #ifndef WIN32
 /* reads from keypress, doesn't echo */
@@ -82,7 +82,7 @@ void stepClient(SocketClient* client) {
 		// }
 
 		cv::Mat test_image;
-		int recv_test_info = client->receiveImage(test_image,128,96);
+		int recv_test_info = client->receiveImage(test_image,160,120);
 
 		if (recv_test_info < 0){
 			std::cout << "recv failed\n" << std::endl;
