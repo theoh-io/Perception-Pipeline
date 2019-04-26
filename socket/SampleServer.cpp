@@ -70,31 +70,31 @@ void stepServer(SocketServer* server){
 		// int send_info_test = server->sendFloats(floats_send, 1);
 		
 		// Send char
-		char_send[0] = 'b';
-		char_send[1] = 'b';
-		char_send[2] = 'b';
-		std::cout << "send chars = (" << char_send[0] << "," << char_send[1] << "," << char_send[2] << ")" << std::endl << std::endl;
-		int send_info_test = server->sendChars(char_send, length_send);
+		// char_send[0] = 'b';
+		// char_send[1] = 'b';
+		// char_send[2] = 'b';
+		// std::cout << "send chars = (" << char_send[0] << "," << char_send[1] << "," << char_send[2] << ")" << std::endl << std::endl;
+		// int send_info_test = server->sendChars(char_send, length_send);
 
 		// Color 
-		// cv::Mat color_image = cv::imread("../test/fullsend.jpg", CV_LOAD_IMAGE_COLOR);   // Read the file
-	    // if(! color_image.data )                              // Check for invalid input
-	    // {
-	    //     std::cout <<  "Could not open or find the color_image" << std::endl ;
-	    // }
+		cv::Mat color_image = cv::imread("../test/fullsend.jpg", CV_LOAD_IMAGE_COLOR);   // Read the file
+	    if(! color_image.data )                              // Check for invalid input
+	    {
+	        std::cout <<  "Could not open or find the color_image" << std::endl ;
+	    }
 
-	    // cv::resize(color_image, color_image, cv::Size(128,96));
+	    cv::resize(color_image, color_image, cv::Size(128,96));
 
-		// int send_info_test = server->sendImage(color_image, 128, 96);
+		int send_info_test = server->sendImage(color_image, 128, 96);
 
-		// if (send_info_test < 0) {
-		// 	cnt_err++;
-		// 	std::cout << "send test image failed\n" << std::endl;
-		// }
-		// else {
-		// 	cnt_image_send++;
-		// 	std::cout << "sent test image #" << cnt_image_send << std::endl;
-		// }
+		if (send_info_test < 0) {
+			cnt_err++;
+			std::cout << "send test image failed\n" << std::endl;
+		}
+		else {
+			cnt_image_send++;
+			std::cout << "sent test image #" << cnt_image_send << std::endl;
+		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 	}

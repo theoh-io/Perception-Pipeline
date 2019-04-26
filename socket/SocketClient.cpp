@@ -320,8 +320,9 @@ int SocketClient::receiveImage(cv::Mat& image, const int width, const int height
 	int returnflag = 0;
 	// TODO: channels 
 	cv::Mat img(height, width, CV_8UC3, cv::Scalar(0));
-
 	const int sz_image = height * width * channels * sizeof(uint8_t) / bags;
+	std::cout << "bags = " << bags; 
+	std::cout << "sz_image = " << sz_image; 
 	char data[sz_image];
 	memset(&data, 0, sizeof(data));	
 
