@@ -82,7 +82,7 @@ void stepClient(SocketClient* client) {
 		// }
 
 		cv::Mat test_image;
-		int recv_test_info = client->receiveImage(test_image,160,120);
+		int recv_test_info = client->receiveImage(test_image,128,96);
 
 		if (recv_test_info < 0){
 			std::cout << "recv failed\n" << std::endl;
