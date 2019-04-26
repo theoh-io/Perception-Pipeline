@@ -57,7 +57,7 @@ void stepServer(SocketServer* server){
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 			continue;
 		}
-
+		
 		// // Float 
 		// floats_send[0] = (float)cnt_float_send + 0.1;
 		// floats_send[1] = (float)cnt_float_send + 0.2;
@@ -77,7 +77,7 @@ void stepServer(SocketServer* server){
 		// int send_info_test = server->sendChars(char_send, length_send);
 
 		// Color 
-		cv::Mat color_image = cv::imread("../test/fullsend.jpg", CV_LOAD_IMAGE_COLOR);   // Read the file
+		cv::Mat color_image = cv::imread("../test/input.jpg", CV_LOAD_IMAGE_COLOR);   // Read the file
 	    if(! color_image.data )                              // Check for invalid input
 	    {
 	        std::cout <<  "Could not open or find the color_image" << std::endl ;

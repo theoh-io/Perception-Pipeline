@@ -88,7 +88,7 @@ void stepClient(SocketClient* client) {
 			cnt_image_recv++;
 			std::cout << "received #" << cnt_image_recv << std::endl;
 			cv::imshow( "Test window", test_image );                   // Show our depth inside it.		
-		 	cv::waitKey(50);
+		 	cv::waitKey(10);
 		 	// cv::imwrite( foldername + "/recv"+ std::to_string(cnt_image_recv) + ".jpg", test_image);
 		}
 
