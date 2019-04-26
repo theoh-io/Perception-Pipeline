@@ -1,9 +1,3 @@
-/*! define the server to test class SocketServer.
-* Filename: server.cpp
-* Version: 0.20
-* Algo team, Ninebot Inc., 2017
-*/
-
 #include <stdlib.h>
 #include <string>
 #include <string.h>
@@ -51,6 +45,7 @@ void stepServer(SocketServer* server){
 	char* chars_recv = new char[length_recv];
 	const int length_send = 3;
 	float* floats_send = new float[length_send];
+	char* char_send = new char[length_send];
 
 	while (true) {
 		std::cout << "--- server ---" << std::endl;
@@ -68,27 +63,25 @@ void stepServer(SocketServer* server){
 		// floats_send[1] = (float)cnt_float_send + 0.2;
 		// floats_send[2] = (float)cnt_float_send + 0.3;
 		// std::cout << "send floats = (" << floats_send[0] << "," << floats_send[1] << "," << floats_send[2] << ")" << std::endl << std::endl;
+		
+		// My float send
+		// floats_send[0] = 0.666;
+		// std::cout << "send floats =" << floats_send[0] << std::endl << std::endl;
+		// int send_info_test = server->sendFloats(floats_send, 1);
+		
+		// Send char
+		// char_send[0] = 'b';
+		// char_send[1] = 'b';
+		// char_send[2] = 'b';
+		// std::cout << "send chars = (" << char_send[0] << "," << char_send[1] << "," << char_send[2] << ")" << std::endl << std::endl;
+		// int send_info_test = server->sendChars(char_send, length_send);
 
 		// Color 
-		cv::Mat color_image = cv::imread("../test/input.jpg", CV_LOAD_IMAGE_COLOR);   // Read the file
+		cv::Mat color_image = cv::imread("../test/fullsend.jpg", CV_LOAD_IMAGE_COLOR);   // Read the file
 	    if(! color_image.data )                              // Check for invalid input
 	    {
 	        std::cout <<  "Could not open or find the color_image" << std::endl ;
 	    }
-
-	 //    const int TEST_SIZE = 800;
-		// cv::Mat test_image(TEST_SIZE, TEST_SIZE, CV_8UC3, cv::Scalar(10, 100, 150));
-
-		// // Send
-		// int send_info_floats = server->sendFloats(floats_send, length_send);
-		// if (send_info_floats < 0) {
-		// 	cnt_err++;
-		// 	std::cout << "send chars failed\n" << std::endl;
-		// }
-		// else {
-		// 	cnt_float_send++;
-		// 	std::cout << "sent chars #" << cnt_float_send << std::endl;
-		// }
 
 	    cv::resize(color_image, color_image, cv::Size(128,96));
 
