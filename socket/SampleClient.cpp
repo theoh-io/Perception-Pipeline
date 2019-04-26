@@ -22,8 +22,8 @@
 #include <unistd.h>
 #endif
 
-#define IP_ADDRESS "128.179.161.119"
-// #define IP_ADDRESS "127.0.0.1" 
+// #define IP_ADDRESS "128.179.161.119"
+#define IP_ADDRESS "127.0.0.1" 
 
 #ifndef WIN32
 /* reads from keypress, doesn't echo */
