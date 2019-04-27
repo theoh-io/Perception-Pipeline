@@ -8,12 +8,13 @@ import binascii
 
 from PIL import Image
 
-host = '127.0.0.1'  # The server's hostname or IP address
+# host = '127.0.0.1'  # The server's hostname or IP address
+host = '128.179.162.125'  # The server's hostname or IP address
 port = 8081        # The port used by the server
 
 # image data
-width = 128
-height = 96 
+width = 80
+height = 60 
 channels = 3
 sz_image = width*height*channels
 
@@ -44,11 +45,11 @@ while True:
     # print(reply)
     print(len(reply))
     if len(reply) == sz_image:
-        pil_image = Image.frombytes('RGB', (128, 96), reply)
+        pil_image = Image.frombytes('RGB', (width, height), reply)
         opencvImage = cv2.cvtColor(numpy.array(pil_image), cv2.COLOR_RGB2BGR)
         opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
         cv2.imshow('Test window',opencvImage)
-        cv2.waitKey(50)
+        cv2.waitKey(10)
 
     ########################
     ## Detect

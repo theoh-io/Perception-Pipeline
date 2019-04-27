@@ -87,9 +87,9 @@ void stepServer(SocketServer* server){
 	        std::cout <<  "Could not open or find the color_image" << std::endl ;
 	    }
 
-	    cv::resize(color_image, color_image, cv::Size(128,96));
+	    cv::resize(color_image, color_image, cv::Size(80,60));
 
-		int send_info_test = server->sendImage(color_image, 128, 96);
+		int send_info_test = server->sendImage(color_image,80,60);
 
 		if (send_info_test < 0) {
 			cnt_err_send++;
@@ -115,7 +115,6 @@ void stepServer(SocketServer* server){
 				bounding_box[i] = *(float*)&floats_recv[i];
 				std::cout << "Coordinate #" << i << "  " << bounding_box[i] << std::endl;				
 			}
-			
 		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
