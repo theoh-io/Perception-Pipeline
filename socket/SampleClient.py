@@ -3,6 +3,9 @@ import cv2
 import socket
 import sys
 import numpy
+import struct
+import binascii
+
 from PIL import Image
 
 host = '127.0.0.1'  # The server's hostname or IP address
@@ -38,6 +41,7 @@ while True:
     # Receive data
     print('# Receive image data from server')
     reply = s.recv(sz_image)
+    # print(reply)
     print(len(reply))
     if len(reply) == sz_image:
         pil_image = Image.frombytes('RGB', (128, 96), reply)
@@ -45,3 +49,29 @@ while True:
         opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
         cv2.imshow('Test window',opencvImage)
         cv2.waitKey(50)
+
+    ########################
+    ## Detect
+    ########################
+
+
+    print("# Now to send data")
+    # https://pymotw.com/3/socket/binary.html
+    values = (1.0, 2.0, 3.0, 4.0, 5.0)
+    packer = struct.Struct('f f f f f')
+    packed_data = packer.pack(*values)
+
+    print('values =', values)
+    # Send data
+    send_info = s.send(packed_data)
+    print('Number of bytes sent' ,send_info)
+
+    ## Done :) Loop!
+
+    # send_data = struct.pack('f'*len(data), *data)
+    # float* buffer = new float[len(data)];
+    # memcpy(buffer, data, length*sizeof(float));
+    # send_info = s.send('\x00\x00\x80?');
+    # print(data[0])
+    # print(data)
+    # sent_status = s.send(send_data)

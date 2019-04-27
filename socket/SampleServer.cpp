@@ -36,13 +36,17 @@ int getch(void) {
 void stepServer(SocketServer* server){
 
 	int cnt_recv = 0;
-	int cnt_float_send = 0;
+	int cnt_float_rcv = 0;
 	int cnt_image_send = 0;
-	int cnt_err = 0;
+	int cnt_err_send = 0;
+	int cnt_err_rcv = 0;
 
 	// Create variables 
-	const int length_recv = 3;
+	const int length_recv = 5;
+	float* floats_recv = new float[length_recv];
 	char* chars_recv = new char[length_recv];
+	float* bounding_box = new float[length_recv];
+
 	const int length_send = 3;
 	float* floats_send = new float[length_send];
 	char* char_send = new char[length_send];
@@ -76,7 +80,7 @@ void stepServer(SocketServer* server){
 		// std::cout << "send chars = (" << char_send[0] << "," << char_send[1] << "," << char_send[2] << ")" << std::endl << std::endl;
 		// int send_info_test = server->sendChars(char_send, length_send);
 
-		// Color 
+		// Send the Image 
 		cv::Mat color_image = cv::imread("../test/input.jpg", CV_LOAD_IMAGE_COLOR);   // Read the file
 	    if(! color_image.data )                              // Check for invalid input
 	    {
@@ -88,12 +92,30 @@ void stepServer(SocketServer* server){
 		int send_info_test = server->sendImage(color_image, 128, 96);
 
 		if (send_info_test < 0) {
-			cnt_err++;
+			cnt_err_send++;
 			std::cout << "send test image failed\n" << std::endl;
 		}
 		else {
 			cnt_image_send++;
 			std::cout << "sent test image #" << cnt_image_send << std::endl;
+		}
+
+
+		// Receive Bounding Box coordinates (5 floats)
+		int rcv_info_test = server->recvFloats(floats_recv, length_recv);
+		if (rcv_info_test < 0) {
+			cnt_err_rcv++;
+			std::cout << "rcv float failed\n" << std::endl;
+		}
+		else {
+			cnt_float_rcv++;
+			std::cout << "rcv float succeeded #" << cnt_float_rcv << std::endl;
+			for (int i = 0; i < length_recv; i++)
+			{
+				bounding_box[i] = *(float*)&floats_recv[i];
+				std::cout << "Coordinate #" << i << "  " << bounding_box[i] << std::endl;				
+			}
+			
 		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
