@@ -7,6 +7,7 @@ import struct
 import binascii
 
 from PIL import Image
+from detector import Detector
 
 # host = '127.0.0.1'  # The server's hostname or IP address
 host = '128.179.162.125'  # The server's hostname or IP address
@@ -37,6 +38,10 @@ except socket.gaierror:
 print('# Connecting to server, ' + host + ' (' + remote_ip + ')')
 s.connect((remote_ip , port))
 
+# Set up detector
+detector = Detector()
+# detector.load(PATH)
+
 while True:
 
     # Receive data
@@ -54,10 +59,12 @@ while True:
     ########################
     ## Detect
     ########################
+    # bbox, bbox_label = detector.forward(opencvImage)
 
 
     print("# Now to send data")
     # https://pymotw.com/3/socket/binary.html
+    # values = (bbox[0], bbox[1], bbox[2], bbox[3], bbox_label)
     values = (1.0, 2.0, 3.0, 4.0, 5.0)
     packer = struct.Struct('f f f f f')
     packed_data = packer.pack(*values)
