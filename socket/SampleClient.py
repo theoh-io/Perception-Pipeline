@@ -10,7 +10,10 @@ from PIL import Image
 from detector import Detector
 
 # host = '127.0.0.1'  # The server's hostname or IP address
+
+##### IP Address of server #########
 host = '128.179.162.125'  # The server's hostname or IP address
+####################################
 port = 8081        # The port used by the server
 
 # image data
@@ -40,46 +43,62 @@ s.connect((remote_ip , port))
 
 # Set up detector
 detector = Detector()
-# detector.load(PATH)
+detector.load('./saved_model.pth')
 
+#Image Receiver 
+net_recvd_length = 0
+recvd_image = b''
+
+#Saving Images
+t = 0
+w = 0
 while True:
 
     # Receive data
-    print('# Receive image data from server')
+    # print('# Receive image data from server')
     reply = s.recv(sz_image)
-    # print(reply)
-    print(len(reply))
-    if len(reply) == sz_image:
-        pil_image = Image.frombytes('RGB', (width, height), reply)
+    recvd_image += reply
+    net_recvd_length += len(reply)
+
+    # print(len(reply))
+    # print(net_recvd_length)
+    if net_recvd_length == sz_image:
+        t = t+1
+        # print("Received Full Image")
+        pil_image = Image.frombytes('RGB', (width, height), recvd_image)
         opencvImage = cv2.cvtColor(numpy.array(pil_image), cv2.COLOR_RGB2BGR)
         opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
         cv2.imshow('Test window',opencvImage)
-        cv2.waitKey(10)
+        if t % 100 and w < 1000:
+            w = w + 1
+            # save_name = str(t) + '.png'
+            print("Saving: ", w)
+            cv2.imwrite('images/' + str(w) + '.png', opencvImage)
 
-    ########################
-    ## Detect
-    ########################
-    # bbox, bbox_label = detector.forward(opencvImage)
+        cv2.waitKey(50)
+        net_recvd_length = 0
+        recvd_image = b''
 
 
-    print("# Now to send data")
-    # https://pymotw.com/3/socket/binary.html
-    # values = (bbox[0], bbox[1], bbox[2], bbox[3], bbox_label)
-    values = (1.0, 2.0, 3.0, 4.0, 5.0)
-    packer = struct.Struct('f f f f f')
-    packed_data = packer.pack(*values)
 
-    print('values =', values)
-    # Send data
-    send_info = s.send(packed_data)
-    print('Number of bytes sent' ,send_info)
+        ########################
+        ## Detect
+        ########################
+        bbox, bbox_label = detector.forward(opencvImage)
+        if bbox_label[0]:
+            print(bbox)
+            print(bbox_label)
 
-    ## Done :) Loop!
+        # print("# Now to send data")
+        # https://pymotw.com/3/socket/binary.html
+        values = (bbox[0], bbox[1], bbox[2], bbox[3], float(bbox_label[0]))
+        # values = (1.0, 2.0, 3.0, 4.0, 5.0)
+        packer = struct.Struct('f f f f f')
+        packed_data = packer.pack(*values)
 
-    # send_data = struct.pack('f'*len(data), *data)
-    # float* buffer = new float[len(data)];
-    # memcpy(buffer, data, length*sizeof(float));
-    # send_info = s.send('\x00\x00\x80?');
-    # print(data[0])
-    # print(data)
-    # sent_status = s.send(send_data)
+        # print('values =', values)
+        # Send data
+        send_info = s.send(packed_data)
+        # print('Number of bytes sent' ,send_info)
+
+        ## Done :) Loop!
