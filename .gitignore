@@ -2,3 +2,5 @@ dependency/
 socket/bin/
 socket/build/
 # socket/test/
+python/__pycache__/
+socket/__pycache__/

@@ -12,7 +12,7 @@ from detector import Detector
 # host = '127.0.0.1'  # The server's hostname or IP address
 
 ##### IP Address of server #########
-host = '128.179.162.125'  # The server's hostname or IP address
+host = '128.179.181.20'  # The server's hostname or IP address
 ####################################
 port = 8081        # The port used by the server
 
@@ -52,6 +52,11 @@ recvd_image = b''
 #Saving Images
 t = 0
 w = 0
+
+#Test Controller
+direction = -1
+cnt = 0
+
 while True:
 
     # Receive data
@@ -69,30 +74,37 @@ while True:
         opencvImage = cv2.cvtColor(numpy.array(pil_image), cv2.COLOR_RGB2BGR)
         opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
         cv2.imshow('Test window',opencvImage)
-        if t % 100 and w < 1000:
-            w = w + 1
-            # save_name = str(t) + '.png'
-            print("Saving: ", w)
-            cv2.imwrite('images/' + str(w) + '.png', opencvImage)
 
-        cv2.waitKey(50)
+        # if t % 100 and w < 1000:
+        #     w = w + 1
+        #     # save_name = str(t) + '.png'
+        #     print("Saving: ", w)
+        #     cv2.imwrite('images/' + str(w) + '.png', opencvImage)
+
+        cv2.waitKey(1)
         net_recvd_length = 0
         recvd_image = b''
-
 
 
         ########################
         ## Detect
         ########################
-        bbox, bbox_label = detector.forward(opencvImage)
-        if bbox_label[0]:
-            print(bbox)
-            print(bbox_label)
+        # bbox, bbox_label = detector.forward(opencvImage)
+        # if bbox_label[0]:
+        #     print(bbox)
+        #     print(bbox_label)
 
-        # print("# Now to send data")
-        # https://pymotw.com/3/socket/binary.html
-        values = (bbox[0], bbox[1], bbox[2], bbox[3], float(bbox_label[0]))
-        # values = (1.0, 2.0, 3.0, 4.0, 5.0)
+        # # print("# Now to send data")
+        # # https://pymotw.com/3/socket/binary.html
+        # values = (bbox[0], bbox[1], bbox[2], bbox[3], float(bbox_label[0]))
+
+        cnt = cnt + 1
+        if cnt > 20:
+            direction = - direction
+            cnt = 0
+
+        # values = (40.0, 30.0, 15.0, 10.0, 0.0)
+        values = (40.0 + direction * 10.0, 30.0, 10.0, 20.0, 1.0)
         packer = struct.Struct('f f f f f')
         packed_data = packer.pack(*values)
 
@@ -102,3 +114,4 @@ while True:
         # print('Number of bytes sent' ,send_info)
 
         ## Done :) Loop!
+
