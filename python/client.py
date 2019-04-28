@@ -12,7 +12,7 @@ from detector import Detector
 # host = '127.0.0.1'  # The server's hostname or IP address
 
 ##### IP Address of server #########
-host = '128.179.181.20'  # The server's hostname or IP address
+host = '128.179.183.102'  # The server's hostname or IP address
 ####################################
 port = 8081        # The port used by the server
 
@@ -89,6 +89,7 @@ while True:
         ########################
         ## Detect
         ########################
+        # print(opencvImage)
         bbox, bbox_label = detector.forward(opencvImage)
         if bbox_label[0]:
             print(bbox)
@@ -96,7 +97,7 @@ while True:
 
         # # print("# Now to send data")
         # # https://pymotw.com/3/socket/binary.html
-        # values = (bbox[0], bbox[1], bbox[2], bbox[3], float(bbox_label[0]))
+        values = (bbox[0], bbox[1], bbox[2], bbox[3], float(bbox_label[0]))
 
         cnt = cnt + 1
         if cnt > 20:
@@ -104,7 +105,7 @@ while True:
             cnt = 0
 
         # values = (40.0, 30.0, 15.0, 10.0, 0.0)
-        values = (40.0 + direction * 10.0, 30.0, 10.0, 20.0, 1.0)
+        # values = (40.0 + direction * 10.0, 30.0, 10.0, 20.0, 1.0)
         packer = struct.Struct('f f f f f')
         packed_data = packer.pack(*values)
 

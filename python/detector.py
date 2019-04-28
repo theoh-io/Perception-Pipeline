@@ -50,8 +50,9 @@ class Detector(object):
     """docstring for Detector"""
     def __init__(self):
         super(Detector, self).__init__()
-        self.mean = [[[[0.59699919, 0.53694908, 0.48639409]]]]
-        self.std = [[[[0.27047858, 0.28182432, 0.2962865 ]]]]
+        # TODO: MEAN & STD
+        self.mean = [[[[0.59383941, 0.5336764, 0.48412776]]]]
+        self.std = [[[[0.2569135, 0.26834411, 0.28249551]]]]
         self.img_size = 100 
         self.img_size_w = 80
         self.img_size_h = 60
@@ -70,22 +71,22 @@ class Detector(object):
 
     def forward(self, img):        
         ##Add a dimension
-        img = np.expand_dims(img, 0)
-
+        img = np.expand_dims(img.transpose(1,0,2), 0)
+        
         ##Preprocess
-        img = (img - self.mean)/self.std
-
+        img = (img/255 - self.mean)/self.std
+        
         ##Transpose to model format
         if(img.shape[1] != self.num_channels):
             img = img.transpose((0,3,1,2))
-        
+
         ##Detect
         with torch.no_grad():
             pred_y_box, pred_y_logit = self.model.forward(torch.tensor(img, dtype=torch.float32))
             pred_y_box, pred_y_logit = pred_y_box.numpy(), pred_y_logit.numpy()
             pred_y_label = pred_y_logit > 0.5
-            # pred_bboxes = pred_y_box * self.img_size
+            pred_bboxes = pred_y_box * self.img_size
             # pred_bboxes = pred_bboxes.reshape(len(pred_bboxes), num_objects, -1)
-        
-        return pred_y_box[0], pred_y_label[0]
+
+        return pred_bboxes[0], pred_y_label[0]
 
