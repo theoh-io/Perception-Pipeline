@@ -75,7 +75,7 @@ while True:
         opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
         cv2.imshow('Test window',opencvImage)
 
-        # if t % 100 and w < 1000:
+        # if t % 100 and w < 5000:
         #     w = w + 1
         #     # save_name = str(t) + '.png'
         #     print("Saving: ", w)
@@ -105,7 +105,7 @@ while True:
             cnt = 0
 
         # values = (40.0, 30.0, 15.0, 10.0, 0.0)
-        # values = (40.0 + direction * 10.0, 30.0, 10.0, 20.0, 1.0)
+        # values = (40.0 + direction * 30.0, 30.0, 10.0, 20.0, 1.0)
         packer = struct.Struct('f f f f f')
         packed_data = packer.pack(*values)
 

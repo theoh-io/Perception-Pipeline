@@ -9,7 +9,7 @@ from PIL import Image
 from detector import Detector
 
 
-img = cv2.imread('1.png')
+img = cv2.imread('images/157.png')
 cv2.imshow('Test window',img)
 
 # Set up detector

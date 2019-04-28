@@ -51,8 +51,8 @@ class Detector(object):
     def __init__(self):
         super(Detector, self).__init__()
         # TODO: MEAN & STD
-        self.mean = [[[[0.59383941, 0.5336764, 0.48412776]]]]
-        self.std = [[[[0.2569135, 0.26834411, 0.28249551]]]]
+        self.mean = [[[[0.5548078,  0.56693329, 0.53457436]]]] 
+        self.std = [[[[0.26367019, 0.26617227, 0.25692861]]]]
         self.img_size = 100 
         self.img_size_w = 80
         self.img_size_h = 60
@@ -69,20 +69,33 @@ class Detector(object):
         self.model.load_state_dict(torch.load(PATH))
         self.model.eval()
 
-    def forward(self, img):        
+    def forward(self, img):   
         ##Add a dimension
-        img = np.expand_dims(img.transpose(1,0,2), 0)
-        
+        img = np.expand_dims(img.transpose(1,0,2), 0) / 255
+
+        ch1 = img[:,:,:,0].copy()
+        ch3 = img[:,:,:,2].copy()
+
+        img[:,:,:,0] = ch3
+        img[:,:,:,2] = ch1
+
+        # print(img.shape)   
+        # print(img)
+
         ##Preprocess
-        img = (img/255 - self.mean)/self.std
-        
+        img = (img - self.mean)/self.std
+
         ##Transpose to model format
         if(img.shape[1] != self.num_channels):
             img = img.transpose((0,3,1,2))
 
+        # print(img.shape)
+        # print(img)
+
         ##Detect
         with torch.no_grad():
             pred_y_box, pred_y_logit = self.model.forward(torch.tensor(img, dtype=torch.float32))
+
             pred_y_box, pred_y_logit = pred_y_box.numpy(), pred_y_logit.numpy()
             pred_y_label = pred_y_logit > 0.5
             pred_bboxes = pred_y_box * self.img_size
