@@ -89,10 +89,10 @@ while True:
         ########################
         ## Detect
         ########################
-        # bbox, bbox_label = detector.forward(opencvImage)
-        # if bbox_label[0]:
-        #     print(bbox)
-        #     print(bbox_label)
+        bbox, bbox_label = detector.forward(opencvImage)
+        if bbox_label[0]:
+            print(bbox)
+            print(bbox_label)
 
         # # print("# Now to send data")
         # # https://pymotw.com/3/socket/binary.html
