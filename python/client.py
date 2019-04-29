@@ -15,7 +15,7 @@ from detector import Detector
 # host = '127.0.0.1'  # The server's hostname or IP address
 
 ##### IP Address of server #########
-host = '128.179.178.21'  # The server's hostname or IP address
+host = '128.179.198.238'  # The server's hostname or IP address
 ####################################
 port = 8081        # The port used by the server
 
@@ -68,6 +68,7 @@ while True:
         pil_image = Image.frombytes('RGB', (width, height), recvd_image)
         opencvImage = cv2.cvtColor(numpy.array(pil_image), cv2.COLOR_RGB2BGR)
         opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
+
         cv2.imshow('Test window',opencvImage)
 
         cv2.waitKey(1)
@@ -87,7 +88,7 @@ while True:
         # https://pymotw.com/3/socket/binary.html
         values = (bbox[0], bbox[1], bbox[2], bbox[3], float(bbox_label[0]))
 
-        #Test Controller
+        # #Test Controller
         # cnt = cnt + 1
         # if cnt > 50:
         #     direction = - direction
