@@ -1,13 +1,30 @@
 # dynav-loomo
 Run pytorch pretrained model on loomo
 
-1. Install python3-dev
+1. opencv 
 ```
-sudo apt-get install python3-dev
+mkdir depencency 
+cd dependency
+wget https://github.com/opencv/opencv/archive/3.4.5.zip
+unzip 3.4.5.zip
+mkdir opencv 
+cd opencv-3.4.5
+mkdir build
+cd build
+cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=../../opencv -DFORCE_VTK=ON -DWITH_TBB=ON -DWITH_V4L=ON -DWITH_OPENGL=ON -DWITH_CUBLAS=ON -DCUDA_NVCC_FLAGS="-D_FORCE_INLINES" ..
+make -j8
+make install
 ```
-2. Install all the python dependencies for system python
+2. 
 ```
-/usr/bin/python3.5 -m pip install [RVO2, dynav]
-3. Run compiled binary file
+cd socket
+mkdir build 
+cd build 
+cmake ..
+make -j8
 ```
-PYTHONPATH=. ./cmake-build-debug/dynav-loomo
+3. Connect to Loomo via adb connect
+```
+adb connect [port]
+adb devices
+```

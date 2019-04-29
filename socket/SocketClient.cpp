@@ -271,19 +271,154 @@ int SocketClient::sendFloats(const float* send_floats, const int length) {
 
 int SocketClient::recvDepth(cv::Mat& image, int height, int width) {
 
-	const int sz_image = height * width * sizeof(uint16_t);
+	const int sz_image = height * width * sizeof(ushort);
 	char buffer[sz_image];
-	
-	ALOGD("sz image = %d", sz_image);
 
 	int recv_info = recv(_socket, (char*)(&buffer), sz_image, 0); 
 	cv::Mat mat(height,width,CV_16UC1,&buffer[0]);
 	image = mat.clone();
 
+	std::cout << "depth recv size = " << sz_image << std::endl;
+	std::cout << "depth image size = " << sizeof(image.data) << std::endl;
+
 	if (recv_info < 0){
 		ALOGW("failed to recv image");
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 		return -1;
 	}
 
 	return 1;
+}
+
+int SocketClient::recvColor(cv::Mat& image, int height, int width) {
+
+	const int sz_image = height * width * sizeof(uint8_t) * 3;
+	char buffer[sz_image];
+
+	std::cout << "color recv size = " << sz_image << std::endl;
+
+	int recv_info = recv(_socket, (char*)(&buffer), sz_image, 0); 
+
+	std::cout << "recv_info = " << recv_info << std::endl;
+
+	cv::Mat mat(height,width,CV_8UC3,&buffer[0]);
+	image = mat.clone();
+
+	std::cout << "color image size = " << sizeof(image.data) << std::endl;
+
+	if (recv_info < 0){
+		ALOGW("failed to recv image");
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
+		return -1;
+	}
+
+	return 1;
+}
+
+
+int SocketClient::receiveImage(cv::Mat& image, const int width, const int height, const int channels, const int bags) {
+	int returnflag = 0;
+	// TODO: channels 
+	cv::Mat img(height, width, CV_8UC3, cv::Scalar(0));
+	const int sz_image = height * width * channels * sizeof(uint8_t) / bags;
+	std::cout << "bags = " << bags; 
+	std::cout << "sz_image = " << sz_image; 
+	char data[sz_image];
+	memset(&data, 0, sizeof(data));	
+
+	int needRecv = sizeof(data);
+	for (int i = 0; i < bags; i++)		
+	{  
+		int pos = 0;  
+		int len0 = 0;  
+
+		// read 
+		while (pos < needRecv)  
+		{  
+			len0 = recv(_socket, (char*)(&data) + pos, needRecv - pos, 0);  
+			if (len0 < 0)  
+			{
+				std::cout << "Server Recieve Data Failed!\n";  
+				return -1;
+			}
+			pos += len0;  
+		}
+
+		// convert 
+		int num1 = height / bags * i;  
+		for (int j = 0; j < height / bags; j++)  
+		{  
+			int num2 = j * width * 3;  
+			uchar* ucdata = img.ptr<uchar>(j + num1);  
+			for (int k = 0; k < width * 3; k++)  
+			{  
+				ucdata[k] = data[num2 + k];  
+			}
+		}  
+	}
+
+	image = img;  
+	return 1;
+
+	// // const int BUFFER_MAX = width * height * channels;
+	// const int BUFFER_MAX = 1000;
+	// struct imagebuf{
+	// 	char buf[BUFFER_MAX];
+	// 	int flag;
+	// };
+
+	// imagebuf data;
+	// int needRecv = sizeof(imagebuf);
+	// int count = 0;
+
+	// memset(&data, 0, sizeof(data));		
+
+	// for (int i = 0; i < bags; i++)		
+	// {  
+	// 	int pos = 0;  
+	// 	int len0 = 0;  
+
+	// 	while (pos < needRecv)  
+	// 	{  
+	// 		len0 = recv(_socket, (char*)(&data) + pos, needRecv - pos, 0);  
+	// 		if (len0 < 0)  
+	// 		{
+	// 			std::cout << "Server Recieve Data Failed!\n";  
+	// 			break;
+	// 		}
+	// 		pos += len0;  
+	// 	}
+	// 	count = count + data.flag;  
+
+	// 	int num1 = height / bags * i;  
+	// 	for (int j = 0; j < height / bags; j++)  
+	// 	{  
+	// 		int num2 = j * width * 3;  
+	// 		uchar* ucdata = img.ptr<uchar>(j + num1);  
+	// 		for (int k = 0; k < width * 3; k++)  
+	// 		{  
+	// 			ucdata[k] = data.buf[num2 + k];  
+	// 		}  
+	// 	}  
+
+	// 	if (data.flag == 2)  
+	// 	{  
+	// 		if (count == bags + 1)  
+	// 		{  
+	// 			image = img;  
+	// 			returnflag = 1;  
+	// 			count = 0;  
+	// 		}  
+	// 		else  
+	// 		{  
+	// 			count = 0;  
+	// 			i = 0;  
+	// 		}
+	// 	}
+	// } 
+
+	// if(returnflag == 1)  
+	// 	return 1;  
+	// else  
+	// 	return -1;  
 }

@@ -30,6 +30,8 @@ public:
 	int recvFloats(float* recv_floats, const int length);
 	int sendFloats(const float* send_floats, const int length);	
 	int recvDepth(cv::Mat& image, int height, int width);
+	int recvColor(cv::Mat& image, int height, int width);
+	int receiveImage(cv::Mat& image, const int width, const int height, const int channels=3, const int bags=1);
 
 private:
 

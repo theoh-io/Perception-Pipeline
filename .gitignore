@@ -1,7 +1,8 @@
-socket/images/
-.idea/
-cmake-build-debug/
-__pycache__/
-build/
-data/
-bin/
+dependency/
+socket/bin/
+socket/build/
+# socket/test/
+python/__pycache__/
+socket/__pycache__/
+python/images/
+python/images1/

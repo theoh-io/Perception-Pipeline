@@ -26,7 +26,7 @@ namespace ninebot_algo
 namespace socket_algo
 {
 
-const int TIMEOUT = 3; // this unit of time is second.
+const int TIMEOUT = 5; // this unit of time is second.
 
 SocketServer::SocketServer(int port) {
 	_reconnect_times = 0;
@@ -73,7 +73,7 @@ int SocketServer::init_socket(int port) {
 
 	// timeout of send and receive
 #ifdef WIN32
-	int timeout = TIMEOUT*1000; // the unit is ms
+	int timeout = TIMEOUT*100000; // the unit is ms
 #else
 	struct timeval timeout = {TIMEOUT, 0}; // the unit is s.
 #endif
@@ -368,7 +368,7 @@ void SocketServer::receiveChars() {
 
 		if (recv_size <= 0) {
 			ALOGD("client send empty");
-			std::this_thread::sleep_for(std::chrono::milliseconds(30));
+			std::this_thread::sleep_for(std::chrono::milliseconds(50));
 			continue;
 		}
 	}
@@ -408,6 +408,67 @@ int SocketServer::sendDepth(cv::Mat image) {
 	{  
 		ALOGW("failed to send image through socket");
 		return -1;  
+	}
+
+	std::cout << "depth image size = " << sizeof(image.data) << std::endl;
+	std::cout << "depth send size = " << image.cols * image.rows * image.channels() * sizeof(ushort) << std::endl;
+
+	return 1;
+}
+
+int SocketServer::sendColor(cv::Mat image) {
+	if (image.empty()){
+		ALOGW("failed to send empty image");
+		return -1;
+	}
+
+	if (send(_process_socket, (char *)(image.data), image.cols * image.rows * image.channels() * sizeof(uint8_t), 0) < 0)  
+	{  
+		ALOGW("failed to send image through socket");
+		return -1;  
+	}
+
+	std::cout << "color image size = " << sizeof(image.data) << std::endl;
+	std::cout << "color send size = " << image.cols * image.rows * image.channels() * sizeof(uint8_t) << std::endl;
+
+	return 1;
+}
+
+int SocketServer::sendImage(cv::Mat image, const int width, const int height, const int channels, const int bags) {
+	
+	if (image.empty()){
+		std::cout << "empty image\n"; 
+		return -1;
+	}
+
+	if(image.cols != width || image.rows != height || image.channels() != channels){
+		std::cout << "image format error" << std::endl;
+		return -1; 
+	}
+
+	const int sz_image = height * width * channels* sizeof(uint8_t) / bags;
+	char data[sz_image];
+	memset(&data, 0, sizeof(data));	
+
+	for (int k = 0; k < bags; ++k)   
+	{
+		// convert
+		int num1 = height / bags * k;  
+		for (int i = 0; i < height / bags; ++i)
+		{  
+			int num2 = i * width * channels;  
+			uchar* ucdata = image.ptr<uchar>(i + num1);  
+			for (int j = 0; j < width * channels; ++j)  
+			{  
+				data[num2 + j] = ucdata[j];  
+			}  
+		}  
+
+		if (send(_process_socket, (char *)(&data), sizeof(data), 0) < 0)  
+		{  
+			std::cout << "send image failed\n";  
+			return -1;  
+		}  
 	}
 
 	return 1;

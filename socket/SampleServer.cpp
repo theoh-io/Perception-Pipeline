@@ -1,9 +1,3 @@
-/*! define the server to test class SocketServer.
-* Filename: server.cpp
-* Version: 0.20
-* Algo team, Ninebot Inc., 2017
-*/
-
 #include <stdlib.h>
 #include <string>
 #include <string.h>
@@ -20,7 +14,6 @@
 #endif
 
 #include "SocketServer.h"
-#include "alog.h"
 
 using namespace ninebot_algo;
 using namespace socket_algo;
@@ -43,15 +36,20 @@ int getch(void) {
 void stepServer(SocketServer* server){
 
 	int cnt_recv = 0;
-	int cnt_float_send = 0;
+	int cnt_float_rcv = 0;
 	int cnt_image_send = 0;
-	int cnt_err = 0;
+	int cnt_err_send = 0;
+	int cnt_err_rcv = 0;
 
 	// Create variables 
-	const int length_recv = 3;
+	const int length_recv = 5;
+	float* floats_recv = new float[length_recv];
 	char* chars_recv = new char[length_recv];
+	float* bounding_box = new float[length_recv];
+
 	const int length_send = 3;
 	float* floats_send = new float[length_send];
+	char* char_send = new char[length_send];
 
 	while (true) {
 		std::cout << "--- server ---" << std::endl;
@@ -63,74 +61,61 @@ void stepServer(SocketServer* server){
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 			continue;
 		}
+		
+		// // Float 
+		// floats_send[0] = (float)cnt_float_send + 0.1;
+		// floats_send[1] = (float)cnt_float_send + 0.2;
+		// floats_send[2] = (float)cnt_float_send + 0.3;
+		// std::cout << "send floats = (" << floats_send[0] << "," << floats_send[1] << "," << floats_send[2] << ")" << std::endl << std::endl;
+		
+		// My float send
+		// floats_send[0] = 0.666;
+		// std::cout << "send floats =" << floats_send[0] << std::endl << std::endl;
+		// int send_info_test = server->sendFloats(floats_send, 1);
+		
+		// Send char
+		// char_send[0] = 'b';
+		// char_send[1] = 'b';
+		// char_send[2] = 'b';
+		// std::cout << "send chars = (" << char_send[0] << "," << char_send[1] << "," << char_send[2] << ")" << std::endl << std::endl;
+		// int send_info_test = server->sendChars(char_send, length_send);
 
-		// Float 
-		floats_send[0] = (float)cnt_float_send + 0.1;
-		floats_send[1] = (float)cnt_float_send + 0.2;
-		floats_send[2] = (float)cnt_float_send + 0.3;
-		std::cout << "send floats = (" << floats_send[0] << "," << floats_send[1] << "," << floats_send[2] << ")" << std::endl << std::endl;
+		// Send the Image 
+		cv::Mat color_image = cv::imread("../test/input.jpg", CV_LOAD_IMAGE_COLOR);   // Read the file
+	    if(! color_image.data )                              // Check for invalid input
+	    {
+	        std::cout <<  "Could not open or find the color_image" << std::endl ;
+	    }
 
-		// Image 
-		// cv::Mat1w random_image(3,3);
-		// cv::randu(random_image, cv::Scalar(200), cv::Scalar(400));		
-		// std::cout << "send image = "<< std::endl << " "  << random_image << std::endl << std::endl;
-		cv::Mat raw_depth; 
-		raw_depth = cv::imread("sample.png", CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_ANYCOLOR ); // Read the file 
-		// cv::resize(raw_depth, raw_depth, cv::Size(), 0.25, 0.25);
+	    cv::resize(color_image, color_image, cv::Size(80,60));
 
-        int type = raw_depth.type();
-        std::string r;
-        {
-          uchar depth = type & CV_MAT_DEPTH_MASK;
-          uchar chans = 1 + (type >> CV_CN_SHIFT);
-          switch ( depth ) {
-            case CV_8U:  r = "8U"; break;
-            case CV_8S:  r = "8S"; break;
-            case CV_16U: r = "16U"; break;
-            case CV_16S: r = "16S"; break;
-            case CV_32S: r = "32S"; break;
-            case CV_32F: r = "32F"; break;
-            case CV_64F: r = "64F"; break;
-            default:     r = "User"; break;
-          }
-          r += "C";
-          r += (chans+'0');
-        }            
+		int send_info_test = server->sendImage(color_image,80,60);
 
-        std::string contents = "depth: type: "  + r + ", size:" + std::to_string(raw_depth.rows) + "x" + std::to_string(raw_depth.cols) + ", " + std::to_string(raw_depth.rows*raw_depth.cols*sizeof(uint16_t));
-		std::cout << contents << std::endl;
-
-		// Send
-		int send_info_floats = server->sendFloats(floats_send, length_send);
-		if (send_info_floats < 0) {
-			cnt_err++;
-			std::cout << "send chars failed\n" << std::endl;
-		}
-		else {
-			cnt_float_send++;
-			std::cout << "sent chars #" << cnt_float_send << std::endl;
-		}
-
-		int send_info_image = server->sendDepth(raw_depth);
-		if (send_info_image < 0) {
-			cnt_err++;
-			std::cout << "send image failed\n" << std::endl;
+		if (send_info_test < 0) {
+			cnt_err_send++;
+			std::cout << "send test image failed\n" << std::endl;
 		}
 		else {
 			cnt_image_send++;
-			std::cout << "sent image #" << cnt_image_send << std::endl;
+			std::cout << "sent test image #" << cnt_image_send << std::endl;
 		}
 
-		// int recv_info = server->recvChars(chars_recv,length_recv);
-		// if (recv_info>0)
-		// {
-		// 	cnt_recv++;
-		// 	std::cout << "policy_receive #" << cnt_recv << std::endl;
-		// }
-		// else {
-		// 	cnt_err++;
-		// 	std::cout << "received failed\n" << std::endl;
-		// }
+
+		// Receive Bounding Box coordinates (5 floats)
+		int rcv_info_test = server->recvFloats(floats_recv, length_recv);
+		if (rcv_info_test < 0) {
+			cnt_err_rcv++;
+			std::cout << "rcv float failed\n" << std::endl;
+		}
+		else {
+			cnt_float_rcv++;
+			std::cout << "rcv float succeeded #" << cnt_float_rcv << std::endl;
+			for (int i = 0; i < length_recv; i++)
+			{
+				bounding_box[i] = *(float*)&floats_recv[i];
+				std::cout << "Coordinate #" << i << "  " << bounding_box[i] << std::endl;				
+			}
+		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 	}
