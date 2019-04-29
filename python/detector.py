@@ -7,6 +7,7 @@ from PIL import Image
 import torch
 import torch.nn.functional as F
 
+
 class Net(torch.nn.Module):
     def __init__(self, n_feature, n_hidden, n_output, n_c):
         super(Net, self).__init__()
@@ -23,7 +24,7 @@ class Net(torch.nn.Module):
                 padding = 0,                  
             ),                              
             torch.nn.ReLU(),                      # activation
-            torch.nn.MaxPool2d(kernel_size = 2),    
+            #torch.nn.MaxPool2d(kernel_size = 2),    
         )
         self.conv2 = torch.nn.Sequential(       
             torch.nn.Conv2d(in_channels = 8, 
@@ -32,20 +33,30 @@ class Net(torch.nn.Module):
                             stride = 2, 
                             padding = 0),      
             torch.nn.ReLU(),                      # activation
-            torch.nn.MaxPool2d(2),                
+            #torch.nn.MaxPool2d(2),                
         )
-
+        
+        self.conv3 = torch.nn.Sequential(       
+            torch.nn.Conv2d(in_channels = 16, 
+                            out_channels = 8, 
+                            kernel_size = 1, 
+                            stride = 1, 
+                            padding = 0),      
+            torch.nn.ReLU(),                      # activation
+            #torch.nn.MaxPool2d(2),                
+        )
     def forward(self, x):
         feat = self.conv1(x)
         feat = self.conv2(feat)
+        feat = self.conv3(feat)
         feat = feat.view(feat.size(0), -1)
         x2 = F.relu(self.hidden(feat))      # activation function for hidden layer
         
-        out_box = self.box(x2)              # linear output
+        out_box = F.relu(self.box(x2))            # linear output
         out_logit = torch.sigmoid(self.logit(x2))
         
         return out_box, out_logit
-
+        
 class Detector(object):
     """docstring for Detector"""
     def __init__(self):
@@ -60,7 +71,8 @@ class Detector(object):
         self.max_object_size = 40 
         self.num_objects = 1
         self.num_channels = 3
-        self.model = Net(n_feature = 128, n_hidden = 20, n_output = 5, n_c = 3)
+        self.model = Net(n_feature = 1632, n_hidden = 128, n_output = 5, n_c = 3)     # define the network
+
 
     def load(self, PATH):
         # self.model = torch.load(PATH)
