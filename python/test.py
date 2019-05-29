@@ -9,15 +9,25 @@ import binascii
 
 from PIL import Image
 
-# host = '127.0.0.1'  # The server's hostname or IP address
+import argparse
+
+parser = argparse.ArgumentParser(
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+)
+
+parser.add_argument('-i','--ip-address',
+                    help='IP Address of robot')
+parser.add_argument('-d', '--downscale', default=8, type=int,
+                    help=('downscale of the received image'))
+args = parser.parse_args()
 
 ##### IP Address of server #########
-host = '128.179.179.243'  # The server's hostname or IP address
+host = args.ip_address #'128.179.150.43'  # The server's hostname or IP address
 ####################################
 port = 8081        # The port used by the server
 
 # image data
-downscale = 8
+downscale = args.downscale
 width = int(640/downscale)
 height = int(480/downscale)
 channels = 3
