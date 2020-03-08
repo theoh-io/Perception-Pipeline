@@ -12,10 +12,8 @@ import binascii
 from PIL import Image
 from detector import Detector
 
-# host = '127.0.0.1'  # The server's hostname or IP address
+host = '127.0.0.1'  # The server's hostname or IP address
 
-##### IP Address of server #########
-host = '128.179.182.205'  # The server's hostname or IP address
 ####################################
 port = 8081        # The port used by the server
 

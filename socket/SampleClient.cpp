@@ -50,10 +50,10 @@ void stepClient(SocketClient* client) {
 	char* chars_send = new char[length_send];
 	cv::namedWindow( "Test window", cv::WINDOW_AUTOSIZE );// Create a window for display.
 
-	std::string foldername = "images";
-	std::string cmd_str_mk = "mkdir \"" + foldername + "\"";
-	system(cmd_str_mk.c_str());
-	ALOGD("Command %s was executed. ", cmd_str_mk.c_str());	
+	// std::string foldername = "images";
+	// std::string cmd_str_mk = "mkdir \"" + foldername + "\"";
+	// system(cmd_str_mk.c_str());
+	// ALOGD("Command %s was executed. ", cmd_str_mk.c_str());	
 
 	while (true) {
 		std::cout << "--- client ---" << std::endl;
@@ -63,21 +63,8 @@ void stepClient(SocketClient* client) {
 			break;
 		}
 
-		//Receive
-		// int recv_floats_info = client->recvFloats(floats_recv,length_recv);
-		// if (recv_floats_info < 0){
-		// 	std::cout << "recv char failed\n" << std::endl;
-		// 	client->stopSocket();
-		// 	break;
-		// }	
-		// else {
-		// 	cnt_char_recv++;
-		// 	std::cout << "received char #" << cnt_char_recv << std::endl;
-		// 	std::cout << "received floats = (" << floats_recv[0] << "," << floats_recv[1] << "," << floats_recv[2] << ")" << std::endl << std::endl;
-		// }
-
 		cv::Mat test_image;
-		int recv_test_info = client->receiveImage(test_image,128,96);
+		int recv_test_info = client->receiveImage(test_image,80,60);
 
 		if (recv_test_info < 0){
 			std::cout << "recv failed\n" << std::endl;

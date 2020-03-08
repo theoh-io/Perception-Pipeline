@@ -62,26 +62,8 @@ void stepServer(SocketServer* server){
 			continue;
 		}
 		
-		// // Float 
-		// floats_send[0] = (float)cnt_float_send + 0.1;
-		// floats_send[1] = (float)cnt_float_send + 0.2;
-		// floats_send[2] = (float)cnt_float_send + 0.3;
-		// std::cout << "send floats = (" << floats_send[0] << "," << floats_send[1] << "," << floats_send[2] << ")" << std::endl << std::endl;
-		
-		// My float send
-		// floats_send[0] = 0.666;
-		// std::cout << "send floats =" << floats_send[0] << std::endl << std::endl;
-		// int send_info_test = server->sendFloats(floats_send, 1);
-		
-		// Send char
-		// char_send[0] = 'b';
-		// char_send[1] = 'b';
-		// char_send[2] = 'b';
-		// std::cout << "send chars = (" << char_send[0] << "," << char_send[1] << "," << char_send[2] << ")" << std::endl << std::endl;
-		// int send_info_test = server->sendChars(char_send, length_send);
-
 		// Send the Image 
-		cv::Mat color_image = cv::imread("../test/input.jpg", CV_LOAD_IMAGE_COLOR);   // Read the file
+		cv::Mat color_image = cv::imread("test/input.jpg", CV_LOAD_IMAGE_COLOR);   // Read the file
 	    if(! color_image.data )                              // Check for invalid input
 	    {
 	        std::cout <<  "Could not open or find the color_image" << std::endl ;
