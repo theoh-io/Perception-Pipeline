@@ -1,7 +1,8 @@
-# dynav-loomo
-Run pytorch pretrained model on loomo
+# Loomo Socket
 
-1. opencv 
+This repository provides a socket protocol that supports real-time data communication between a Loomo robot and a remote computer, such as a laptop or a server machine. 
+
+# Install Dependency
 ```
 mkdir depencency 
 cd dependency
@@ -15,15 +16,18 @@ cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=../../opencv -DFORCE_V
 make -j8
 make install
 ```
-2. 
+
+# Test Locally
 ```
-cd socket
+cd cpp
 mkdir build 
 cd build 
 cmake ..
 make -j8
 ```
-3. Connect to Loomo via adb connect
+
+# Loomo Deployment
+Connect to Loomo via adb
 ```
 adb connect [port]
 adb devices
