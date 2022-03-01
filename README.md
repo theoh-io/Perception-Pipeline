@@ -25,6 +25,7 @@ Please find the following [documents](docs) for an introduction to the Loomo rob
 * Getting_Started_with_Loomo.pdf
 * Environment_Setup_Robots.pdf
 * Loomo_Deployment_Instruction.pdf
+* Tutorial_Loomo_Race.pdf
 
 ### Install dependency
 
