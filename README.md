@@ -1,5 +1,9 @@
 # Loomo Socket
 
+<p align="center">
+  <img src="docs/loomorace.jpg" width="400">
+</p>
+
 This repository contains a socket protocol that supports real-time data communication between a Loomo robot and a remote computer, such as a laptop or a server machine.
 
 This sockek protocal, together with the associated documents, provides a basic setup for the [tandem race](https://actu.epfl.ch/news/robots-programmed-to-follow-you-4).
