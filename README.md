@@ -1,16 +1,30 @@
 # Loomo Socket
 
-This repository provides a socket protocol that supports real-time data communication between a Loomo robot and a remote computer, such as a laptop or a server machine. The code and examples are tested on Linux.
+This repository contains a socket protocol that supports real-time data communication between a Loomo robot and a remote computer, such as a laptop or a server machine.
 
-### Directory hierarchy
+This sockek protocal, together with the associated documents, provides a basic setup for the [tandem race](https://actu.epfl.ch/news/robots-programmed-to-follow-you-4).
+
+### Repo structure
 
     .
+    ├── docs                  # Basic docs for tandem race
     ├── cpp                   # Cpp files on the robot side
     ├── python                # Python files on the cloud side
-    ├── dependency            # Compile dependencies
+    ├── scripts               # Basic bash scripts for configuration
+    ├── others                # Other materials for a toy TP exercise
     └── README.md
 
-### Install Dependency
+### Introductory documents
+
+Please find the following [documents](docs) for an introduction to the Loomo robot and a socket protocol.
+
+* Getting_Started_with_Loomo.pdf
+* Environment_Setup_Robots.pdf
+* Loomo_Deployment_Instruction.pdf
+
+### Install dependency
+
+The code and examples are tested on Linux. 
 
 ```
 mkdir depencency 
@@ -26,7 +40,7 @@ make -j4
 make install
 ```
 
-### Local Test
+### Local test
 
 Compile the server in the cpp folder
 ```
@@ -43,9 +57,15 @@ Run the client in the python folder
 run_client.sh
 ```
 
-### Loomo Deployment
+### On-robot deployment
+
 Connect to Loomo via adb
 ```
-adb connect [port]
+adb connect <port>
 adb devices
 ```
+
+### Other resources
+
+* [Loomo with Ros](https://github.com/cconejob/Autonomous_driving_pipeline)
+* [Loomo Follower App](https://github.com/segway-robotics/loomo-algodev/blob/master/algo_app/src/main/jni/app_follow/AlgoFollow.cpp)
