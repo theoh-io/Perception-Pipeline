@@ -1,6 +1,6 @@
-# VITA, EPFL
+# VITA, EPFL 
 
-#import cv2
+import cv2
 import socket
 import sys
 import numpy
@@ -40,6 +40,8 @@ height = int(480/downscale)
 channels = 3
 sz_image = width*height*channels
 
+
+
 # create socket
 print('# Creating socket')
 try:
@@ -48,7 +50,7 @@ except socket.error:
     print('Failed to create socket')
     sys.exit()
 
-print('# Getting remote IP address')
+print('# Getting remote IP address') 
 try:
     remote_ip = socket.gethostbyname( host )
 except socket.gaierror:
@@ -63,13 +65,22 @@ s.connect((remote_ip , port))
 arguments = ["--checkpoint",args.checkpoint,"--pif-fixed-scale", "1.0", "--instance-threshold",args.instance_threshold]
 detector = Detector(arguments,input_size = args.square_edge)
 
-#Image Receiver
+#Image Receiver 
 net_recvd_length = 0
 recvd_image = b''
+
+#function to automatically adjust the downscale factor
+def size_adjust():
+    global sz_image
+    print("Warning: Image Size Mismatch")
+    if(net_recvd_length==sz_image/4):
+        sz_image=sz_image/4
+    
 
 #Test Controller
 direction = -1
 cnt = 0
+#out = cv2.VideoWriter('output.avi', -1, 20.0, (640,480)) #creating video file
 
 while True:
 
@@ -77,35 +88,44 @@ while True:
     reply = s.recv(sz_image)
     recvd_image += reply
     net_recvd_length += len(reply)
-
     if net_recvd_length == sz_image:
 
         pil_image = Image.frombytes('RGB', (width, height), recvd_image)
-        # opencvImage = cv2.cvtColor(numpy.array(pil_image), cv2.COLOR_RGB2BGR)
-        # opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
-        #
-        # cv2.imshow('Test window',opencvImage)
+        opencvImage = cv2.cvtColor(numpy.array(pil_image), cv2.COLOR_RGB2BGR)
+        opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
 
-        #cv2.waitKey(1)
+        cv2.imshow('Test window',opencvImage)
+        cv2.waitKey(1)
+        #out.write(opencvImage) #writing the video file
+
         net_recvd_length = 0
         recvd_image = b''
 
         #######################
         # Detect
         #######################
-        bbox, bbox_label = detector.forward(pil_image)
-
+        bbox, bbox_label = detector.forward(opencvImage)
+        
         if bbox_label:
-            print("BBOX: {}".format(bbox))
-            print("BBOX_label: {}".format(bbox_label))
+            print(bbox)
         else:
             print("False")
 
         # https://pymotw.com/3/socket/binary.html
-        values = (bbox[0], bbox[1], 10, 10, float(bbox_label[0]))
+        values = (bbox[0], bbox[1], bbox[2], bbox[3], float(bbox_label[0]))
+        # values = (50.0, 30.0, 10.0, 10.0, 1.0)
 
+        # #Test Controller
+        # cnt = cnt + 1
+        # if cnt > 50:
+        #     direction = - direction
+        #     cnt = 0
+        # values = (40.0 + direction * 20.0, 30.0, 10.0, 20.0, 1.0)
+        
         packer = struct.Struct('f f f f f')
         packed_data = packer.pack(*values)
 
         # Send data
         send_info = s.send(packed_data)
+    else:
+        size_adjust()

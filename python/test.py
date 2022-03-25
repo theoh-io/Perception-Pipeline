@@ -56,6 +56,11 @@ s.connect((remote_ip , port))
 net_recvd_length = 0
 recvd_image = b''
 
+def size_adjust():
+    global sz_image
+    if(net_recvd_length==sz_image/4):
+        sz_image=sz_image/4
+
 #Test Controller
 direction = -1
 cnt = 0
@@ -87,3 +92,5 @@ while True:
 
         # Send data
         send_info = s.send(packed_data)
+    else:
+        size_adjust()
