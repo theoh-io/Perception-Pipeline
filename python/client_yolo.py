@@ -23,7 +23,7 @@ parser.add_argument('-i','--ip-address',
                     help='IP Address of robot')
 parser.add_argument('--instance-threshold', default=0.0, type=float,
                     help='Defines the threshold of the detection score')
-parser.add_argument('-d', '--downscale', default=8, type=int,
+parser.add_argument('-d', '--downscale', default=2, type=int,
                     help=('downscale of the received image'))
 
 
@@ -97,9 +97,7 @@ while True:
         opencvImage = cv2.cvtColor(numpy.array(pil_image), cv2.COLOR_RGB2BGR)
         opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
 
-        cv2.imshow('Test window',opencvImage)
-        cv2.waitKey(1)
-        #out.write(opencvImage) #writing the video file
+        
 
         net_recvd_length = 0
         recvd_image = b''
@@ -107,13 +105,32 @@ while True:
         #######################
         # Detect
         #######################
-        #bbox, bbox_label = detector.forward(opencvImage)
-        bbox, bbox_label = detector.yolo_predict(opencvImage)
+        #bbox format xcenter, ycenter, width, height
+
+        #bbox, bbox_label = detector.forward(opencvImage)  #detection using previous detector
+        bbox, bbox_label = detector.yolo_predict(opencvImage)  #detection using yolo detector
         
         if bbox_label:
             print(bbox)
         else:
             print("False")
+
+        #######################
+        # Visualization
+        #######################
+        #start=(int(bbox[0]-bbox[2]/2), int(bbox[1]+bbox[3]/2))  #top-left corner
+        #print("start: ", start)
+        #stop= (int(bbox[0]+bbox[2]/2), int(bbox[1]-bbox[3]/2)) #bottom right corner
+        #print("stop: ", stop)
+        #cv2.rectangle(opencvImage, start, stop, (0,0,255), 5)
+
+        cv2.imshow('Camera Loomo',opencvImage)
+        cv2.waitKey(1)
+        #out.write(opencvImage) #writing the video file
+
+        #######################
+        # Socket
+        #######################
 
         # https://pymotw.com/3/socket/binary.html
         values = (bbox[0], bbox[1], bbox[2], bbox[3], float(bbox_label))
