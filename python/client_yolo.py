@@ -3,13 +3,16 @@
 import cv2
 import socket
 import sys
-import numpy
+import numpy as np
 import struct
 import binascii
+import time
 
 from PIL import Image
 #from detector import Detector
-from yolo_torch import YoloDetector
+from detector import YoloDetector
+from ReID import ReID_Tracker
+
 import torch
 import argparse
 
@@ -63,9 +66,12 @@ print('# Connecting to server, ' + host + ' (' + remote_ip + ')')
 s.connect((remote_ip , port))
 
 # Set up detector
-arguments = ["--checkpoint",args.checkpoint,"--pif-fixed-scale", "1.0", "--instance-threshold",args.instance_threshold]
+#arguments = ["--checkpoint",args.checkpoint,"--pif-fixed-scale", "1.0", "--instance-threshold",args.instance_threshold]
+path=args.checkpoint
 #detector = Detector() 
 detector=YoloDetector()
+tracker=ReID_Tracker()
+tracker.load_pretrained(path)
 
 
 #Image Receiver 
@@ -74,10 +80,12 @@ recvd_image = b''
 
 #function to automatically adjust the downscale factor
 def size_adjust():
-    global sz_image
-    print("Warning: Image Size Mismatch: ", sz_image, "  ",net_recvd_length)
-    if(net_recvd_length==sz_image/4):
-        sz_image=sz_image/4
+    global sz_image, timer_start, mismatch
+    if(mismatch==1):
+        print("Warning: Image Size Mismatch: ", sz_image, "  ",net_recvd_length)
+        timer_start=time.time()
+    #if(net_recvd_length==sz_image/4):
+        #sz_image=sz_image/4
     
 
 #Test Controller
@@ -85,35 +93,81 @@ direction = -1
 cnt = 0
 #out = cv2.VideoWriter('output.avi', -1, 20.0, (640,480)) #creating video file
 
-while True:
+mismatch=1
 
+while True:
+    
     # Receive data
     reply = s.recv(sz_image)
     recvd_image += reply
     net_recvd_length += len(reply)
     if net_recvd_length == sz_image:
-
         pil_image = Image.frombytes('RGB', (width, height), recvd_image)
-        opencvImage = cv2.cvtColor(numpy.array(pil_image), cv2.COLOR_RGB2BGR)
+        opencvImage = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
         opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
-
-        
 
         net_recvd_length = 0
         recvd_image = b''
+
+        mismatch=0
 
         #######################
         # Detect
         #######################
         #bbox format xcenter, ycenter, width, height
 
-        #bbox, bbox_label = detector.forward(opencvImage)  #detection using previous detector
-        bbox, bbox_label = detector.yolo_predict(opencvImage)  #detection using yolo detector
+        bbox, bbox_label = detector.predict_multiple(opencvImage)  #detection using yolo detector
         
         if bbox_label:
             print(bbox)
         else:
             print("False")
+
+        ###########################################
+        #   Image Cropping and preprocessing      #
+        ###########################################
+
+        #crop_img = img[y:y+h, x:x+w]
+        img_list=[]
+        if bbox_label==True:
+            for i in range(bbox.shape[0]):
+                bbox_indiv=bbox[i]
+                crop_img=np.array(opencvImage[int((bbox_indiv[1]-bbox_indiv[3]/2)):int((bbox_indiv[1]+bbox_indiv[3]/2)), int((bbox_indiv[0]-bbox_indiv[2]/2)):int((bbox_indiv[0]+bbox_indiv[2]/2))])
+                #to apply the normalization need a PIL image
+                # PIL RGB while CV is BGR.
+                crop_img = cv2.cvtColor(crop_img, cv2.COLOR_BGR2RGB)
+                crop_img = Image.fromarray(crop_img)
+                tensor_img_indiv=tracker.image_preprocessing(crop_img)
+                tensor_img_indiv=torch.unsqueeze(tensor_img_indiv, 0)
+                img_list.append(tensor_img_indiv)
+            tensor_img=torch.cat(img_list)
+
+            #print("writing the file")
+            #cv2.imwrite("cropped/crop.jpg", crop_img)
+        else:
+            print("no detection")
+
+        ############
+        # Tracking #
+        ############
+        #handle no detection case
+        #generate embedding
+        if bbox_label==True:
+        #generate embedding
+        #print(tensor_img.shape)
+            idx=tracker.embedding_comparator(tensor_img, 'cosine')
+            #select the bbox corresponding to correct detection
+            #print(bbox.size)
+            if idx!=None:
+                bbox=bbox[idx]
+            else:
+                print("empty bbox")
+                bbox_label= False
+                bbox=[0, 0, 0, 0]
+        else:
+            print("no detection 2")
+            print("empty bbox")
+            bbox=[0, 0, 0, 0]
 
         #######################
         # Visualization

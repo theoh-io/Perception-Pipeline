@@ -1,118 +1,129 @@
-import numpy as np
-import matplotlib
-matplotlib.use('TkAgg')
-import matplotlib.pyplot as plt
-import os
-from PIL import Image
-
 import torch
-import torch.nn.functional as F
+import cv2
+from PIL import Image
+import numpy as np
+#import pandas
 
 
-class Net(torch.nn.Module):
-    def __init__(self, n_feature, n_hidden, n_output, n_c):
-        super(Net, self).__init__()
-        self.hidden = torch.nn.Linear(n_feature, n_hidden)   # hidden layer
-        self.box = torch.nn.Linear(n_hidden, n_output-1)   # output layer
-        self.logit = torch.nn.Linear(n_hidden, 1)
-        
-        self.conv1 = torch.nn.Sequential(         # input shape (3, 80, 60)
-            torch.nn.Conv2d(
-                in_channels = n_c,            # input height
-                out_channels = 8,             # n_filters
-                kernel_size = 5,              # filter size
-                stride = 2,                   # filter movement/step
-                padding = 0,                  
-            ),                              
-            torch.nn.ReLU(),                      # activation
-            #torch.nn.MaxPool2d(kernel_size = 2),    
-        )
-        self.conv2 = torch.nn.Sequential(       
-            torch.nn.Conv2d(in_channels = 8, 
-                            out_channels = 16, 
-                            kernel_size = 5, 
-                            stride = 2, 
-                            padding = 0),      
-            torch.nn.ReLU(),                      # activation
-            #torch.nn.MaxPool2d(2),                
-        )
-        
-        self.conv3 = torch.nn.Sequential(       
-            torch.nn.Conv2d(in_channels = 16, 
-                            out_channels = 8, 
-                            kernel_size = 1, 
-                            stride = 1, 
-                            padding = 0),      
-            torch.nn.ReLU(),                      # activation
-            #torch.nn.MaxPool2d(2),                
-        )
-    def forward(self, x):
-        feat = self.conv1(x)
-        feat = self.conv2(feat)
-        feat = self.conv3(feat)
-        feat = feat.view(feat.size(0), -1)
-        x2 = F.relu(self.hidden(feat))      # activation function for hidden layer
-        
-        out_box = F.relu(self.box(x2))            # linear output
-        out_logit = torch.sigmoid(self.logit(x2))
-        
-        return out_box, out_logit
-        
-class Detector(object):
-    """docstring for Detector"""
+#Inference Settings
+#model.conf = 0.25  # NMS confidence threshold
+#      iou = 0.45  # NMS IoU threshold
+#      agnostic = False  # NMS class-agnostic
+#      multi_label = False  # NMS multiple labels per box
+#      classes = None  # (optional list) filter by class, i.e. = [0, 15, 16] for COCO persons, cats and dogs
+#      max_det = 1000  # maximum number of detections per image
+#      amp = False  # Automatic Mixed Precision (AMP) inference
+#results = model(imgs, size=320)  # custom inference size
+
+
+class YoloDetector(object):
     def __init__(self):
-        super(Detector, self).__init__()
-        # TODO: MEAN & STD
-        self.mean = [[[[0.5548078,  0.56693329, 0.53457436]]]] 
-        self.std = [[[[0.26367019, 0.26617227, 0.25692861]]]]
-        self.img_size = 100 
-        self.img_size_w = 80
-        self.img_size_h = 60
-        self.min_object_size = 10
-        self.max_object_size = 40 
-        self.num_objects = 1
-        self.num_channels = 3
-        self.model = Net(n_feature = 1632, n_hidden = 128, n_output = 5, n_c = 3)     # define the network
+        self.model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
+        self.model.classes=0 #running only person detection
+        self.detection=np.array([0, 0, 0, 0])
 
 
-    def load(self, PATH):
-        # self.model = torch.load(PATH)
-        # self.model.eval()
+    def bbox_format(self):
+        #detection format xmin, ymin, xmax,ymax, conf, class, 'person'
+        #bbox format xcenter, ycenter, width, height
+        if(self.detection.shape[0]==1):
+            self.detection=np.squeeze(self.detection)
+            xmin=self.detection[0]
+            ymin=self.detection[1]
+            xmax=self.detection[2]
+            ymax=self.detection[3]
+            x_center=(xmin+xmax)/2
+            y_center=(ymin+ymax)/2
+            width=xmax-xmin
+            height=ymax-ymin
+            arr=[x_center, y_center, width, height]
+            bbox=np.array(arr)
+            bbox=np.expand_dims(bbox, 0)
+            return bbox
+        else:
+            bbox_list=[]
+            for i in range(self.detection.shape[0]):
+                xmin=self.detection[i][0]
+                ymin=self.detection[i][1]
+                xmax=self.detection[i][2]
+                ymax=self.detection[i][3]
+                x_center=(xmin+xmax)/2
+                y_center=(ymin+ymax)/2
+                width=xmax-xmin
+                height=ymax-ymin
+                arr=[x_center, y_center, width, height]
+                bbox_unit=np.array(arr)
+                bbox_list.append(bbox_unit)
+                #bbox=np.append(bbox_unit, axis=0)
+            bbox=np.vstack(bbox_list)
+            return bbox
 
-        self.model.load_state_dict(torch.load(PATH))
-        self.model.eval()
+            
 
-    def forward(self, img):   
-        ##Add a dimension
-        img = np.expand_dims(img.transpose(1,0,2), 0) / 255
+    def best_detection(self):
+        N=self.detection.shape[0]
+        if(N != 1):
+            print("multiple persons detected")
+            #extracting the detection with max confidence
+            idx=np.argmax(self.detection[range(N),4])
+            self.detection=self.detection[idx]
+        else: #1 detection
+            self.detection=np.squeeze(self.detection)
 
-        ch1 = img[:,:,:,0].copy()
-        ch3 = img[:,:,:,2].copy()
 
-        img[:,:,:,0] = ch3
-        img[:,:,:,2] = ch1
+    def predict(self, image, thresh=0.01):
+        #threshold for confidence detection
+        
+        # Inference
+        results = self.model(image) #might need to specify the size
 
-        # print(img.shape)   
-        # print(img)
+        #results.xyxy: [xmin, ymin, xmax, ymax, conf, class]
+        detect_pandas=results.pandas().xyxy
 
-        ##Preprocess
-        img = (img - self.mean)/self.std
+        self.detection=np.array(detect_pandas)
+        #print("shape of the detection: ", self.detection.shape)
+        #print("detection: ",self.detection)
 
-        ##Transpose to model format
-        if(img.shape[1] != self.num_channels):
-            img = img.transpose((0,3,1,2))
+        if (self.detection.shape[1]!=0):
+            #print("DETECTED SOMETHING !!!")
+            #save resuts
+            #results.save()
+            
+            #use np.squeeze to remove 0 dim from the tensor
+            self.detection=np.squeeze(self.detection,axis=0) 
 
-        # print(img.shape)
-        # print(img)
+            #class function to decide which detection to keep
+            self.best_detection()
+            if(self.detection[4]>thresh):
+                label=True
+            #modify the format of detection for bbox
+            bbox=self.bbox_format()
+            return bbox, label
+        return [0.0, 0.0, 0.0, 0.0],False
 
-        ##Detect
-        with torch.no_grad():
-            pred_y_box, pred_y_logit = self.model.forward(torch.tensor(img, dtype=torch.float32))
 
-            pred_y_box, pred_y_logit = pred_y_box.numpy(), pred_y_logit.numpy()
-            pred_y_label = pred_y_logit > 0.5
-            pred_bboxes = pred_y_box * self.img_size
-            # pred_bboxes = pred_bboxes.reshape(len(pred_bboxes), num_objects, -1)
+    def predict_multiple(self, image, thresh=0.01):
+      #threshold for confidence detection
+      
+      # Inference
+      results = self.model(image) #might need to specify the size
 
-        return pred_bboxes[0], pred_y_label[0]
+      #results.xyxy: [xmin, ymin, xmax, ymax, conf, class]
+      detect_pandas=results.pandas().xyxy
 
+      self.detection=np.array(detect_pandas)
+      #print("shape of the detection: ", self.detection.shape)
+      #print("detection: ",self.detection)
+
+      if (self.detection.shape[1]!=0):
+          #print("DETECTED SOMETHING !!!")
+          #save resuts
+          #results.save()
+          
+          #use np.squeeze to remove 0 dim from the tensor
+          self.detection=np.squeeze(self.detection,axis=0) 
+
+          #modify the format of detection for bbox
+          bbox=self.bbox_format()
+          return bbox, True
+      return [0.0, 0.0, 0.0, 0.0],False
