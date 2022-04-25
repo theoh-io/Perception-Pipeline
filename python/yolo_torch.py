@@ -15,58 +15,52 @@ import numpy as np
 #      amp = False  # Automatic Mixed Precision (AMP) inference
 #results = model(imgs, size=320)  # custom inference size
 
-# # Model
-# model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
-# model.classes=0
-
-# # Image
-# img1 = Image.open('yolo_imgs/crosswalk.jpg')
-# img2 = cv2.imread('yolo_imgs/Cr796.jpeg')[..., ::-1]  # OpenCV image (BGR to RGB)
-# imgs = [img1, img2]  # batch of images
-
-
-# # Inference
-# results = model(imgs, (96)) #might specify the size
-# print("type of result", type(results))
-# results.print()
-# results.save()
-
-
-
-
-# print(results.xyxy[0])
-# #xmin, ymin, xmax,ymax, conf, class
-# print(results.pandas().xyxy[0])
 
 class YoloDetector(object):
     def __init__(self):
         self.model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
         self.model.classes=0 #running only person detection
-        self.detection=np.array([0,0])
-
-# def yolo_model(self, classe=0):
-#     model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
-#     model.classes=classe
-#     return model
+        self.detection=np.array([0, 0, 0, 0])
 
 
     def bbox_format(self):
         #detection format xmin, ymin, xmax,ymax, conf, class, 'person'
         #bbox format xcenter, ycenter, width, height
-        xmin=self.detection[0]
-        ymin=self.detection[1]
-        xmax=self.detection[2]
-        ymax=self.detection[3]
-        x_center=(xmin+xmax)/2
-        y_center=(ymin+ymax)/2
-        width=xmax-xmin
-        height=ymax-ymin
-        bbox=[x_center, y_center, width, height]
-        return bbox
+        if(self.detection.shape[0]==1):
+            self.detection=np.squeeze(self.detection)
+            xmin=self.detection[0]
+            ymin=self.detection[1]
+            xmax=self.detection[2]
+            ymax=self.detection[3]
+            x_center=(xmin+xmax)/2
+            y_center=(ymin+ymax)/2
+            width=xmax-xmin
+            height=ymax-ymin
+            arr=[x_center, y_center, width, height]
+            bbox=np.array(arr)
+            bbox=np.expand_dims(bbox, 0)
+            return bbox
+        else:
+            bbox_list=[]
+            for i in range(self.detection.shape[0]):
+                xmin=self.detection[i][0]
+                ymin=self.detection[i][1]
+                xmax=self.detection[i][2]
+                ymax=self.detection[i][3]
+                x_center=(xmin+xmax)/2
+                y_center=(ymin+ymax)/2
+                width=xmax-xmin
+                height=ymax-ymin
+                arr=[x_center, y_center, width, height]
+                bbox_unit=np.array(arr)
+                bbox_list.append(bbox_unit)
+                #bbox=np.append(bbox_unit, axis=0)
+            bbox=np.vstack(bbox_list)
+            return bbox
 
+            
 
-
-    def yolo_to_loomo(self):
+    def best_detection(self):
         N=self.detection.shape[0]
         if(N != 1):
             print("multiple persons detected")
@@ -77,32 +71,59 @@ class YoloDetector(object):
             self.detection=np.squeeze(self.detection)
 
 
-    def yolo_predict(self, image):
+    def predict(self, image, thresh=0.01):
         #threshold for confidence detection
-        thresh=0.01
+        
         # Inference
         results = self.model(image) #might need to specify the size
+
         #results.xyxy: [xmin, ymin, xmax, ymax, conf, class]
         detect_pandas=results.pandas().xyxy
-        #detect_np=detect_tensor.numpy()
-        #print(detect_np)
+
         self.detection=np.array(detect_pandas)
-        print("shape of the detection: ", self.detection.shape)
-        print("detection: ",self.detection)
-        #if (self.detection.shape[0]==0):
-            #return [], False
+        #print("shape of the detection: ", self.detection.shape)
+        #print("detection: ",self.detection)
+
         if (self.detection.shape[1]!=0):
-            print("DETECTED SOMETHING !!!")
-            #save resuts for my demo
-            results.save()
+            #print("DETECTED SOMETHING !!!")
+            #save resuts
+            #results.save()
+            
             #use np.squeeze to remove 0 dim from the tensor
             self.detection=np.squeeze(self.detection,axis=0) 
-            self.yolo_to_loomo()
+
+            #class function to decide which detection to keep
+            self.best_detection()
             if(self.detection[4]>thresh):
                 label=True
             #modify the format of detection for bbox
             bbox=self.bbox_format()
             return bbox, label
-
-        
         return [0.0, 0.0, 0.0, 0.0],False
+
+
+    def predict_multiple(self, image, thresh=0.01):
+      #threshold for confidence detection
+      
+      # Inference
+      results = self.model(image) #might need to specify the size
+
+      #results.xyxy: [xmin, ymin, xmax, ymax, conf, class]
+      detect_pandas=results.pandas().xyxy
+
+      self.detection=np.array(detect_pandas)
+      #print("shape of the detection: ", self.detection.shape)
+      #print("detection: ",self.detection)
+
+      if (self.detection.shape[1]!=0):
+          #print("DETECTED SOMETHING !!!")
+          #save resuts
+          #results.save()
+          
+          #use np.squeeze to remove 0 dim from the tensor
+          self.detection=np.squeeze(self.detection,axis=0) 
+
+          #modify the format of detection for bbox
+          bbox=self.bbox_format()
+          return bbox, True
+      return [0.0, 0.0, 0.0, 0.0],False

@@ -155,28 +155,26 @@ while True:
         if bbox_label==True:
         #generate embedding
         #print(tensor_img.shape)
-            idx=tracker.embedding_comparator(tensor_img, 'cosine')
+            idx=tracker.embedding_comparator_mult(tensor_img, 'L2')
             #select the bbox corresponding to correct detection
             #print(bbox.size)
             if idx!=None:
                 bbox=bbox[idx]
             else:
-                print("empty bbox")
+                #print("empty bbox")
                 bbox_label= False
                 bbox=[0, 0, 0, 0]
         else:
-            print("no detection 2")
-            print("empty bbox")
+            #print("no detection 2")
+            #print("empty bbox")
             bbox=[0, 0, 0, 0]
 
         #######################
         # Visualization
         #######################
-        #start=(int(bbox[0]-bbox[2]/2), int(bbox[1]+bbox[3]/2))  #top-left corner
-        #print("start: ", start)
-        #stop= (int(bbox[0]+bbox[2]/2), int(bbox[1]-bbox[3]/2)) #bottom right corner
-        #print("stop: ", stop)
-        #cv2.rectangle(opencvImage, start, stop, (0,0,255), 5)
+        start=(int(bbox[0]-bbox[2]/2), int(bbox[1]+bbox[3]/2))  #top-left corner
+        stop= (int(bbox[0]+bbox[2]/2), int(bbox[1]-bbox[3]/2)) #bottom right corner
+        cv2.rectangle(opencvImage, start, stop, (0,0,255), 1)
 
         cv2.imshow('Camera Loomo',opencvImage)
         cv2.waitKey(1)

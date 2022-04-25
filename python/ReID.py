@@ -42,8 +42,8 @@ class ReID_Tracker():
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ])
         self.dist_thresh= 8
-        self.cos_thresh=0.87
-        self.ref_emb=torch.tensor([])
+        self.cos_thresh=0.85
+        self.ref_emb=torch.tensor([[]])
 
     def load_pretrained(self, path):
         checkpoint = torch.load(path, map_location=torch.device('cpu'))
@@ -114,16 +114,104 @@ class ReID_Tracker():
 
             best_dist=best_dist.squeeze()
             best_dist=float(best_dist)
-            #print(best_dist)
+            print("best distance between embeddings", best_dist)
             idx=int((dist_list==best_dist).nonzero().squeeze())
             
             #compare to the defined threshold to decide if it's similar enough
 
             if (metric=='L2' and best_dist < self.dist_thresh):
-                self.ref_emb=emb_list[idx]
+                #self.ref_emb=emb_list[idx]
                 return idx
             elif (metric=='cosine' and best_dist>self.cos_thresh):
                 self.ref_emb=emb_list[idx]
+                return idx
+            else:
+                print("under thresh")
+                return None
+    def average_ref(self):
+        #return an average of the reference embeddings
+        N=self.ref_emb.shape[0]
+        weights=torch.ones((1, N))/N
+        if weights.shape[1] != N:
+            print("error in size of weights")
+        result = torch.matmul(weights, self.ref_emb)
+        #print("self_emb shape: ", self.ref_emb.shape)
+        #print("results shape :", result.shape)
+        return result
+        
+    def embedding_comparator_mult(self, detections, metric='L2'):
+        #update the ref embedding and return the index of correct detection
+        idx=None
+        #new_ref=None
+        best_dist=None
+        max_ref=100
+        #ref_emb is a tensor, detections must be a list of tensor image cropped, conf list array
+
+        #######################################
+        # Initialization with first detection #
+        #######################################
+
+        if self.ref_emb.nelement() == 0:
+            if(detections.size(0)==1):
+            #may need to squeeze(0)
+                ref_emb=self.embedding_generator(detections)
+                idx=0
+                self.ref_emb=ref_emb #mightnot need to cat and just equal
+                return idx
+            else:
+                print("error: trying to initialize with multiple detections")
+                return None
+                #try to handle the case of multiple detections by using the conf_list as input ??
+                #for idx in range(detections.size[0]):
+                #ref_emb=embedding_generator(ReID_model, detections)
+
+        else:
+            #compute L2 distance for each detection
+
+            emb_list=self.embedding_generator(detections)
+            #fill a list of all distances wrt to ref
+            #dist_list=[]
+
+            #average the ref_embeddings
+            average_ref=self.average_ref()
+            # print("shape of refs: ", self.ref_emb.shape)
+            # print("shape of avg: ", average_ref.shape)
+
+            dist_list=self.distance(emb_list, average_ref, metric)# self.ref_emb    .repeat(emb_list.size(0), 1))
+            dist_list=dist_list.squeeze(0)
+            if metric=='L2':
+                best_dist = min(dist_list)
+            elif metric=='cosine':
+                best_dist= max(dist_list) #for cosine gives a similarity score between 0 and 1
+
+            best_dist=best_dist.squeeze()
+            best_dist=float(best_dist)
+            print("best distance between embeddings", best_dist)
+            idx=int((dist_list==best_dist).nonzero().squeeze())
+            
+            #compare to the defined threshold to decide if it's similar enough
+
+            if (metric=='L2' and best_dist < self.dist_thresh):
+                #self.ref_emb=emb_list[idx]
+                #print("emb_list[idx] shape:", emb_list[idx].shape)
+                #print("self.ref_emb shape:", self.ref_emb.shape)
+                if self.ref_emb.shape[0]<max_ref:
+                    self.ref_emb=torch.cat((self.ref_emb, torch.unsqueeze(emb_list[idx],0)), 0)
+                elif self.ref_emb.shape[0]==max_ref:
+                    self.ref_emb=torch.cat((self.ref_emb[1:],torch.unsqueeze(emb_list[idx], 0)), 0)
+                else :
+                    print("error number of ref")
+                return idx
+            elif (metric=='cosine' and best_dist>self.cos_thresh):
+                #self.ref_emb=emb_list[idx]
+                #print("emb_list[idx] shape:", emb_list[idx].shape)
+                #print("self.ref_emb shape:", self.ref_emb.shape)
+                if self.ref_emb.shape[0]<max_ref:
+                    self.ref_emb=torch.cat((self.ref_emb, torch.unsqueeze(emb_list[idx],0)), 0)
+                elif self.ref_emb.shape[0]==max_ref:
+                    self.ref_emb=torch.cat((self.ref_emb[1:],torch.unsqueeze(emb_list[idx], 0)), 0)
+                else :
+                    print("error number of ref")
                 return idx
             else:
                 print("under thresh")

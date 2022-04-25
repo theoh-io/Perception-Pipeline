@@ -21,7 +21,7 @@ class YoloDetector(object):
         self.model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
         self.model.classes=0 #running only person detection
         self.detection=np.array([0, 0, 0, 0])
-
+        self.detec_thresh=0.4
 
     def bbox_format(self):
         #detection format xmin, ymin, xmax,ymax, conf, class, 'person'
@@ -101,29 +101,59 @@ class YoloDetector(object):
             return bbox, label
         return [0.0, 0.0, 0.0, 0.0],False
 
+    def detection_confidence(self):
+        # for i in range(self.detection.shape[0]):
+        #     if self.detection[i][4]<thresh:
+        #         print("yolo under thresh")
+        #         self.detection=np.delete(i, self.detection)
 
-    def predict_multiple(self, image, thresh=0.01):
-      #threshold for confidence detection
-      
-      # Inference
-      results = self.model(image) #might need to specify the size
+        thresh=self.detec_thresh
+        #self.detection= np.delete(self.detection, np.where(self.detection[range(self.detection.shape[0]),4] <thresh))
+        det_conf=self.detection[range(self.detection.shape[0]),4].astype(float)
+        idx=np.argwhere(det_conf<thresh)
+        self.detection= np.delete(self.detection, idx, axis=0)
+        #print("after cleaning")
+        #print("new shape:", self.detection.shape)
+        print("yolo conf", self.detection)
+        if self.detection.size==0:
+            return False
+        else:
+            return True
+    
 
-      #results.xyxy: [xmin, ymin, xmax, ymax, conf, class]
-      detect_pandas=results.pandas().xyxy
+        
 
-      self.detection=np.array(detect_pandas)
-      #print("shape of the detection: ", self.detection.shape)
-      #print("detection: ",self.detection)
+    def predict_multiple(self, image):
+        #threshold for confidence detection
+        
+        # Inference
+        results = self.model(image) #might need to specify the size
 
-      if (self.detection.shape[1]!=0):
-          #print("DETECTED SOMETHING !!!")
-          #save resuts
-          #results.save()
-          
-          #use np.squeeze to remove 0 dim from the tensor
-          self.detection=np.squeeze(self.detection,axis=0) 
+        #results.xyxy: [xmin, ymin, xmax, ymax, conf, class]
+        detect_pandas=results.pandas().xyxy
 
-          #modify the format of detection for bbox
-          bbox=self.bbox_format()
-          return bbox, True
-      return [0.0, 0.0, 0.0, 0.0],False
+        self.detection=np.array(detect_pandas)
+        # print("shape of the detection: ", self.detection.shape)
+        # print("detection: ",self.detection)
+
+        if (self.detection.shape[1]!=0):
+            #print("DETECTED SOMETHING !!!")
+            #save resuts
+            #results.save()
+            
+            #use np.squeeze to remove 0 dim from the tensor
+            self.detection=np.squeeze(self.detection,axis=0)
+
+            #Handling the case of poor confidence detection using yolo 
+            #print("self detection shape:", self.detection.shape)
+            #print("self detect confi ??", self.detection)
+            if not self.detection_confidence():
+                return [0.0, 0.0, 0.0, 0.0],False
+
+            
+            
+
+            #modify the format of detection for bbox
+            bbox=self.bbox_format()
+            return bbox, True
+        return [0.0, 0.0, 0.0, 0.0],False
