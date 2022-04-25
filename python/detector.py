@@ -17,11 +17,11 @@ import numpy as np
 
 
 class YoloDetector(object):
-    def __init__(self):
+    def __init__(self, thresh):
         self.model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
         self.model.classes=0 #running only person detection
         self.detection=np.array([0, 0, 0, 0])
-        self.detec_thresh=0.4
+        self.yolo_thresh=thresh
 
     def bbox_format(self):
         #detection format xmin, ymin, xmax,ymax, conf, class, 'person'
@@ -71,7 +71,7 @@ class YoloDetector(object):
             self.detection=np.squeeze(self.detection)
 
 
-    def predict(self, image, thresh=0.01):
+    def predict(self, image):
         #threshold for confidence detection
         
         # Inference
@@ -82,22 +82,21 @@ class YoloDetector(object):
 
         self.detection=np.array(detect_pandas)
         #print("shape of the detection: ", self.detection.shape)
-        #print("detection: ",self.detection)
+        print("all detections: ",self.detection)
 
-        if (self.detection.shape[1]!=0):
-            #print("DETECTED SOMETHING !!!")
-            #save resuts
-            #results.save()
-            
+        if (self.detection.shape[1]!=0):          
             #use np.squeeze to remove 0 dim from the tensor
             self.detection=np.squeeze(self.detection,axis=0) 
 
             #class function to decide which detection to keep
             self.best_detection()
-            if(self.detection[4]>thresh):
+            if(self.detection[4]>self.yolo_thresh):
                 label=True
+            else:
+                label=False
             #modify the format of detection for bbox
-            bbox=self.bbox_format()
+            self.detection=np.expand_dims(self.detection, axis=0)
+            bbox=np.squeeze(self.bbox_format())
             return bbox, label
         return [0.0, 0.0, 0.0, 0.0],False
 
@@ -107,7 +106,7 @@ class YoloDetector(object):
         #         print("yolo under thresh")
         #         self.detection=np.delete(i, self.detection)
 
-        thresh=self.detec_thresh
+        thresh=self.yolo_thresh
         #self.detection= np.delete(self.detection, np.where(self.detection[range(self.detection.shape[0]),4] <thresh))
         det_conf=self.detection[range(self.detection.shape[0]),4].astype(float)
         idx=np.argwhere(det_conf<thresh)

@@ -17,7 +17,7 @@ parser = argparse.ArgumentParser(
 
 parser.add_argument('-i','--ip-address',
                     help='IP Address of robot')
-parser.add_argument('-d', '--downscale', default=8, type=int,
+parser.add_argument('-d', '--downscale', default=1, type=int,
                     help=('downscale of the received image'))
 args = parser.parse_args()
 
@@ -58,6 +58,7 @@ recvd_image = b''
 
 def size_adjust():
     global sz_image
+    print("Warning: Image Size Mismatch")
     if(net_recvd_length==sz_image/4):
         sz_image=sz_image/4
 
@@ -71,6 +72,9 @@ while True:
     reply = s.recv(sz_image)
     recvd_image += reply
     net_recvd_length += len(reply)
+    
+    print("recvd size", net_recvd_length)
+    print("size_image", sz_image)
 
     if net_recvd_length == sz_image:
 
