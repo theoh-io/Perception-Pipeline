@@ -17,11 +17,12 @@ import numpy as np
 
 
 class YoloDetector(object):
-    def __init__(self, thresh):
-        self.model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
+    def __init__(self, model, thresh, verbose):
+        self.model = torch.hub.load('ultralytics/yolov5', model)
         self.model.classes=0 #running only person detection
         self.detection=np.array([0, 0, 0, 0])
         self.yolo_thresh=thresh
+        self.verbose=verbose
 
     def bbox_format(self):
         #detection format xmin, ymin, xmax,ymax, conf, class, 'person'
@@ -63,7 +64,7 @@ class YoloDetector(object):
     def best_detection(self):
         N=self.detection.shape[0]
         if(N != 1):
-            print("multiple persons detected")
+            if bool(self.verbose): print("multiple persons detected")
             #extracting the detection with max confidence
             idx=np.argmax(self.detection[range(N),4])
             self.detection=self.detection[idx]
@@ -82,7 +83,7 @@ class YoloDetector(object):
 
         self.detection=np.array(detect_pandas)
         #print("shape of the detection: ", self.detection.shape)
-        print("all detections: ",self.detection)
+        if bool(self.verbose): print("all detections: ",self.detection)
 
         if (self.detection.shape[1]!=0):          
             #use np.squeeze to remove 0 dim from the tensor
@@ -113,7 +114,7 @@ class YoloDetector(object):
         self.detection= np.delete(self.detection, idx, axis=0)
         #print("after cleaning")
         #print("new shape:", self.detection.shape)
-        print("yolo conf", self.detection)
+        if bool(self.verbose): print("yolo conf", self.detection)
         if self.detection.size==0:
             return False
         else:
@@ -147,10 +148,7 @@ class YoloDetector(object):
             #print("self detection shape:", self.detection.shape)
             #print("self detect confi ??", self.detection)
             if not self.detection_confidence():
-                return [0.0, 0.0, 0.0, 0.0],False
-
-            
-            
+                return [0.0, 0.0, 0.0, 0.0],False            
 
             #modify the format of detection for bbox
             bbox=self.bbox_format()

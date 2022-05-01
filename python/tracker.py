@@ -34,18 +34,25 @@ class ResNet50(nn.Module):
 
 
 class ReID_Tracker():
-    def __init__(self):
+    def __init__(self, path, metric, dist_thresh, ref_method, verbose):
         self.ReID_model=ResNet50(10)
         self.transformation=transforms.Compose([
             transforms.Resize((256, 128)),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ])
-        self.dist_thresh= 8
-        self.cos_thresh=0.85
+        self.path=path
+        self.metric=metric
+        self.dist_thresh=dist_thresh
+        self.ref_method=ref_method
+        self.verbose=verbose
+        #self.dist_thresh= 8
+        #self.cos_thresh=0.85
         self.ref_emb=torch.tensor([[]])
+        self.load_pretrained()
 
-    def load_pretrained(self, path):
+    def load_pretrained(self):
+        path=self.path
         checkpoint = torch.load(path, map_location=torch.device('cpu'))
         pretrain_dict = checkpoint['state_dict']
         ReID_model_dict = self.ReID_model.state_dict()
@@ -63,7 +70,8 @@ class ReID_Tracker():
             embedding =self.ReID_model(tensor_img)
         return embedding
 
-    def distance(self, emb1, emb2, metric):
+    def distance(self, emb1, emb2):
+        metric=self.metric
         #L2 distance
         if metric=='L2':
             if emb1.shape[0]==1:
@@ -80,7 +88,9 @@ class ReID_Tracker():
         #Preprocessing: resize so that it fits with the entry of the neural net, convert to tensor type, normalization
         return self.transformation(img)
 
-    def embedding_comparator(self, detections, metric='L2'):
+    def embedding_comparator(self, detections):
+        dist_thresh=self.dist_thresh
+        metric=self.metric
         #update the ref embedding and return the index of correct detection
         idx=None
         #new_ref=None
@@ -94,7 +104,7 @@ class ReID_Tracker():
                 self.ref_emb=torch.squeeze(ref_emb)
                 return idx
             else:
-                print("error: trying to initialize with multiple detections")
+                if bool(self.verbose): print("error: trying to initialize with multiple detections")
                 return None
                 #try to handle the case of multiple detections by using the conf_list as input ??
                 #for idx in range(detections.size[0]):
@@ -105,7 +115,7 @@ class ReID_Tracker():
             emb_list=self.embedding_generator(detections)
             #fill a list of all distances wrt to ref
             #dist_list=[]
-            dist_list=self.distance(emb_list, torch.unsqueeze(self.ref_emb,0), metric)# .repeat(emb_list.size(0), 1))
+            dist_list=self.distance(emb_list, torch.unsqueeze(self.ref_emb,0))# .repeat(emb_list.size(0), 1))
             dist_list=dist_list.squeeze(0)
             if metric=='L2':
                 best_dist = min(dist_list)
@@ -114,7 +124,7 @@ class ReID_Tracker():
 
             best_dist=best_dist.squeeze()
             best_dist=float(best_dist)
-            print("best distance between embeddings", best_dist)
+            if bool(self.verbose): print("best distance between embeddings", best_dist)
             idx=int((dist_list==best_dist).nonzero().squeeze())
             
             #compare to the defined threshold to decide if it's similar enough
@@ -122,12 +132,13 @@ class ReID_Tracker():
             if (metric=='L2' and best_dist < self.dist_thresh):
                 #self.ref_emb=emb_list[idx]
                 return idx
-            elif (metric=='cosine' and best_dist>self.cos_thresh):
+            elif (metric=='cosine' and best_dist>self.dist_thresh):
                 self.ref_emb=emb_list[idx]
                 return idx
             else:
-                print("under thresh")
+                if bool(self.verbose): print("under thresh")
                 return None
+
     def average_ref(self):
         #return an average of the reference embeddings
         N=self.ref_emb.shape[0]
@@ -139,7 +150,9 @@ class ReID_Tracker():
         #print("results shape :", result.shape)
         return result
         
-    def embedding_comparator_mult(self, detections, metric='L2'):
+    def embedding_comparator_mult(self, detections):
+        metric=self.metric
+        dist_thresh=self.dist_thresh
         #update the ref embedding and return the index of correct detection
         idx=None
         #new_ref=None
@@ -159,7 +172,7 @@ class ReID_Tracker():
                 self.ref_emb=ref_emb #mightnot need to cat and just equal
                 return idx
             else:
-                print("error: trying to initialize with multiple detections")
+                if bool(self.verbose): print("error: trying to initialize with multiple detections")
                 return None
                 #try to handle the case of multiple detections by using the conf_list as input ??
                 #for idx in range(detections.size[0]):
@@ -167,17 +180,15 @@ class ReID_Tracker():
 
         else:
             #compute L2 distance for each detection
-
             emb_list=self.embedding_generator(detections)
             #fill a list of all distances wrt to ref
             #dist_list=[]
-
             #average the ref_embeddings
             average_ref=self.average_ref()
             # print("shape of refs: ", self.ref_emb.shape)
             # print("shape of avg: ", average_ref.shape)
 
-            dist_list=self.distance(emb_list, average_ref, metric)# self.ref_emb    .repeat(emb_list.size(0), 1))
+            dist_list=self.distance(emb_list, average_ref)# self.ref_emb    .repeat(emb_list.size(0), 1))
             dist_list=dist_list.squeeze(0)
             if metric=='L2':
                 best_dist = min(dist_list)
@@ -186,12 +197,12 @@ class ReID_Tracker():
 
             best_dist=best_dist.squeeze()
             best_dist=float(best_dist)
-            print("best distance between embeddings", best_dist)
+            if bool(self.verbose): print("best distance between embeddings", best_dist)
             idx=int((dist_list==best_dist).nonzero().squeeze())
             
             #compare to the defined threshold to decide if it's similar enough
 
-            if (metric=='L2' and best_dist < self.dist_thresh):
+            if (metric=='L2' and best_dist < dist_thresh):
                 #self.ref_emb=emb_list[idx]
                 #print("emb_list[idx] shape:", emb_list[idx].shape)
                 #print("self.ref_emb shape:", self.ref_emb.shape)
@@ -202,7 +213,7 @@ class ReID_Tracker():
                 else :
                     print("error number of ref")
                 return idx
-            elif (metric=='cosine' and best_dist>self.cos_thresh):
+            elif (metric=='cosine' and best_dist> dist_thresh):
                 #self.ref_emb=emb_list[idx]
                 #print("emb_list[idx] shape:", emb_list[idx].shape)
                 #print("self.ref_emb shape:", self.ref_emb.shape)
@@ -214,5 +225,14 @@ class ReID_Tracker():
                     print("error number of ref")
                 return idx
             else:
-                print("under thresh")
+                if bool(self.verbose): print("under thresh")
                 return None
+
+    def track(self, detections):
+        ref_method=self.ref_method
+        metric=self.metric
+        if (ref_method=='multiple'):
+            idx=self.embedding_comparator_mult(detections)
+        else:
+            idx=self.embedding_comparator(detections)
+        return idx
