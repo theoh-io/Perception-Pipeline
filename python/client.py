@@ -10,7 +10,7 @@ import argparse
 from PIL import Image
 
 from detector import YoloDetector
-from ReID import ReID_Tracker
+from tracker import ReID_Tracker
 
 parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter,
