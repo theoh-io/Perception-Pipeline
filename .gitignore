@@ -2,4 +2,7 @@ dependency/
 cpp/bin/
 cpp/build/
 python/images/
+python/yolo_imgs/
+python/runs/
+python/not synced
 *__pycache__*
