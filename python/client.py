@@ -35,7 +35,14 @@ parser.add_argument('--dist-metric', default='cosine',
 parser.add_argument('-tt','--tracker-threshold', default=0.87, type=float,
                     help='Defines the threshold for the distance between embeddings refering to the same target')
 parser.add_argument('--ref-emb', default='multiple',
-                    help='Defines the method to get the reference embedding in tracker')
+                    help='Defines the method to get the reference embedding in tracker (simple, mulitple, smart)')
+parser.add_argument('--nb-ref', default='8', type=int,
+                    help='number of embeddings to keep for the computation of the average embedding')
+parser.add_argument('--av-method', default='standard',
+                    help='Averaging method to use on the list of ref embeddings')
+parser.add_argument('--intra-dist', default='6', type=float,
+                    help='Used for smart embedding comparision, L2 distance threshold for high diversity embeddings')
+
 
 args = parser.parse_args()
 
@@ -44,8 +51,8 @@ host = args.ip_address #local : 127.0.0.1  # The server's hostname or IP address
 ####################################
 port = 8081        # The port used by the server
 
-verbose=args.verbose
-print("verbose", verbose)
+verbose=args.verbose == 'True' or args.verbose=='true'
+print("verbose = ", args.verbose)
 
 # image data
 downscale = args.downscale
@@ -55,13 +62,13 @@ channels = 3
 sz_image = width*height*channels
 
 # create socket
-if bool(verbose): print('# Creating socket')
+if (verbose is True): print('# Creating socket')
 try:
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 except socket.error:
     print('Failed to create socket')
     sys.exit()
-if bool(verbose): print('# Getting remote IP address') 
+if verbose is True: print('# Getting remote IP address') 
 try:
     remote_ip = socket.gethostbyname( host )
 except socket.gaierror:
@@ -69,23 +76,20 @@ except socket.gaierror:
     sys.exit()
 
 # Connect to remote server
-if bool(verbose): print('# Connecting to server, ' + host + ' (' + remote_ip + ')')
+if verbose is True: print('# Connecting to server, ' + host + ' (' + remote_ip + ')')
 s.connect((remote_ip , port))
 
 # Initialize Detector and Tracker
-model=args.yolo_model
-conf_thresh=args.yolo_threshold
-path=args.checkpoint
-dist_metric=args.dist_metric
-dist_thresh=args.tracker_threshold
-ref_method=args.ref_emb
+model, conf_thresh=args.yolo_model, args.yolo_threshold
+path, dist_metric, dist_thresh, ref_method, nb_ref, av_method, intra_dist=args.checkpoint, args.dist_metric, args.tracker_threshold, args.ref_emb, args.nb_ref, args.av_method, args.intra_dist
+
 
 detector=YoloDetector(model, conf_thresh, verbose)
 if path != False:
-    tracker=ReID_Tracker(path, dist_metric, dist_thresh, ref_method, verbose)
+    tracker=ReID_Tracker(path, dist_metric, dist_thresh, ref_method, nb_ref, av_method, intra_dist, verbose)
     #tracker.load_pretrained(path)
 else:
-    if bool(verbose): print("No tracking as no model as been provided with argument -c")
+    if verbose is True: print("No tracking as no model as been provided with argument -c")
 
 #Image Receiver 
 net_recvd_length = 0
@@ -145,7 +149,7 @@ while True:
             tensor_img=torch.cat(img_list)
 
         elif bbox_label==False:
-            if bool(verbose): print("no detection")
+            if verbose is True: print("no detection")
 
         ############
         # Tracking #

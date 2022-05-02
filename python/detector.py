@@ -64,7 +64,7 @@ class YoloDetector(object):
     def best_detection(self):
         N=self.detection.shape[0]
         if(N != 1):
-            if bool(self.verbose): print("multiple persons detected")
+            if self.verbose is True: print("multiple persons detected")
             #extracting the detection with max confidence
             idx=np.argmax(self.detection[range(N),4])
             self.detection=self.detection[idx]
@@ -83,7 +83,7 @@ class YoloDetector(object):
 
         self.detection=np.array(detect_pandas)
         #print("shape of the detection: ", self.detection.shape)
-        if bool(self.verbose): print("all detections: ",self.detection)
+        if self.verbose is True: print("all detections: ",self.detection)
 
         if (self.detection.shape[1]!=0):          
             #use np.squeeze to remove 0 dim from the tensor
@@ -114,7 +114,7 @@ class YoloDetector(object):
         self.detection= np.delete(self.detection, idx, axis=0)
         #print("after cleaning")
         #print("new shape:", self.detection.shape)
-        if bool(self.verbose): print("yolo conf", self.detection)
+        #if self.verbose is True: print("yolo conf", self.detection)
         if self.detection.size==0:
             return False
         else:
