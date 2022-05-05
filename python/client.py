@@ -27,7 +27,7 @@ parser.add_argument('-v', '--verbose', default=True,
 #Detector Arguments
 parser.add_argument('-ym','--yolo-model', default='yolov5s',
                     help='Yolo model to import: v5n, v5s, v5m, v5l (in order of size)')
-parser.add_argument('-yt','--yolo-threshold', default=0.4, type=float,
+parser.add_argument('-yt','--yolo-threshold', default=0, type=float,
                     help='Defines the threshold for the detection score')
 #Tracker arguments
 parser.add_argument('--dist-metric', default='cosine',
@@ -43,6 +43,9 @@ parser.add_argument('--av-method', default='standard',
 parser.add_argument('--intra-dist', default='6', type=float,
                     help='Used for smart embedding comparision, L2 distance threshold for high diversity embeddings')
 
+#recording option argument
+parser.add_argument('--recording', default=None, help='If a path is provided will save the video from loomo camera without bounding boxes')
+parser.add_argument('--recordingbb', default=None, help='If a path is provided will save the video from loomo camera with bounding boxes')
 
 args = parser.parse_args()
 
@@ -53,6 +56,11 @@ port = 8081        # The port used by the server
 
 verbose=args.verbose == 'True' or args.verbose=='true'
 print("verbose = ", args.verbose)
+rec= (args.recording != None)
+print("recording = ", rec)
+recbb=(args.recordingbb != None)
+if recbb is True:
+    print("recording bounding boxes")
 
 # image data
 downscale = args.downscale
@@ -61,6 +69,15 @@ height = int(480/downscale)
 channels = 3
 sz_image = width*height*channels
 
+#Video writersize
+if rec is True:
+    path=args.recording
+    framerate=3.5 #3.3 for downscale 2 and 5 for downscale 4
+    output_vid = cv2.VideoWriter(path, cv2.VideoWriter_fourcc(*'MJPG'), framerate, (width, height)) #try without specifying width and height
+if recbb is True:
+    pathbb=args.recordingbb
+    output_vid_bb = cv2.VideoWriter(pathbb, cv2.VideoWriter_fourcc(*'MJPG'), framerate, (width, height))
+    
 # create socket
 if (verbose is True): print('# Creating socket')
 try:
@@ -103,12 +120,21 @@ def size_adjust():
 mismatch=1 #FSM for avoiding checking size once it has been verified one time
 timeout=time.time()+0.2 #variable used to avoid printing warning on size mismatch for initialization
 
+
+#measuring time between frames
+start_time=time.time()
+
 while True:
     # Receive data
     reply = s.recv(sz_image)
     recvd_image += reply
     net_recvd_length += len(reply)
     if net_recvd_length == sz_image:
+        current_time=time.time()
+        elapsed_time=current_time-start_time
+        print("elapsed: ", elapsed_time)
+        start_time=current_time
+
         pil_image = Image.frombytes('RGB', (width, height), recvd_image)
         opencvImage = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
         opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
@@ -174,6 +200,14 @@ while True:
             #print("empty bbox")
             bbox=[0, 0, 0, 0]
 
+        ######################
+        # Video Recording
+        #####################
+        #before the plotting of the bounding box
+        if rec is True:
+            output_vid.write(opencvImage)
+        #output_vid.release() at the end of the while loop ??
+
         #######################
         # Visualization
         #######################
@@ -183,6 +217,12 @@ while True:
         cv2.rectangle(opencvImage, start, stop, (0,0,255), 2)
         cv2.imshow('Camera Loomo',opencvImage)
         cv2.waitKey(1)
+
+        #Video recording adding the bounding boxes
+        if recbb is True:
+            output_vid_bb.write(opencvImage)
+
+
 
         #######################
         # Socket
