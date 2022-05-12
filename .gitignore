@@ -5,4 +5,8 @@ python/images/
 python/yolo_imgs/
 python/runs/
 python/not synced
+testing/
+recording/
+scripts/
+python/deep_sort
 *__pycache__*

@@ -21,6 +21,8 @@ Other options are available: such as the choice of the detection algorithm and t
     python3 client.py --options
 
 ### Options
+`-s <input video source>` by default loomo stream but can also be used by passing a recorded video (to compare trackers for example)
+
 `-i <ip-address Loomo>` used by socket to communicate with Loomo.
 
 `-c <checkpoints>` path to the weights of the tracker. if no path is provided then no tracker is used.
@@ -31,13 +33,21 @@ Other options are available: such as the choice of the detection algorithm and t
 #### Options for detector
 `-yt <float in [0;1]>` yolo-threshold value for confidence in detection.
 
+`-ym <name of the yolo model: yolov5n, yolov5s, yolov5m...>` Define the yolov5 pretrained model to use. If not locally stored will automatically download it online.
+
 ---
 #### Options for tracker
 `--dist-metric <'L2', 'cosine'>` metric to compute distance between embeddings in the tracker
 
 `-tt <tracker distance threshold>` distance threshold meaning that embedding refers to the same target as the reference (/!\ L2 distance must be below threshold, while cosine similarity must be above).
 
-`ref-emb <method to get reference embedding: multiple, simple` multiple will keep fixed number of ref embedding and average across them while simple will only keep the last embedding.
+`ref-emb <method to get reference embedding: multiple, simple, smart` multiple will keep fixed number of ref embedding and average across them while simple will only keep the last embedding. Finally smart will try to keep a limited number of high diversity embeddings.
+
+`--nb_ref <number of ref embeddings>` Max number of embeddings to keep and average across when using multiple or smart
+
+`--av-method <averaging method name>` Weights used during the averaging of the the reference embedding list, according more weights on recent detection (standard, linear, exponential). Use standard by default <=> all detections having the same weight.
+
+`--intra-dist <L2 distance threshold for smart>` Above this threshold the embedding in the list of references will be kept to store high diversity representation
 
 
 ## Structure

@@ -16,10 +16,11 @@ from tracker import ReID_Tracker
 parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter,
 )
-parser.add_argument('-c', '--checkpoint', default=False,
-                    help=('directory to load checkpoint'))
+#Compulsory
 parser.add_argument('-i','--ip-address',
                     help='IP Address of robot')
+parser.add_argument('-c', '--checkpoint', default=False,
+                    help=('directory to load checkpoint'))
 parser.add_argument('-d', '--downscale', default=2, type=int,
                     help=('downscale of the received image'))
 parser.add_argument('-v', '--verbose', default=True,
@@ -35,11 +36,11 @@ parser.add_argument('--dist-metric', default='cosine',
 parser.add_argument('-tt','--tracker-threshold', default=0.87, type=float,
                     help='Defines the threshold for the distance between embeddings refering to the same target')
 parser.add_argument('--ref-emb', default='multiple',
-                    help='Defines the method to get the reference embedding in tracker (simple, mulitple, smart)')
+                    help='Defines the method to get the reference embedding in tracker (simple, multiple, smart)')
 parser.add_argument('--nb-ref', default='8', type=int,
                     help='number of embeddings to keep for the computation of the average embedding')
 parser.add_argument('--av-method', default='standard',
-                    help='Averaging method to use on the list of ref embeddings')
+                    help='Averaging method to use on the list of ref embeddings (standard, linear, exponential')
 parser.add_argument('--intra-dist', default='6', type=float,
                     help='Used for smart embedding comparision, L2 distance threshold for high diversity embeddings')
 
@@ -54,8 +55,38 @@ host = args.ip_address #local : 127.0.0.1  # The server's hostname or IP address
 ####################################
 port = 8081        # The port used by the server
 
+# create socket
+#source_loomo = args.source == 'Loomo' or args.source=='loomo'
+#if source_loomo is True:
+#print("source: Loomo's video stream")
+print('# Creating socket')
+try:
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+except socket.error:
+    print('Failed to create socket')
+    sys.exit()
+print('# Getting remote IP address') 
+try:
+    remote_ip = socket.gethostbyname( host )
+except socket.gaierror:
+    print('Hostname could not be resolved. Exiting')
+    sys.exit()
+
+# Connect to remote server
+print('# Connecting to server, ' + host + ' (' + remote_ip + ')')
+s.connect((remote_ip , port))
+
+# else:
+#     path_source= args.source
+#     print("source video: ", path_source)
+#     try:
+#         cap=cv2.VideoCapture(path_source)
+#     except:
+#         print("path provided to the video source is not Working. Exiting")
+#         sys.exit()
+
 verbose=args.verbose == 'True' or args.verbose=='true'
-print("verbose = ", args.verbose)
+print("verbose = ", verbose)
 rec= (args.recording != None)
 print("recording = ", rec)
 recbb=(args.recordingbb != None)
@@ -70,31 +101,15 @@ channels = 3
 sz_image = width*height*channels
 
 #Video writersize
+framerate=3.5 #3.3 for downscale 2 and 5 for downscale 4
 if rec is True:
-    path=args.recording
-    framerate=3.5 #3.3 for downscale 2 and 5 for downscale 4
-    output_vid = cv2.VideoWriter(path, cv2.VideoWriter_fourcc(*'MJPG'), framerate, (width, height)) #try without specifying width and height
+    path_vid=args.recording
+    output_vid = cv2.VideoWriter(path_vid, cv2.VideoWriter_fourcc(*'MJPG'), framerate, (width, height)) #try without specifying width and height
 if recbb is True:
-    pathbb=args.recordingbb
-    output_vid_bb = cv2.VideoWriter(pathbb, cv2.VideoWriter_fourcc(*'MJPG'), framerate, (width, height))
+    path_vidbb=args.recordingbb
+    output_vid_bb = cv2.VideoWriter(path_vidbb, cv2.VideoWriter_fourcc(*'MJPG'), framerate, (width, height))
     
-# create socket
-if (verbose is True): print('# Creating socket')
-try:
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-except socket.error:
-    print('Failed to create socket')
-    sys.exit()
-if verbose is True: print('# Getting remote IP address') 
-try:
-    remote_ip = socket.gethostbyname( host )
-except socket.gaierror:
-    print('Hostname could not be resolved. Exiting')
-    sys.exit()
 
-# Connect to remote server
-if verbose is True: print('# Connecting to server, ' + host + ' (' + remote_ip + ')')
-s.connect((remote_ip , port))
 
 # Initialize Detector and Tracker
 model, conf_thresh=args.yolo_model, args.yolo_threshold
@@ -104,13 +119,10 @@ path, dist_metric, dist_thresh, ref_method, nb_ref, av_method, intra_dist=args.c
 detector=YoloDetector(model, conf_thresh, verbose)
 if path != False:
     tracker=ReID_Tracker(path, dist_metric, dist_thresh, ref_method, nb_ref, av_method, intra_dist, verbose)
-    #tracker.load_pretrained(path)
 else:
     if verbose is True: print("No tracking as no model as been provided with argument -c")
 
-#Image Receiver 
-net_recvd_length = 0
-recvd_image = b''
+
 
 #function to Warn the user in case of wrong downscale factor
 def size_adjust():
@@ -120,21 +132,18 @@ def size_adjust():
 mismatch=1 #FSM for avoiding checking size once it has been verified one time
 timeout=time.time()+0.2 #variable used to avoid printing warning on size mismatch for initialization
 
-
-#measuring time between frames
-start_time=time.time()
-
+#Image Receiver 
+net_recvd_length = 0
+recvd_image = b''
+print("cuda !!: ", torch.cuda.is_available())
 while True:
     # Receive data
     reply = s.recv(sz_image)
     recvd_image += reply
     net_recvd_length += len(reply)
+    # if verbose is True:
+    #     print("Size info: ", sz_image, "  ",net_recvd_length)
     if net_recvd_length == sz_image:
-        current_time=time.time()
-        elapsed_time=current_time-start_time
-        print("elapsed: ", elapsed_time)
-        start_time=current_time
-
         pil_image = Image.frombytes('RGB', (width, height), recvd_image)
         opencvImage = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
         opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)

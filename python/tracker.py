@@ -6,6 +6,7 @@ from torchvision import models
 from torchvision import transforms
 import numpy as np
 
+
 class ResNet50(nn.Module):
     def __init__(self, num_classes, loss={'xent'}, **kwargs):
         super(ResNet50, self).__init__()
@@ -87,6 +88,8 @@ class ReID_Tracker():
         #cosine similarity
             cos_dist=nn.CosineSimilarity(dim=1, eps=1e-6)
             return torch.unsqueeze(cos_dist(emb1, emb2),0)
+        else:
+            print("Metric option doesn't exist")
 
     def image_preprocessing(self, img):
         #Preprocessing: resize so that it fits with the entry of the neural net, convert to tensor type, normalization
@@ -128,7 +131,7 @@ class ReID_Tracker():
 
             best_dist=best_dist.squeeze()
             best_dist=float(best_dist)
-            if self.verbose is True: print("best distance between embeddings", best_dist)
+            if self.verbose is True: print("best distance to average ref", best_dist)
             idx=int((dist_list==best_dist).nonzero().squeeze())
             
             #compare to the defined threshold to decide if it's similar enough
@@ -164,8 +167,6 @@ class ReID_Tracker():
             #weights=weights.type(torch.DoubleTensor)
         else:
             print("error in method of averaging")
-        print("weights for averaging", weights)
-        print(weights.shape[1])
         if weights.shape[1] != N:
             print("error in size of weights")
         result = torch.matmul(weights, self.ref_emb)
@@ -219,7 +220,7 @@ class ReID_Tracker():
 
             best_dist=best_dist.squeeze()
             best_dist=float(best_dist)
-            if self.verbose is True: print("best distance between embeddings", best_dist)
+            if self.verbose is True: print("best distance to average ref", best_dist)
             idx=int((dist_list==best_dist).nonzero().squeeze())
             
             #compare to the defined threshold to decide if it's similar enough
@@ -251,9 +252,9 @@ class ReID_Tracker():
                 return None
 
     def smart_emb_dist(self, new_emb, smart_thresh):
-        if self.verbose is True: print("!!! in smart emb dist")
+        #if self.verbose is True: print("!!! in smart emb dist")
         ref_list=self.ref_emb
-        if self.verbose is True: print("number of ref", ref_list.shape[0])
+        #if self.verbose is True: print("number of ref", ref_list.shape[0])
         #compute distance to each of the ref
         if ref_list.shape[0]==1:
             intra_dist=torch.cdist(ref_list, new_emb, p=2) #.unsqueeze(0)
@@ -315,7 +316,7 @@ class ReID_Tracker():
                 best_dist_idx=np.argmax(dist_list)
             best_dist=best_dist.squeeze()
             best_dist=float(best_dist)
-            if self.verbose is True: print("best distance between embeddings", best_dist)
+            if self.verbose is True: print("best distance to average ref", best_dist)
             idx=int((dist_list==best_dist).nonzero().squeeze())
             
             smart_bool, smart_idx=self.smart_emb_dist(torch.unsqueeze(emb_list[idx], 0), smart_thresh)
@@ -370,3 +371,7 @@ class ReID_Tracker():
         else:
             idx=self.embedding_comparator(detections)
         return idx
+
+
+
+    
