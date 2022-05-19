@@ -1,12 +1,8 @@
 dependency/
 cpp/bin/
 cpp/build/
-python/images/
-python/yolo_imgs/
 python/runs/
-python/not synced
-testing/
-recording/
+python/yolov5*
 scripts/
-python/deep_sort
+
 *__pycache__*
