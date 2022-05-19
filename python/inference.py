@@ -189,7 +189,6 @@ def inference_vid(truth_df=None, deepsort_df=None):
             #crop_img = img[y:y+h, x:x+w]
             img_list=[]
             if bbox is not None and path!=False:
-                print(bbox)
                 ###Ajoute la condition initialisation avec plusieurs detections
                 nb_ref=tracker.ref_emb.nelement()
                 nb_det=bbox.shape[0]  
@@ -227,7 +226,7 @@ def inference_vid(truth_df=None, deepsort_df=None):
                     bbox=bbox[idx]
                 else:
                     bbox=None
-                    print("Tracking didn't work")
+                    if verbose is True: print("Tracking didn't work")
 
             ##############
             # Benchmarking
@@ -238,8 +237,8 @@ def inference_vid(truth_df=None, deepsort_df=None):
                 #formatting of the bbox :[xtopleft, ytopleft, width, height] to [xcenter, ycenter, width, height]
                 truth=[truth[0]+truth[2]/2,truth[1]+truth[3]/2, truth[2], truth[3]]
                 if bbox is not None:
-                    print("truth :", truth)
-                    print("bbox :", bbox)
+                    if verbose is True: print("truth :", truth)
+                    if verbose is True: print("bbox :", bbox)
                     dist_to_truth=loss(truth, bbox)
                 else:
                     dist_to_truth=-1
@@ -389,6 +388,7 @@ def first_detection_selection(bboxes, opencvImage, init_det):
     colors=[(128, 128,128), (128, 0,0), (128,128, 0), (0, 128, 0), (128,0,128 ), (0,0,255), (0, 255, 0), (255, 0, 0), (255, 255, 0), (0, 255, 255), (255, 0, 255), (192, 192, 192)]
     for bbox in bboxes:
         i+=1
+        print("First Detection selection")
         print("detection nb ", i, ": ", bbox)
         start=(int(bbox[0]-bbox[2]/2), int(bbox[1]+bbox[3]/2)) #top-left corner
         stop= (int(bbox[0]+bbox[2]/2), int(bbox[1]-bbox[3]/2)) #bottom right corner
