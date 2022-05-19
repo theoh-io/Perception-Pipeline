@@ -1,5 +1,7 @@
 # **DLAV Project**
 
+<img src=./docs/loomo.gif width="350" />
+
 ## Intro
 This repository shows the implementation of a robust perception pipeline supporting real-time on Loomo. Furthermore, this Repository can also serve as a benchmark to test the performance of different perception algorithms on Single Person Tracking Videos/Img Sequences.
 
