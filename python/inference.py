@@ -69,7 +69,8 @@ def getargs():
     global recordingbb, visu
     #getting all the parser arguments into variables
     #General
-    img_seq, path_source, path, verbose=args.MOT, args.source, args.checkpoint, args.verbose
+    #img_seq, path_source, path, verbose=args.MOT, args.source, args.checkpoint, args.verbose
+    path_source, path, verbose=args.source, args.checkpoint, args.verbose
     #Detector
     model, conf_thresh, init_det=args.yolo_model, args.yolo_threshold, args.init_det
     #Tracker
@@ -92,31 +93,33 @@ def print_config():
         print("no path provided for the output video")
 
 def img_seq2vid():
-    global img_seq, path_seq, path_source, seq_vid_fps, path_vid
-    if img_seq is True:
-        print("Using Image sequence as Input")
-        path_seq=path_source + '/img'
-        sequences = os.listdir(path_seq)
-        sequences=sorted(sequences)
-        #if the video from the sequence of images doesn't exist => create it
-        path_vid=os.path.join(path_source, "video.avi")
-        exists=os.path.exists(path_vid)
-        if exists is False:
-            print("creating video from img sequence")
-            print("first img name", sequences[0])
-            print("init image", os.path.join(path_seq, sequences[0]))
+    global img_seq, path_seq, path_source, seq_vid_fps, path_vid, verbose
+    path_vid=os.path.join(path_source, "video.avi")
+    #check if the video from img sequence has already been created
+    exists=os.path.exists(path_vid)
+    #TO BE SOLVED: if no source argument is passed path source is None but still goes in the if
+    if path_source is not None:
+        if not exists:
+            if verbose is True: print("Using Image sequence as Input")
+            path_seq=path_source + '/img'
+            sequences = os.listdir(path_seq)
+            sequences=sorted(sequences)
+            #if the video from the sequence of images doesn't exist => create it
+            if verbose is True: print("init image", os.path.join(path_seq, sequences[0]))
             init_img=cv2.imread(os.path.join(path_seq, sequences[0]))
             height, width, layers =init_img.shape
             size=(width, height)
-            print("!!size of the input seq:", size)
+            if verbose is True: print("size of the input seq:", size)
             seq_vid=cv2.VideoWriter(path_vid, cv2.VideoWriter_fourcc(*'MJPG'), seq_vid_fps, size)
             for sequence in sequences:
-                print("Running sequence %s" % sequence)
+                #print("Running sequence %s" % sequence)
                 sequence_dir = os.path.join(path_seq, sequence)
                 cvimg=cv2.imread(sequence_dir)
                 seq_vid.write(cvimg)
             seq_vid.release()
-        path_vid
+    else:
+        print("path source provided is not working")
+        sys.exit()
 
 def openvideo():
     global path_vid, sys, cap, width, height, fps, frame_count
