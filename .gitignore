@@ -4,5 +4,6 @@ cpp/build/
 python/runs/
 python/yolov5*
 scripts/
+Results/
 
 *__pycache__*

@@ -91,15 +91,13 @@ class YoloDetector(object):
 
             #class function to decide which detection to keep
             self.best_detection()
-            if(self.detection[4]>self.yolo_thresh):
-                label=True
-            else:
-                label=False
-            #modify the format of detection for bbox
-            self.detection=np.expand_dims(self.detection, axis=0)
-            bbox=np.squeeze(self.bbox_format())
-            return bbox, label
-        return [0.0, 0.0, 0.0, 0.0],False
+            if (self.detection[4]>self.yolo_thresh):
+                #modify the format of detection for bbox
+                self.detection=np.expand_dims(self.detection, axis=0)
+                bbox=np.squeeze(self.bbox_format())
+                return bbox
+            
+        return None
 
     def detection_confidence(self):
         # for i in range(self.detection.shape[0]):
@@ -133,8 +131,7 @@ class YoloDetector(object):
         detect_pandas=results.pandas().xyxy
 
         self.detection=np.array(detect_pandas)
-        # print("shape of the detection: ", self.detection.shape)
-        # print("detection: ",self.detection)
+        #if self.verbose is True: print("all detections: ",self.detection)
 
         if (self.detection.shape[1]!=0):
             #print("DETECTED SOMETHING !!!")
@@ -152,5 +149,6 @@ class YoloDetector(object):
 
             #modify the format of detection for bbox
             bbox=self.bbox_format()
-            return bbox, True
-        return [0.0, 0.0, 0.0, 0.0],False
+            if self.verbose is True: print("list of detections:", bbox)
+            return bbox
+        return None
