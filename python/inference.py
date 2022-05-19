@@ -19,8 +19,6 @@ parser = argparse.ArgumentParser(
     description="Benchmark of Single Person Tracking compatible with vieo and MOTChallenge Images sequences"
 )
 #General Arguments
-parser.add_argument('--MOT', action='store_true',
-                    help='Flag to use sequence of images instead of video')
 parser.add_argument('-s','--source', default='None',
                     help='Path of the video to use for inference')
 parser.add_argument('-c', '--checkpoint', default=False,
@@ -62,14 +60,13 @@ args = parser.parse_args()
 
 def getargs():
     global args 
-    global img_seq, path_source, path, verbose
+    global path_source, path, verbose
     global model, conf_thresh, init_det
     global dist_metric, dist_thresh, ref_method, nb_ref, av_method, intra_dist
     global path_ground_truth, path_deepsort, loss_method, path_stats
     global recordingbb, visu
     #getting all the parser arguments into variables
     #General
-    #img_seq, path_source, path, verbose=args.MOT, args.source, args.checkpoint, args.verbose
     path_source, path, verbose=args.source, args.checkpoint, args.verbose
     #Detector
     model, conf_thresh, init_det=args.yolo_model, args.yolo_threshold, args.init_det
@@ -93,7 +90,7 @@ def print_config():
         print("no path provided for the output video")
 
 def img_seq2vid():
-    global img_seq, path_seq, path_source, seq_vid_fps, path_vid, verbose
+    global path_seq, path_source, seq_vid_fps, path_vid, verbose
     path_vid=os.path.join(path_source, "video.avi")
     #check if the video from img sequence has already been created
     exists=os.path.exists(path_vid)
