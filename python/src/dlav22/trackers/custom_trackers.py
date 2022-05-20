@@ -38,25 +38,28 @@ class Custom_ReID_with_Deepsort():
         -> bbox
         '''
         if self.start:
+            self.start = False
             return self.first_tracking(cut_imgs, detections, img)
         else:
             self.track_with_deepsort(detections,img)
             track_ids = [track.track_id for track in self.ds_tracker.tracker.tracks]
-            print('IDs',track_ids)
-            print('ID',self.current_ds_track_idx)
+            # print('IDs',track_ids)
+            # print('ID',self.current_ds_track_idx)
             if self.current_ds_track_idx in track_ids:
                 idx_ = track_ids.index(self.current_ds_track_idx)
             else:
                 idx_ = self.reid_tracker.track(cut_imgs)
+                if idx_ is None: # FIXME Why is this happening?? -> Did not find a similar obj
+                    return None
                 bbox = self.update_deepsort(detections, idx_, img)
             bbox = detections[idx_]
             return bbox
 
     def update_deepsort(self,detections, idx_, img):
-        print("Updating...")
         bbox=detections[idx_]
         self.track_with_deepsort([bbox], img)
         self.current_ds_track_idx = self.ds_tracker.tracker.tracks[0].track_id
+        print(f"Updating DeepSort with ReID with ID {self.current_ds_track_idx}.")
         return bbox
 
     def track_with_deepsort(self, bboxes: list, img: np.ndarray):
@@ -64,18 +67,18 @@ class Custom_ReID_with_Deepsort():
         classes = list(np.zeros(len(bboxes)))
         # print(bboxes) #[array([312, 276, 515, 363])]
         for i, bbox_ in enumerate(bboxes):
-            bbox_ = Utils.get_bbox_tlwh_from_xcent_ycent_w_h(bbox_)
-            bbox_ = Utils.get_xyah_from_tlwh(bbox_)
             bbox_ = [int(b) for b in bbox_] #FIXME more efficient with numpy
             bboxes[i] = bbox_
-        # print(bboxes)
-        #bboxes = np.array(bboxes)
+        # print("bboxes",bboxes)
         bboxes = torch.tensor(bboxes)
         confs = torch.tensor(confs)
         classes = torch.tensor(classes)
-        # img = torch.tensor(img)
         self.ds_tracker.update(bboxes, confs, classes, img)
     
+    def increment_ds_ages(self):
+        self.ds_tracker.increment_ages()
+        # for t in self.ds_tracker.tracker.tracks:
+        #     print("t",t.age)
 
 class ReID_with_KF():
 

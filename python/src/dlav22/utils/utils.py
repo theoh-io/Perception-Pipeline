@@ -98,25 +98,35 @@ class Utils():
         """Convert bounding box to format `(center x, center y, aspect ratio,
         height)`, where the aspect ratio is `width / height`.
         """
-        tlwh = tlwh.astype('float64')
         ret = tlwh.copy()
-        print(".",ret)
         ret[:2] += ret[2:] / 2
+        ret[2] /= ret[3]
+        return ret
+    
+    @staticmethod
+    def get_xyah_from_xc_yc_wh(xywh):
+        """Convert bounding box to format `(center x, center y, aspect ratio,
+        height)`, where the aspect ratio is `width / height`.
+        """
+        ret = xywh.copy()
         ret[2] /= ret[3]
         return ret
 
 class FrameGrab:
-    def __init__(self, mode: str ="webcam") -> None:
+    def __init__(self, mode: str ="webcam", video: str = "Loomo/video.avi") -> None:
         self.cap = None
         if mode == "webcam": #FIXME Do it as enum
             self.cap = cv2.VideoCapture(0) 
         elif mode == "video":
-            self.cap = cv2.VideoCapture("../Benchmark/Loomo/video.avi")
+            FOLDER = "../Benchmark/"
+            # self.cap = cv2.VideoCapture(FILDER + "Loomo/video.avi")
+            self.cap = cv2.VideoCapture(FOLDER + video)
         
     def read_cap(self) -> np.ndarray:
         success, image =  self.cap.read()
         if not success:
             logging.warning("Reading was not successful.")
+            image = None
         return image
     
     def __del__(self):
