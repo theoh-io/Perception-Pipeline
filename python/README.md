@@ -13,9 +13,8 @@ $ activate desired venv name
 Make sure to install python 3 in case you do not have it.
 
 #### Module Installation
+Execute in this directory:
 ```
-$ cd <desired cloning directory for the dlav22 repo>
-$ git clone <repo url>
 $ pip install -e .
-$ pip install -r requirements.txt
+$ pip install -r requirements.txt FIXME -> Write that!
 ``

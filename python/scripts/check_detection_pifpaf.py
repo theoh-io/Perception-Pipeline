@@ -28,8 +28,6 @@ if __name__ == "__main__":
     colDetect = custom_detectors.ColorDetector(verbose=VERBOSE,dim_img=(250,170))
     poseColFuseDetect = custom_detectors.PoseColorGuidedDetector(dim_img=(250,170))
     grab = FrameGrab(mode="webcam")
-    
-    cap = cv2.VideoCapture(0)
 
     while(1):
 
@@ -90,7 +88,7 @@ if __name__ == "__main__":
         sleep(0.3)
     
     cv2.destroyAllWindows()
-    cap.release()
+    del grab
 
 
 

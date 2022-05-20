@@ -18,24 +18,22 @@ from dlav22.deep_sort.deep_sort import DeepSort
 from dlav22.utils.utils import FrameGrab
 
 from dlav22.detectors import custom_detectors, yolo_detector
-from dlav22.trackers import custom_trackers
+from dlav22.trackers import custom_trackers, reid_tracker
 from dlav22.utils.utils import Utils
 
 if __name__ == "__main__":
 
     # logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
+
     
     verbose = False
-    #create instance of the detector
+
     detector=yolo_detector.YoloDetector(verbose=verbose) #simple yolo
-    #detector=custom_detectors.YoloDetector('best.pt') #loading custom weights in yolo
     first_detector = custom_detectors.PoseColorGuidedDetector() #detector combining color detection and PifPaf
-    #detector=custom_detectors.PifPafDetector() 
-    #detector=custom_detectors.ColorDetector()
+    
     current_path=os.getcwd()
-    print(current_path)
     ReIDpath=current_path+"/src/trackers/ReID_model.pth.tar"
-    tracker=custom_trackers.ReID_Tracker(ReIDpath, 'cosine', 0.87, verbose=verbose)
+    tracker=reid_tracker.ReID_Tracker(ReIDpath, 'cosine', 0.87, verbose=verbose)
 
 
     deep_sort_model = "osnet_x0_25"
@@ -124,13 +122,8 @@ if __name__ == "__main__":
             #if bbox_list != [None]:
             #generate embedding
             if bbox_list[0] is not None:
-                if start:
-                    bbox2 = ds_reid_tracker.first_tracking(tensor_img, bbox_list,img)
-                    start = False
-                    if bbox2 is not None:
-                        print(bbox2)
-                else:
-                    bbox = ds_reid_tracker.track(tensor_img, bbox_list,img)
+                bbox = ds_reid_tracker.track(tensor_img, bbox_list,img)
+                if bbox is not None: print("bbox",bbox)
             else:
                 print('no')
 
@@ -172,9 +165,7 @@ if __name__ == "__main__":
         sleep(0.3)
     
     cv2.destroyAllWindows()
-    cap.release()
-
-
+    del grab
 
 
 

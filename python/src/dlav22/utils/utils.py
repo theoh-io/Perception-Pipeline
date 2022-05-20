@@ -118,6 +118,10 @@ class FrameGrab:
         if not success:
             logging.warning("Reading was not successful.")
         return image
+    
+    def __del__(self):
+        self.cap.release()
+        print('Released cap.')
 
         
 class BBox:
