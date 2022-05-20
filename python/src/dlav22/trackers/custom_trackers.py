@@ -43,8 +43,6 @@ class Custom_ReID_with_Deepsort():
         else:
             self.track_with_deepsort(detections,img)
             track_ids = [track.track_id for track in self.ds_tracker.tracker.tracks]
-            # print('IDs',track_ids)
-            # print('ID',self.current_ds_track_idx)
             if self.current_ds_track_idx in track_ids:
                 idx_ = track_ids.index(self.current_ds_track_idx)
             else:
@@ -65,11 +63,9 @@ class Custom_ReID_with_Deepsort():
     def track_with_deepsort(self, bboxes: list, img: np.ndarray):
         confs = list(np.zeros(len(bboxes)))
         classes = list(np.zeros(len(bboxes)))
-        # print(bboxes) #[array([312, 276, 515, 363])]
         for i, bbox_ in enumerate(bboxes):
             bbox_ = [int(b) for b in bbox_] #FIXME more efficient with numpy
             bboxes[i] = bbox_
-        # print("bboxes",bboxes)
         bboxes = torch.tensor(bboxes)
         confs = torch.tensor(confs)
         classes = torch.tensor(classes)
@@ -77,8 +73,6 @@ class Custom_ReID_with_Deepsort():
     
     def increment_ds_ages(self):
         self.ds_tracker.increment_ages()
-        # for t in self.ds_tracker.tracker.tracks:
-        #     print("t",t.age)
 
 class ReID_with_KF():
 

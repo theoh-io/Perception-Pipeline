@@ -27,7 +27,6 @@ if __name__ == "__main__":
 
     # logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
-    
     verbose = False
 
     detector=yolo_detector.YoloDetector(verbose=verbose) #simple yolo
@@ -60,7 +59,7 @@ if __name__ == "__main__":
     logger.setLevel(logging.WARNING)
 
     # start streaming video from webcam
-    grab = FrameGrab(mode="video") #, video="Diverse/sot_room_with_pifpaf_pose.mp4") # video or webcam
+    grab = FrameGrab(mode="video") 
     
     # initialze bounding box to empty'list' object has no attribute 'shape'
     bbox = None
@@ -94,8 +93,6 @@ if __name__ == "__main__":
         else:
             #2nd Detection ... => Yolo
             bbox_list= detector.predict_multiple(img)
-            # print(bbox_list)
-            #bbox_list=np.array(bbox)
             if verbose is True: print("yolo detection", bbox_list)
             
         ###########################################
@@ -136,18 +133,6 @@ if __name__ == "__main__":
             print('No detection')
             ds_reid_tracker.increment_ds_ages()
             bbox = None
-
-            # idx=tracker.track(tensor_img)
-            # if idx!=None:
-            #     bbox=bbox_list[idx]
-            #FIXME handle the case when tracker doesn't return any index
-            # else:
-            #     #print("empty bbox")
-
-            # else:
-            #     bbox=None
-            #     if verbose is True: print("in tracking no detection")
-
         ###################
         #  Visualization  #
         ###################
