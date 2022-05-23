@@ -5,7 +5,6 @@ from enum import Enum
 from charset_normalizer import detect
 import numpy as np
 import openpifpaf
-from sklearn.cluster import DBSCAN
 from PIL import Image
 import time 
 import cv2
