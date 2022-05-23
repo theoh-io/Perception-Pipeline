@@ -11,6 +11,7 @@ import argparse
 from PIL import Image
 
 from detector import YoloDetector
+from ..src.dlav22.detectors.custom_detectors import PoseColorGuidedDetector
 from tracker import ReID_Tracker
 
 parser = argparse.ArgumentParser(
@@ -117,6 +118,7 @@ path, dist_metric, dist_thresh, ref_method, nb_ref, av_method, intra_dist=args.c
 
 
 detector=YoloDetector(model, conf_thresh, verbose)
+first_detector=PoseColorGuidedDetector()
 if path != False:
     tracker=ReID_Tracker(path, dist_metric, dist_thresh, ref_method, nb_ref, av_method, intra_dist, verbose)
 else:
@@ -156,58 +158,61 @@ while True:
         # Detect
         #######################
         #bbox format xcenter, ycenter, width, height
-        if path != False:
-            bbox, bbox_label = detector.predict_multiple(opencvImage)
+        #first detection case => PifPaf
+        nb_ref=tracker.ref_emb.nelement() 
+        if nb_ref == 0:
+            if verbose is True: print("running pifpaf for first detection")
+            bbox_list = first_detector.predict(opencvImage)
+            if bbox_list is not None:
+                bbox = bbox_list[0]
+                if verbose is True: print("pifpaf bbox:", bbox)
         else:
-            bbox, bbox_label = detector.predict(opencvImage)
-        #if bbox_label:
-            #if verbose: print("bbox candidate(s):", bbox)
-        #else:
-            #if verbose: print("no bbox candidate")
+            #2nd Detection ... => Yolo
+            bbox_list= detector.predict_multiple(opencvImage)
+            #bbox_list=np.array(bbox)
+            if verbose is True: print("yolo detection", bbox_list)
 
         ###########################################
         #   Image Cropping and preprocessing      #
         ###########################################
-        #crop_img = img[y:y+h, x:x+w]
+        #Format for cropping => crop_img = img[y:y+h, x:x+w]
         img_list=[]
-        if bbox_label==True and path!=False:
-            for i in range(bbox.shape[0]):
-                bbox_indiv=bbox[i]
-                crop_img=np.array(opencvImage[int((bbox_indiv[1]-bbox_indiv[3]/2)):int((bbox_indiv[1]+bbox_indiv[3]/2)), int((bbox_indiv[0]-bbox_indiv[2]/2)):int((bbox_indiv[0]+bbox_indiv[2]/2))])
-                #to apply the normalization need a PIL image
-                # PIL RGB while CV is BGR.
-                crop_img = cv2.cvtColor(crop_img, cv2.COLOR_BGR2RGB)
-                crop_img = Image.fromarray(crop_img)
-                tensor_img_indiv=tracker.image_preprocessing(crop_img)
-                tensor_img_indiv=torch.unsqueeze(tensor_img_indiv, 0)
-                img_list.append(tensor_img_indiv)
-            tensor_img=torch.cat(img_list)
+        if bbox_list is not None:
+            if bbox_list[0] is not None:
+                if verbose is True: print("in preprocessing: ", bbox_list)
+                for i in range(bbox_list.shape[0]):
+                    bbox_indiv=bbox_list[i]
+                    crop_img=np.array(img[int((bbox_indiv[1]-bbox_indiv[3]/2)):int((bbox_indiv[1]+bbox_indiv[3]/2)), int((bbox_indiv[0]-bbox_indiv[2]/2)):int((bbox_indiv[0]+bbox_indiv[2]/2))])
+                    #to apply the normalization need a PIL image
+                    # PIL RGB while CV is BGR.
+                    crop_img = cv2.cvtColor(crop_img, cv2.COLOR_BGR2RGB)
+                    crop_img = Image.fromarray(crop_img)
+                    tensor_img_indiv=tracker.image_preprocessing(crop_img)
+                    tensor_img_indiv=torch.unsqueeze(tensor_img_indiv, 0)
+                    img_list.append(tensor_img_indiv)
+                tensor_img=torch.cat(img_list)
 
-        elif bbox_label==False:
+        elif bbox_list is None:
             if verbose is True: print("no detection")
 
         ############
         # Tracking #
         ############
-        #handle no detection case
         #generate embedding
-        if bbox_label==True and path!=False:
-        #generate embedding
-        #print(tensor_img.shape)
-            #idx=tracker.embedding_comparator_mult(tensor_img, 'L2')
+        if bbox_list is not None:
+            #if bbox_list != [None]:
+            #generate embedding
             idx=tracker.track(tensor_img)
-            #select the bbox corresponding to correct detection
-            #print(bbox.size)
             if idx!=None:
-                bbox=bbox[idx]
+                bbox=bbox_list[idx]
+            #FIXME handle the case when tracker doesn't return any index
+            # else:
+            #     #print("empty bbox")
+
             else:
-                #print("empty bbox")
-                bbox_label= False
-                bbox=[0, 0, 0, 0]
-        elif bbox_label==False:
-            #print("no detection 2")
-            #print("empty bbox")
-            bbox=[0, 0, 0, 0]
+                bbox=None
+                if verbose is True: print("in tracking no detection")
+
 
         ######################
         # Video Recording
@@ -237,6 +242,11 @@ while True:
         # Socket
         #######################
         # https://pymotw.com/3/socket/binary.html
+        if bbox is None:
+            bbox=[0,0,0,0]
+            bbox_label=False
+        else:
+            bbox_label=True
         values = (bbox[0], bbox[1], bbox[2], bbox[3], float(bbox_label))
         packer = struct.Struct('f f f f f')
         packed_data = packer.pack(*values)
