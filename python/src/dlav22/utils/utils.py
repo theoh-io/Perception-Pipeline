@@ -1,9 +1,11 @@
 import numpy as np
 import cv2
 from abc import ABC, abstractmethod
-from typing import Tuple
+from typing import Any, Callable, Tuple
 import itertools
 import logging
+from PIL import Image
+import torch
 
 class Utils():
     @staticmethod
@@ -111,6 +113,26 @@ class Utils():
         ret = xywh.copy()
         ret[2] /= ret[3]
         return ret
+
+    @staticmethod
+    def crop_img_parts_from_bboxes(bbox_list: list, img: np.ndarray, image_processing: Callable):
+        img_list=[]
+        if bbox_list is not None and bbox_list[0] is not None:
+            # if bbox_list[0] is not None:
+            for i in range(bbox_list.shape[0]):
+                bbox_indiv=bbox_list[i]
+                crop_img=np.array(img[int((bbox_indiv[1]-bbox_indiv[3]/2)):int((bbox_indiv[1]+bbox_indiv[3]/2)), int((bbox_indiv[0]-bbox_indiv[2]/2)):int((bbox_indiv[0]+bbox_indiv[2]/2))])
+                #to apply the normalization need a PIL image
+                # PIL RGB while CV is BGR.
+                crop_img = cv2.cvtColor(crop_img, cv2.COLOR_BGR2RGB)
+                crop_img = Image.fromarray(crop_img)
+                tensor_img_indiv=image_processing(crop_img)
+                tensor_img_indiv=torch.unsqueeze(tensor_img_indiv, 0)
+                img_list.append(tensor_img_indiv)
+            tensor_img=torch.cat(img_list)
+            return tensor_img
+        else:
+            return None
 
 class FrameGrab:
     def __init__(self, mode: str ="webcam", video: str = "Loomo/Demo3/theo_Indoor.avi") -> None:
