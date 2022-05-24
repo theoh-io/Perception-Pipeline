@@ -24,7 +24,8 @@ class PifPafYOLODetector():
     def predict(self, img: np.ndarray):
         if self.start:
             bbox_list = self.first_detector.predict(img)
-            self.start = False
+            if bbox_list is not None and bbox_list[0] is not None:
+                self.start = False
         else:
             bbox_list= self.detector.predict_multiple(img)
         

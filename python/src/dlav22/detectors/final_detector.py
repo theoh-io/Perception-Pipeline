@@ -22,10 +22,9 @@ class DetectorG16():
             print("no detection")
 
         # Tracking
-        if bbox_list is not None and bbox_list[0] is not None:
+        if bbox_list is not None and len(bbox_list)!=0 and bbox_list[0] is not None:
             bbox = self.ds_reid_tracker.track(tensor_img, bbox_list,img)
         else:
             self.ds_reid_tracker.increment_ds_ages()
             bbox = None
-        return bbox 
-        
+        return bbox

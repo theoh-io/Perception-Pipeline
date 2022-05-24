@@ -15,17 +15,17 @@ class Detector(object):
         super(Detector, self).__init__()
         self.detector = DetectorG16(verbose=False)
 
-    def forward(self, pil_image: np.ndarray):  
+    def forward(self, opencvImage: np.ndarray):  
 
-        opencvImage = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
-        opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
+        # opencvImage = cv2.cvtColor(np.array(pil_image), cv2.COLOR_RGB2BGR)
+        # opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
 
         bbox = self.detector.forward(opencvImage)
         
         #FIXME What is the label?
-        pred_y_label = 0
+        pred_y_label = False
         if bbox is not None:
-            pred_y_label = 1
+            pred_y_label = True
 
         return bbox, pred_y_label
 

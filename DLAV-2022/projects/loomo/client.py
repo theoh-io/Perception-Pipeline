@@ -6,6 +6,7 @@ import sys
 import numpy
 import struct
 import binascii
+import cv2 
 
 from PIL import Image
 from detector import Detector
@@ -80,8 +81,8 @@ while True:
     if net_recvd_length == sz_image:
 
         pil_image = Image.frombytes('RGB', (width, height), recvd_image)
-        # opencvImage = cv2.cvtColor(numpy.array(pil_image), cv2.COLOR_RGB2BGR)
-        # opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
+        opencvImage = cv2.cvtColor(numpy.array(pil_image), cv2.COLOR_RGB2BGR)
+        opencvImage = cv2.cvtColor(opencvImage,cv2.COLOR_BGR2RGB)
         #
         # cv2.imshow('Test window',opencvImage)
 
@@ -92,7 +93,16 @@ while True:
         #######################
         # Detect
         #######################
-        bbox, bbox_label = detector.forward(pil_image)
+        bbox, bbox_label = detector.forward(opencvImage)
+
+        #######################
+        # Visualization
+        #######################
+        start=(int(bbox[0]-bbox[2]/2), int(bbox[1]+bbox[3]/2)) #top-left corner
+        stop= (int(bbox[0]+bbox[2]/2), int(bbox[1]-bbox[3]/2)) #bottom right corner
+        cv2.rectangle(opencvImage, start, stop, (0,0,255), 2)
+        cv2.imshow('Camera Loomo',opencvImage)
+        cv2.waitKey(1)
         
         if bbox_label:
             print("BBOX: {}".format(bbox))
@@ -101,7 +111,7 @@ while True:
             print("False")
 
         # https://pymotw.com/3/socket/binary.html
-        values = (bbox[0], bbox[1], 10, 10, float(bbox_label[0]))
+        values = (bbox[0], bbox[1], 10, 10, float(bbox_label))
 
         packer = struct.Struct('f f f f f')
         packed_data = packer.pack(*values)

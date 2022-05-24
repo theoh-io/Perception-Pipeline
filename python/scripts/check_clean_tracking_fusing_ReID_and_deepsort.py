@@ -25,16 +25,17 @@ from dlav22.deep_sort.utils.parser import get_config
 
 if __name__ == "__main__":
 
-    # logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
+
+    # logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.WARNING)
 
     verbose = False #FIXME Change that to logging configuration
-    
+
     # Change the logging level
     logger = logging.getLogger()
     logger.setLevel(logging.WARNING)
 
     # start streaming video from webcam
-    grab = FrameGrab(mode="video") 
+    grab = FrameGrab(mode="video")
 
     detector = final_detector.DetectorG16(verbose=verbose)
 
@@ -60,7 +61,7 @@ if __name__ == "__main__":
         else:
             pass
             # print("no visualization:", bbox)
-        # cv2.imshow('result', img)
+        cv2.imshow('result', img)
   
         k = cv2.waitKey(10) & 0xFF
         # press 'q' to exit

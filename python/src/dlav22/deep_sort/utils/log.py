@@ -10,7 +10,7 @@ def get_logger(name='root'):
     handler.setFormatter(formatter)
 
     logger = logging.getLogger(name)
-    logger.setLevel(logging.INFO)
+    #logger.setLevel(logging.WARNING)
     logger.addHandler(handler)
     return logger
 
