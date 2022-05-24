@@ -15,16 +15,16 @@ parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter,
 )
 
-parser.add_argument('-c', '--checkpoint',
-                    help=('directory to load checkpoint'))
+# parser.add_argument('-c', '--checkpoint',
+#                     help=('directory to load checkpoint'))
 parser.add_argument('-i','--ip-address',
                     help='IP Address of robot')
-parser.add_argument('--instance-threshold', default=0.0, type=float,
-                    help='Defines the threshold of the detection score')
-parser.add_argument('-d', '--downscale', default=8, type=int,
+# parser.add_argument('--instance-threshold', default=0.0, type=float,
+#                     help='Defines the threshold of the detection score')
+parser.add_argument('-d', '--downscale', default=4, type=int,
                     help=('downscale of the received image'))
-parser.add_argument('--square-edge', default=401, type=int,
-                    help='square edge of input images')
+# parser.add_argument('--square-edge', default=401, type=int,
+#                     help='square edge of input images')
 
 args = parser.parse_args()
 
@@ -60,8 +60,7 @@ print('# Connecting to server, ' + host + ' (' + remote_ip + ')')
 s.connect((remote_ip , port))
 
 # Set up detector
-arguments = ["--checkpoint",args.checkpoint,"--pif-fixed-scale", "1.0", "--instance-threshold",args.instance_threshold]
-detector = Detector(arguments,input_size = args.square_edge)
+detector = Detector()
 
 #Image Receiver
 net_recvd_length = 0

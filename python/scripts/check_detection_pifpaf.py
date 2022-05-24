@@ -10,7 +10,7 @@ if str(os.getcwd())[-7:] == "scripts":
     os.chdir("..")
 print(f"Current WD: {os.getcwd()}")
 
-from dlav22.detectors import custom_detectors
+from dlav22.detectors import pifpaf_detectors
 from dlav22.utils.utils import Utils
 
 from dlav22.utils.utils import FrameGrab
@@ -24,9 +24,9 @@ if __name__ == "__main__":
 
     VERBOSE = False
     
-    pifpafDetect = custom_detectors.PifPafDetector(verbose=VERBOSE)
-    colDetect = custom_detectors.ColorDetector(verbose=VERBOSE,dim_img=(250,170))
-    poseColFuseDetect = custom_detectors.PoseColorGuidedDetector(dim_img=(250,170))
+    pifpafDetect = pifpaf_detectors.PifPafDetector(verbose=VERBOSE)
+    colDetect = pifpaf_detectors.ColorDetector(verbose=VERBOSE,dim_img=(250,170))
+    poseColFuseDetect = pifpaf_detectors.PoseColorGuidedDetector(dim_img=(250,170))
     grab = FrameGrab(mode="webcam")
 
     while(1):
