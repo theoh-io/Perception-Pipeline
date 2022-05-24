@@ -139,7 +139,7 @@ if __name__ == "__main__":
         ###################
         if bbox is not None:
             if verbose is True: print("Visualization bbox:", bbox)
-            # print("Visualization bbox:", bbox)
+            print("Visualization bbox:", bbox)
             #for (x,y,w,h) in bbox:
             top_left=(int(bbox[0]-bbox[2]/2), int(bbox[1]+bbox[3]/2))  #top-left corner
             bot_right= (int(bbox[0]+bbox[2]/2), int(bbox[1]-bbox[3]/2)) #bottom right corner
@@ -151,7 +151,8 @@ if __name__ == "__main__":
             pass
             # print("no visualization:", bbox)
                 # -----
-        cv2.imshow('result', img)
+        # cv2.imshow('result', img)
+
 
 
         #cv2.waitKey(0)    
