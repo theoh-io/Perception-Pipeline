@@ -17,7 +17,7 @@ import torch
 from dlav22.deep_sort.deep_sort import DeepSort
 from dlav22.utils.utils import FrameGrab
 
-from dlav22.detectors import custom_detectors, yolo_detector
+from dlav22.detectors import pifpaf_detectors, yolo_detector
 from dlav22.trackers import custom_trackers, reid_tracker
 from dlav22.utils.utils import Utils
 
@@ -30,7 +30,7 @@ if __name__ == "__main__":
     verbose = False
 
     detector=yolo_detector.YoloDetector(verbose=verbose) #simple yolo
-    first_detector = custom_detectors.PoseColorGuidedDetector() #detector combining color detection and PifPaf
+    first_detector = pifpaf_detectors.PoseColorGuidedDetector() #detector combining color detection and PifPaf
     
     current_path=os.getcwd()
     ReIDpath=current_path+"/src/dlav22/trackers/ReID_model.pth.tar"

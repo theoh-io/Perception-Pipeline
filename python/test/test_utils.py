@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-# from src.detectors.custom_detectors  import PifPafDetector, PifPafKeyPoints
 import os
 import cv2
 from distutils.command.config import config

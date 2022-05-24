@@ -11,7 +11,7 @@ import argparse
 from PIL import Image
 
 from detector import YoloDetector
-from ..src.dlav22.detectors.custom_detectors import PoseColorGuidedDetector
+from ..src.dlav22.detectors.pifpaf_detectors import PoseColorGuidedDetector
 from tracker import ReID_Tracker
 
 parser = argparse.ArgumentParser(

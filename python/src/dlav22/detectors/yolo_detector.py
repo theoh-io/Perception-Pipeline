@@ -10,9 +10,9 @@ import numpy as np
 #      max_det = 1000  # maximum number of detections per image
 #      amp = False  # Automatic Mixed Precision (AMP) inference
 #results = model(imgs, size=320)  # custom inference size
-from dlav22.detectors.custom_detectors import Detector
+from dlav22.detectors.pifpaf_detectors import Detector
 
-class YoloDetector(Detector):
+class YoloDetector():
     def __init__(self, model='default', verbose = False):
         if model=='default':
             self.model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
