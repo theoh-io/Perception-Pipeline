@@ -113,7 +113,7 @@ class Utils():
         return ret
 
 class FrameGrab:
-    def __init__(self, mode: str ="webcam", video: str = "Loomo/video.avi") -> None:
+    def __init__(self, mode: str ="webcam", video: str = "Loomo/Demo2/video.avi") -> None:
         self.cap = None
         if mode == "webcam": #FIXME Do it as enum
             self.cap = cv2.VideoCapture(0) 
