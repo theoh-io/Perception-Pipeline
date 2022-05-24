@@ -93,7 +93,7 @@ while True:
         # Detect
         #######################
         bbox, bbox_label = detector.forward(pil_image)
-
+        
         if bbox_label:
             print("BBOX: {}".format(bbox))
             print("BBOX_label: {}".format(bbox_label))

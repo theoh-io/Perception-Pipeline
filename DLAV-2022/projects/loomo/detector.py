@@ -23,7 +23,9 @@ class Detector(object):
         bbox = self.detector.forward(opencvImage)
         
         #FIXME What is the label?
-        pred_y_label = 1
+        pred_y_label = 0
+        if bbox is not None:
+            pred_y_label = 1
 
         return bbox, pred_y_label
 
