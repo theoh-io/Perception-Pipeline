@@ -22,7 +22,7 @@ class YoloDetector():
         self.model.classes=0 #running only person detection
         self.detection=np.array([0, 0, 0, 0])
         self.verbose=verbose
-
+        print(f"Created YOLO detector with verbose={verbose}.")
 
     def bbox_format(self):
         #detection format xmin, ymin, xmax,ymax, conf, class, 'person'
@@ -77,7 +77,6 @@ class YoloDetector():
 
     def predict(self, image, thresh=0.01):
         #threshold for confidence detection
-        
         # Inference
         results = self.model(image) #might need to specify the size
 
@@ -100,28 +99,27 @@ class YoloDetector():
         return None,False
 
     def predict_multiple(self, image, thresh=0.01):
-      #threshold for confidence detection
-      
-      # Inference
-      results = self.model(image) #might need to specify the size
+        #threshold for confidence detection
+        # Inference
+        results = self.model(image) #might need to specify the size
 
-      #results.xyxy: [xmin, ymin, xmax, ymax, conf, class]
-      detect_pandas=results.pandas().xyxy
+        #results.xyxy: [xmin, ymin, xmax, ymax, conf, class]
+        detect_pandas=results.pandas().xyxy
 
-      self.detection=np.array(detect_pandas)
-      if self.verbose is True: print("shape of the detection: ", self.detection.shape)
-      #print("detection: ",self.detection)
+        self.detection=np.array(detect_pandas)
+        if self.verbose is True: print("shape of the detection: ", self.detection.shape)
+        #print("detection: ",self.detection)
 
-      if (self.detection.shape[1]!=0):
-          if self.verbose is True: print("DETECTED SOMETHING !!!")
-          #save resuts
-          #results.save()
-          
-          #use np.squeeze to remove 0 dim from the tensor
-          self.detection=np.squeeze(self.detection,axis=0) 
-          if self.verbose is True: print("bbox before format: ", self.detection)
-          #modify the format of detection for bbox
-          bbox=self.bbox_format()
-          if self.verbose is True: print("bbox after format: ", bbox)
-          return bbox
-      return None
+        if (self.detection.shape[1]!=0):
+            if self.verbose is True: print("DETECTED SOMETHING !!!")
+            #save resuts
+            #results.save()
+            
+            #use np.squeeze to remove 0 dim from the tensor
+            self.detection=np.squeeze(self.detection,axis=0) 
+            if self.verbose is True: print("bbox before format: ", self.detection)
+            #modify the format of detection for bbox
+            bbox=self.bbox_format()
+            if self.verbose is True: print("bbox after format: ", bbox)
+            return bbox
+        return None

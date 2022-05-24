@@ -13,7 +13,7 @@ class Detector(object):
     """docstring for Detector"""
     def __init__(self):
         super(Detector, self).__init__()
-        self.detector = DetectorG16()
+        self.detector = DetectorG16(verbose=False)
 
     def forward(self, pil_image: np.ndarray):  
 
