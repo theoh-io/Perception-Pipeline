@@ -17,9 +17,12 @@ class Custom_ReID_with_Deepsort():
         current_path=os.getcwd()
         # ReIDpath=current_path+"/src/dlav22/trackers/ReID_model.pth.tar" #FIXME
         ReIDpath = "/home/group16/dlav22_16/DLAV-Project-Loomo/python/src/dlav22/trackers/ReID_model.pth.tar"
+        
         self.reid_tracker=ReID_Tracker(ReIDpath, 'cosine', 0.87, verbose=verbose)
 
-        cfg = get_config(config_file="src/dlav22/deep_sort/configs/deep_sort.yaml")
+        # cfg = get_config(config_file="src/dlav22/deep_sort/configs/deep_sort.yaml")
+        cfg = get_config(config_file="/home/group16/dlav22_16/DLAV-Project-Loomo/python/src/dlav22/deep_sort/configs/deep_sort.yaml")
+        
 
         deep_sort_model = cfg.DEEPSORT.MODEL_TYPE
         desired_device = ''    
