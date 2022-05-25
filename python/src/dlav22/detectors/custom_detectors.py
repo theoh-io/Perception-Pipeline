@@ -1,17 +1,9 @@
 
-import numpy as np
 import logging
 
 import numpy as np
-import torch
-import os
 
-from dlav22.deep_sort.deep_sort import DeepSort
-from dlav22.utils.utils import FrameGrab, Utils
-from dlav22.deep_sort.utils.parser import get_config
 from dlav22.detectors import yolo_detector, pifpaf_detectors
-
-from dlav22.trackers import custom_trackers, reid_tracker
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.WARNING)
 

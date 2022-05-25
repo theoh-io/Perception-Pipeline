@@ -17,8 +17,7 @@ import torch
 from dlav22.deep_sort.deep_sort import DeepSort
 from dlav22.utils.utils import FrameGrab
 
-from dlav22.detectors import custom_detectors, final_detector
-from dlav22.trackers import custom_trackers
+from dlav22.detectors import final_detector
 from dlav22.utils.utils import Utils
 
 from dlav22.deep_sort.utils.parser import get_config

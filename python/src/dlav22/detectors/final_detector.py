@@ -1,13 +1,13 @@
 import numpy as np
 from dlav22.detectors import custom_detectors
-from dlav22.trackers import custom_trackers
+from dlav22.trackers.fused_ds_reid import FusedDsReid
 from dlav22.utils.utils import Utils
 
 class DetectorG16():
 
     def __init__(self, verbose=False) -> None:
         self.pif_yolo_detector = custom_detectors.PifPafYOLODetector(verbose=verbose)
-        self.ds_reid_tracker = custom_trackers.Custom_ReID_with_Deepsort(verbose=verbose)
+        self.ds_reid_tracker = FusedDsReid(verbose=verbose)
         self.verbose = verbose
 
     def forward(self, img: np.ndarray):

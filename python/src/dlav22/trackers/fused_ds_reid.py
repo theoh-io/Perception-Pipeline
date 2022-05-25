@@ -49,7 +49,7 @@ class FusedDsReid():
         img: original image
         -> bbox
         '''
-        idx_=self.reid_tracker.track(cut_imgs)
+        idx_=self.reid_tracker.track(cut_imgs, detections, return_idx=True)
         bbox = None
         if idx_ is not None:
             #cut_img = cut_imgs[idx_]
@@ -72,7 +72,7 @@ class FusedDsReid():
             if self.current_ds_track_idx in track_ids:
                 idx_ = track_ids.index(self.current_ds_track_idx)
             else:
-                idx_ = self.reid_tracker.track(cut_imgs)
+                idx_ = self.reid_tracker.track(cut_imgs, detections, return_idx=True)
                 if idx_ is None: # FIXME Why is this happening?? -> Did not find a similar obj
                     return None
                 bbox = self.update_deepsort(detections, idx_, img)

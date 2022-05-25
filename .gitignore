@@ -20,6 +20,9 @@ __pycache__/
 # VS Code
 .vscode
 
+#Pycharm
+.idea
+
 # Distribution / packaging
 .Python
 build/
