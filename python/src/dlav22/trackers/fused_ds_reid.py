@@ -5,12 +5,10 @@ import os
 from dlav22.utils.utils import Utils
 
 from dlav22.trackers.reid_tracker import ReID_Tracker
-from dlav22.trackers.kalman_filter import KalmanFilter
-from dlav22.trackers.track import Track
 from dlav22.deep_sort.deep_sort import DeepSort
 from dlav22.deep_sort.utils.parser import get_config
 
-class Custom_ReID_with_Deepsort():
+class FusedDsReid():
 
     def __init__(self, verbose: bool = False) -> None:
         
@@ -43,12 +41,6 @@ class Custom_ReID_with_Deepsort():
             )
         self.current_ds_track_idx = None
         self.start = True
-
-    # def __init__(self, ds_tracker: DeepSort, reid_tracker: ReID_Tracker) -> None:
-    #     self.ds_tracker = ds_tracker
-    #     self.reid_tracker = reid_tracker
-    #     self.current_ds_track_idx = None
-    #     self.start = True
         
     def first_tracking(self, cut_imgs: list, detections: list, img: np.ndarray) -> list:
         '''
@@ -108,39 +100,3 @@ class Custom_ReID_with_Deepsort():
     def increment_ds_ages(self):
         self.ds_tracker.increment_ages()
 
-class ReID_with_KF():
-
-    def __init__(self, ReID: ReID_Tracker) -> None:
-        self.reid_tracker = ReID
-        self.kf = KalmanFilter()
-        # FIXME Setting up the KF needs a lot of efforts... (to have it clean)
-        # Simple KF is not sufficient since one has to include functionality when to stop tracking
-
-    def initiate_track(self, detection):
-        # Execite after first detection and when the obj enters the state again
-        detection = Utils.get_bbox_tlwh_from_xcent_ycent_w_h(detection)
-        detection = Utils.get_xyah_from_tlwh(detection)
-        mean, covariance = self.kf.initiate(detection)
-        conf = 1.0
-        n_init = 0
-        max_age = 1000
-        feature = None
-        self.track = Track(mean, covariance, 0, 0, conf, n_init, max_age, feature)
-
-    def track(self, bboxes: list, img_detection: np.ndarray):
-        
-        idx_ = self.reid_tracker.track(img_detection)
-        bbox_detect = bboxes[idx_]
-        self.predict()
-        self.update(bbox_detect) #confidences
-    
-    def predict(self):
-        self.mean, self.covariance = self.kf.predict(self.mean, self.covariance)
-
-    def update(self,detection):
-        detection = Utils.get_bbox_tlwh_from_xcent_ycent_w_h(detection)
-        detection = Utils.get_xyah_from_tlwh(detection)
-        # self.conf = conf
-        self.mean, self.covariance = self.kf.update(
-            self.mean, self.covariance, detection)
-        self.time_since_update = 0

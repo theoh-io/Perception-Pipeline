@@ -360,13 +360,19 @@ class ReID_Tracker():
                 return None
 
 
-    def track(self, detections):
+    def track(self, cut_imgs, bbox_list, img=None):
+        '''
+        cut_imgs: img parts cut from img at bbox positions and converted into tensors
+        bbox_list: bboxes from YOLO detector
+        img: original image
+        -> bbox
+        '''
         ref_method=self.ref_method
         metric=self.metric
         if (ref_method=='multiple'):
-            idx=self.embedding_comparator_mult(detections)
+            idx=self.embedding_comparator_mult(cut_imgs)
         elif (ref_method=='smart'):
-            idx=self.embedding_comparator_smart(detections)
+            idx=self.embedding_comparator_smart(cut_imgs)
         else:
-            idx=self.embedding_comparator(detections)
-        return idx
+            idx=self.embedding_comparator(cut_imgs)
+        return bbox_list[idx]

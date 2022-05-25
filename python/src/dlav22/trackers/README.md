@@ -13,7 +13,17 @@ Output: bbox (x_center, y_center, w, h)
 Class functions: track
 
 ## name of the Top Level Function
-(currently final detector)
-localization of that top level class
+currently: final_detector => perception.py (DetectorG16) at the root of dlav22
+localization of that top level class => src/dlav22
 name of the class: Detector G16 need to change
 Forward method
+
+## To Do
+same IO for reid_tracker ✅
+Create top level file + config file: running pifpaf frequency
+Add ds_custom_reid + compatibility with other ReID weights
+config file
+make the check clean_tracking script working
+check client.py and add it in python/scripts
+[benchmarking performance IoU]
+add comment (documenting code)
