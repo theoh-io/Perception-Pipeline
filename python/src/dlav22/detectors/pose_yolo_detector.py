@@ -4,13 +4,17 @@ import logging
 import numpy as np
 
 from dlav22.detectors import pose_detectors, yolo_detector
+from dlav22.utils.utils import Utils
+import dlav22
+
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.WARNING)
 
 class PoseYoloDetector():
-    def __init__(self, verbose: bool = False) -> None:
+    def __init__(self, cfg, verbose: bool = False) -> None:
+        verbose = cfg.PERCEPTION.VERBOSE
         self.detector = yolo_detector.YoloDetector(verbose=verbose) #simple yolo
-        self.first_detector = pose_detectors.PoseDetector() #detector combining color detection and PifPaf
+        self.first_detector = Utils.import_from_string(cfg.DETECTOR.POSE_DETECTOR_CLASS)() #pose_detectors.PoseDetector() #detector combining color detection and PifPaf
         self.start = True
 
     def predict(self, img: np.ndarray):

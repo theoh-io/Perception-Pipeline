@@ -6,6 +6,7 @@ import itertools
 import logging
 from PIL import Image
 import torch
+from importlib import import_module
 
 class Utils():
     @staticmethod
@@ -133,6 +134,16 @@ class Utils():
             return tensor_img
         else:
             return None
+
+    @staticmethod
+    def import_from_string(class_str: str) -> object:
+        try:
+            module_path, class_name = class_str.rsplit('.', 1)
+            module = import_module(module_path)
+            return getattr(module, class_name)
+        except (ImportError, AttributeError) as e:
+            raise ImportError(class_str)
+
 
 class FrameGrab:
     def __init__(self, mode: str ="webcam", video: str = "Loomo/Demo3/theo_Indoor.avi") -> None:

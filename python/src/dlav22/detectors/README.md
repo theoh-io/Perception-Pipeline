@@ -1,8 +1,10 @@
 # Detectos Format
 
 ## List of available Detectors
+base_detector (BaseDetector()): base class for detectors
 pose_detector (PoseDetector()): pif paf for pose detection, option to choose pose in a list of defined ones
 yolo_detector (YoloDetector()): Detection using yolov5 can download the pretrained weights from online source
+color_detector (ColorDetector()): Detection based on color blobs.
 pose_detector (PoseColorGuidedDetector()): PoseDetector module which uses an additional color filter if detection ambigous
 pose_yolo_detector (PoseYoloDetector()): running pifpaf for first detection and yolo otherwise, option to rerun pifpaf using start flag
 

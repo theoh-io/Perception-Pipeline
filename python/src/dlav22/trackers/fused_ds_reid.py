@@ -1,3 +1,4 @@
+from tabnanny import verbose
 import torch
 import numpy as np
 import os
@@ -10,24 +11,15 @@ from dlav22.deep_sort.utils.parser import get_config
 
 class FusedDsReid():
 
-    def __init__(self, verbose: bool = False) -> None:
+    def __init__(self, cfg) -> None:
+        verbose = cfg.PERCEPTION.VERBOSE
         
-        current_path=os.getcwd()
-        ReIDpath=current_path+"/src/dlav22/trackers/ReID_model.pth.tar"
-        try:
-            self.reid_tracker=ReID_Tracker(ReIDpath, 'cosine', 0.87, verbose=verbose)
-        except:
-            ReIDpath = "/home/group16/dlav22_16/DLAV-Project-Loomo/python/src/dlav22/trackers/ReID_model.pth.tar"
-            self.reid_tracker=ReID_Tracker(ReIDpath, 'cosine', 0.87, verbose=verbose)
-
-        try:
-            cfg = get_config(config_file="src/dlav22/deep_sort/configs/deep_sort.yaml")
-        except:
-            cfg = get_config(config_file="/home/group16/dlav22_16/DLAV-Project-Loomo/python/src/dlav22/deep_sort/configs/deep_sort.yaml")
-        
+        file_path = os.path.dirname(os.path.realpath(__file__))
+        ReIDpath=file_path+cfg.REID.MODEL_PATH #"\ReID_model.pth.tar"                #FIXME Put that in the ReID Tracker class
+        self.reid_tracker=ReID_Tracker(ReIDpath, cfg.REID.SIMILARITY_MEASURE, cfg.REID.SIMILARITY_THRESHOLD, verbose=verbose)
 
         deep_sort_model = cfg.DEEPSORT.MODEL_TYPE
-        desired_device = ''    
+        desired_device = ''
         cpu = 'cpu' == desired_device
         cuda = not cpu and torch.cuda.is_available()
         device = torch.device('cuda:0' if cuda else 'cpu')
