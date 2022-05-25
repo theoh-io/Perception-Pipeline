@@ -9,7 +9,7 @@ ds_custom_reid (DsCustomReid()): using custom ReID model inside Deepsort as Feat
 ## Format of the trackers
 
 Input: Cropped detection images, bbox_list, original_img
-Output: bbox (x_center, y_center, w, h)
+Output: bbox (x_center, y_center, w, h), for ReID idx optionally as output
 Class functions: track
 
 ## name of the Top Level Function

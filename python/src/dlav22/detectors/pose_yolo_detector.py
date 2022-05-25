@@ -3,14 +3,14 @@ import logging
 
 import numpy as np
 
-from dlav22.detectors import yolo_detector, pifpaf_detectors
+from dlav22.detectors import pose_detectors, yolo_detector
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.WARNING)
 
-class PifPafYOLODetector():
+class PoseYoloDetector():
     def __init__(self, verbose: bool = False) -> None:
         self.detector = yolo_detector.YoloDetector(verbose=verbose) #simple yolo
-        self.first_detector = pifpaf_detectors.PoseColorGuidedDetector() #detector combining color detection and PifPaf
+        self.first_detector = pose_detectors.PoseDetector() #detector combining color detection and PifPaf
         self.start = True
 
     def predict(self, img: np.ndarray):

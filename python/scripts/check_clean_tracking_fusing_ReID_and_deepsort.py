@@ -17,7 +17,7 @@ import torch
 from dlav22.deep_sort.deep_sort import DeepSort
 from dlav22.utils.utils import FrameGrab
 
-from dlav22.detectors import final_detector
+from dlav22 import perception
 from dlav22.utils.utils import Utils
 
 from dlav22.deep_sort.utils.parser import get_config
@@ -36,7 +36,7 @@ if __name__ == "__main__":
     # start streaming video from webcam
     grab = FrameGrab(mode="video")
 
-    detector = final_detector.DetectorG16(verbose=verbose)
+    detector = perception.DetectorG16(verbose=verbose)
 
     while(1):
 

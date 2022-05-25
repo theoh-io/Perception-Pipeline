@@ -3,9 +3,8 @@
 ## List of available Detectors
 pose_detector (PoseDetector()): pif paf for pose detection, option to choose pose in a list of defined ones
 yolo_detector (YoloDetector()): Detection using yolov5 can download the pretrained weights from online source
+pose_detector (PoseColorGuidedDetector()): PoseDetector module which uses an additional color filter if detection ambigous
 pose_yolo_detector (PoseYoloDetector()): running pifpaf for first detection and yolo otherwise, option to rerun pifpaf using start flag
-
-
 
 
 ## Format of the Detectors
@@ -19,5 +18,5 @@ config file for detectors: whch detector, which pose, wich weights for yolo
 how it can be loaded (utils.deepsort)
 Add more poses for pifpaf detector
 Add option to change the weights used by yolo: s, m , l, x...
-rename the detectors
+X rename the detectors
 top level =>think about how often we will restart pifpaf: time condition (every 20s), lost of track condition.... => will be implemented in top level file

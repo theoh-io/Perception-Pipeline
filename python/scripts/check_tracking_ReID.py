@@ -15,7 +15,7 @@ print(f"Current WD: {os.getcwd()}")
 
 import torch
 
-from dlav22.detectors import pifpaf_detectors, yolo_detector
+from dlav22.detectors import pose_detectors, yolo_detector
 from dlav22.trackers import custom_trackers, reid_tracker
 from dlav22.utils.utils import Utils
 from dlav22.utils.utils import FrameGrab
@@ -28,7 +28,7 @@ if __name__ == "__main__":
     verbose = False
     #create instance of the detector
     detector=yolo_detector.YoloDetector(verbose=verbose) #simple yolo
-    first_detector = pifpaf_detectors.PoseColorGuidedDetector() #detector combining color detection and PifPaf
+    first_detector = pose_detectors.PoseColorGuidedDetector() #detector combining color detection and PifPaf
     current_path=os.getcwd()
     print(current_path)
     ReIDpath=current_path+"/src/dlav22/trackers/ReID_model.pth.tar"

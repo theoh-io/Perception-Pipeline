@@ -16,7 +16,7 @@ class Detector():
     def __init__(self, verbose) -> None:
         self.verbose = verbose
     
-    def predict(self, image: np.ndarray) -> list:
+    def predict(self, image: np.ndarray) -> np.ndarray:
         raise NotImplementedError("Detector Base Class does not provide a predict class.")
 
 
@@ -40,7 +40,7 @@ class PifPafKeyPoints(Enum):
     RIGHT_ANKLE = 16
 
 
-class PifPafDetector(Detector):
+class PoseDetector(Detector):
     def __init__(self, checkpoint="shufflenetv2k16", verbose=False) -> None:
         super().__init__(verbose)
         self.predictor = openpifpaf.Predictor(checkpoint=checkpoint)
@@ -54,8 +54,11 @@ class PifPafDetector(Detector):
             return None
         
         bbox = bboxes[0]
+        
+        bbox = Utils.get_bbox_xcent_ycent_w_h_from_xy_xy(bbox)
+        bboxes = np.expand_dims(bbox, axis=0)
 
-        return bbox
+        return bboxes
 
     def predict_all_bboxes(self, img: np.ndarray) -> Tuple[list, list]:
 
@@ -350,7 +353,7 @@ class PoseColorFusingDetector(Detector):
 
     def __init__(self,dim_img=(200,150), verbose=False) -> None:
         super().__init__(verbose=verbose)
-        self.pifpafDetect = PifPafDetector(verbose=verbose)
+        self.pifpafDetect = PoseDetector(verbose=verbose)
         self.colDetect = ColorDetector(verbose=verbose,dim_img=dim_img)
         self.min_IoU_for_detection = 0.3
         
