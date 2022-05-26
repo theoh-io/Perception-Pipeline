@@ -9,6 +9,8 @@ Results/
 
 *__pycache__*
 
+*.pth
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
