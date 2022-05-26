@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 import os
+import logging
 
 from dlav22.utils.utils import Utils
 
@@ -28,7 +29,10 @@ class DsCustomReid():
             )
         self.current_ds_track_idx = None
         self.start = True
-        
+    
+    def first_track(self) -> list:
+        self.current_ds_track_idx = self.ds_tracker.tracker.tracks[0].track_id
+
     def track(self, cut_imgs: list, detections: list, img: np.ndarray) -> list:
         '''
         cut_imgs: img parts cut from img at bbox positions
@@ -37,12 +41,17 @@ class DsCustomReid():
         -> bbox
         '''
         self.track_with_deepsort(detections,img)
+        if self.start:
+            self.first_track()
+            self.start = False
+
         track_ids = [track.track_id for track in self.ds_tracker.tracker.tracks]
+        # print(":",track_ids,self.current_ds_track_idx )
         if self.current_ds_track_idx in track_ids:
             idx_ = track_ids.index(self.current_ds_track_idx)
         else:
             #FIXME how to handle the case when we hae lost of ID
-            print("loss of ID")
+            logging.warning("[ds_custom_reid] Lost ID: Selecting the first ID.")
             idx_ = 0
         bbox = detections[idx_]
         return bbox
