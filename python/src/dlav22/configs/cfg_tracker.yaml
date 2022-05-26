@@ -1,5 +1,5 @@
 TRACKER:
-  TRACKER_CLASS: 'dlav22.trackers.fused_ds_reid.FusedDsReid' #'dlav22.trackers.reid_tracker.ReIdTracker' #dlav22.trackers.ds_custom_reid.DsCustomReid
+  TRACKER_CLASS: dlav22.trackers.ds_custom_reid.DsCustomReid #'dlav22.trackers.fused_ds_reid.FusedDsReid' #'dlav22.trackers.reid_tracker.ReIdTracker' #
 DEEPSORT:
   MODEL_TYPE: "osnet_x0_25"   #resnet50_AGWmarket  #resnet50_SBSduke.pth  #resnet50_SBSmsmt17
   MAX_DIST: 0.4 # The matching threshold. Samples with larger distance are considered an invalid match

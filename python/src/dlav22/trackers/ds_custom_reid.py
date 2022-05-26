@@ -43,6 +43,7 @@ class DsCustomReid():
         else:
             #FIXME how to handle the case when we hae lost of ID
             print("loss of ID")
+            idx_ = 0
         bbox = detections[idx_]
         return bbox
 

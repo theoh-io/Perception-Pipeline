@@ -7,11 +7,20 @@ os.chdir("../src/dlav22/deep_sort/deep/checkpoint/")
 print(os.getcwd())
 
 url = "https://github.com/JDAI-CV/fast-reid/releases/download/v0.1.1/market_agw_R50.pth"
-wget.download(url)
-os.rename('market_agw_R50.pth', 'resnet50_AGWmarket.pth')
+# wget.download(url)
+try:
+    os.rename('market_agw_R50.pth', 'resnet50_AGWmarket.pth')
+except:
+    print("No renaming 1")
 url = "https://github.com/JDAI-CV/fast-reid/releases/download/v0.1.1/duke_sbs_R50.pth"
-wget.download(url)
-os.rename('market_agw_R50.pth', 'resnet50_AGWmarket.pth')
+# wget.download(url)
+try:
+    os.rename('duke_sbs_R50.pth', 'resnet50_SBSduke.pth')
+except:
+    print("No renaming 2")
 url = "https://github.com/JDAI-CV/fast-reid/releases/download/v0.1.1/msmt_sbs_R50.pth"
 wget.download(url)
-os.rename('market_agw_R50.pth', 'resnet50_AGWmarket.pth')
+try:
+    os.rename('msmt_sbs_R50.pth', 'resnet50_SBSmsmt17.pth')
+except:
+    print("No renaming 3")
