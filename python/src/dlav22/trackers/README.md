@@ -18,13 +18,26 @@ localization of that top level class => src/dlav22
 name of the class: Detector G16 need to change
 Forward method
 
+## Downloading SOTA weights for REID
+'resnet50_AGWmarket':
+'https://github.com/JDAI-CV/fast-reid/releases/download/v0.1.1/market_agw_R50.pth',
+'resnet50_AGWmarket':
+https://github.com/JDAI-CV/fast-reid/releases/download/v0.1.1/duke_sbs_R50.pth',
+'resnet50_SBSmsmt17':
+'https://github.com/JDAI-CV/fast-reid/releases/download/v0.1.1/msmt_sbs_R50.pth',
+need to rename them correctly
+
 ## To Do
 - [x] same IO for reid_tracker
 - [x] Create top level file + config file: running pifpaf frequency
-- [] Add ds_custom_reid + compatibility with other ReID weights
+- [x] Create script to download SOTA ReID weights and rename them appropriately
+- [x] Add ds_custom_reid + compatibility with other ReID weights
 - [x] config file
-- [] make the check clean_tracking script working at Theos Laptop
-- [] check client.py and add it in python/scripts
+- [] make the check clean_tracking script working at Theos Laptop (theo)
+- [] check client.py and add it in python/scripts (theo)
 - [] [benchmarking performance IoU]
 - [] add comment (documenting code)
 - [] Use logging instead of verbose
+
+
+

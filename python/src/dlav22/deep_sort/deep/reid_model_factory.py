@@ -92,6 +92,15 @@ __trained_urls = {
     'https://drive.google.com/uc?id=1q3Sj2ii34NlfxA4LvmHdWO_75NDRmECJ',
     'osnet_ain_x1_0_MSMT17':
     'https://drive.google.com/uc?id=1SigwBE6mPdqiJMqhuIY4aqC7--5CsMal',
+
+    ######## SOTA models from fast-reid #####################################
+    'resnet50_AGWmarket':
+    'https://github.com/JDAI-CV/fast-reid/releases/download/v0.1.1/market_agw_R50.pth',
+    'resnet50_SBSduke':
+    'https://github.com/JDAI-CV/fast-reid/releases/download/v0.1.1/duke_sbs_R50.pth',
+    'resnet50_SBSmsmt17':
+    'https://github.com/JDAI-CV/fast-reid/releases/download/v0.1.1/msmt_sbs_R50.pth',
+
 }
 
 
