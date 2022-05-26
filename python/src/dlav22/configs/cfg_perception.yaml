@@ -1,4 +1,7 @@
 PERCEPTION:
-  VERBOSE: false
+  VERBOSE: False
+  IP: 128.179.280.74
+  DOWNSCALE: 4
+  RECORDING: "../../Results/test.avi"
   USE_PIFPAF_UPDATE: false
   PIFPAF_UPDATE_FREQUENCY: 10
