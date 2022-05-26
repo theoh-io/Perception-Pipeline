@@ -1,22 +1,18 @@
-from tabnanny import verbose
 import torch
 import numpy as np
 import os
 
 from dlav22.utils.utils import Utils
 
-from dlav22.trackers.reid_tracker import ReID_Tracker
+from dlav22.trackers.reid_tracker import ReIdTracker
 from dlav22.deep_sort.deep_sort import DeepSort
 from dlav22.deep_sort.utils.parser import get_config
 
 class FusedDsReid():
 
     def __init__(self, cfg) -> None:
-        verbose = cfg.PERCEPTION.VERBOSE
-        
-        file_path = os.path.dirname(os.path.realpath(__file__))
-        ReIDpath=file_path+cfg.REID.MODEL_PATH #"\ReID_model.pth.tar"                #FIXME Put that in the ReID Tracker class
-        self.reid_tracker=ReID_Tracker(ReIDpath, cfg.REID.SIMILARITY_MEASURE, cfg.REID.SIMILARITY_THRESHOLD, verbose=verbose)
+
+        self.reid_tracker=ReIdTracker(cfg)
 
         deep_sort_model = cfg.DEEPSORT.MODEL_TYPE
         desired_device = ''

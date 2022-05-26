@@ -1,3 +1,5 @@
 DETECTOR:
   DETECTOR_CLASS: 'dlav22.detectors.pose_yolo_detector.PoseYoloDetector'
   POSE_DETECTOR_CLASS: 'dlav22.detectors.pose_detectors.PoseDetector'
+  YOLO:
+    MODEL_VERSION: 'yolov5s' #l,m,n,x

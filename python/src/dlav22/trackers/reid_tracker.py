@@ -1,3 +1,5 @@
+import os
+
 import torch
 from torch import nn
 from torch.nn import functional as F
@@ -33,14 +35,22 @@ class ResNet50(nn.Module):
             raise KeyError("Unsupported loss: {}".format(self.loss))
 
 
-class ReID_Tracker():
-    def __init__(self, path, metric, dist_thresh, ref_method='multiple', nb_ref=20, av_method='standard', intra_dist=5, verbose=False):
+class ReIdTracker():
+    #def __init__(self, path, metric, dist_thresh, ref_method='multiple', nb_ref=20, av_method='standard', intra_dist=5, verbose=False):
+    def __init__(self, cfg, path=None, metric=None, dist_thresh=None, ref_method='multiple', nb_ref=20, av_method='standard', intra_dist=5, verbose=False):
         self.ReID_model=ResNet50(10)
         self.transformation=transforms.Compose([
             transforms.Resize((256, 128)),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ])
+
+        file_path = os.path.dirname(os.path.realpath(__file__))
+        path = file_path+cfg.REID.MODEL_PATH
+        metric = cfg.REID.SIMILARITY_MEASURE
+        dist_thresh = cfg.REID.SIMILARITY_THRESHOLD
+        verbose = cfg.PERCEPTION.VERBOSE
+
         self.path=path
         self.metric=metric
         self.dist_thresh=dist_thresh
@@ -49,8 +59,6 @@ class ReID_Tracker():
         self.av_method=av_method
         self.intra_dist=intra_dist
         self.verbose=verbose
-        #self.dist_thresh= 8
-        #self.cos_thresh=0.85
         self.ref_emb=torch.tensor([[]])
         self.load_pretrained()
 

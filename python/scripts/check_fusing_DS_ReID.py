@@ -24,19 +24,21 @@ from dlav22.deep_sort.utils.parser import get_config
 
 if __name__ == "__main__":
 
-
-    # logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.WARNING)
-
     verbose = False #FIXME Change that to logging configuration
 
-    # Change the logging level
-    logger = logging.getLogger()
-    logger.setLevel(logging.WARNING)
+    logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.WARNING)
+
+    logger_pifpaf = logging.getLogger("openpifpaf.predictor")
+    logger_pifpaf.setLevel(logging.WARNING)
 
     # start streaming video from webcam
     grab = FrameGrab(mode="video")
 
     detector = perception.DetectorG16(verbose=verbose)
+
+    # Change the logging level
+    logger = logging.getLogger()
+    logger.setLevel(logging.WARNING)
 
     while(1):
 
@@ -52,11 +54,9 @@ if __name__ == "__main__":
         ###################
         if bbox is not None:
             if verbose is True: print("Visualization bbox:", bbox)
-            #for (x,y,w,h) in bbox:
             top_left=(int(bbox[0]-bbox[2]/2), int(bbox[1]+bbox[3]/2))  #top-left corner
             bot_right= (int(bbox[0]+bbox[2]/2), int(bbox[1]-bbox[3]/2)) #bottom right corner
             bbox_array = cv2.rectangle(img,top_left,bot_right,(255,0,0),2)
-            # bbox_array[:,:,3] = (img.max(axis = 2) > 0 ).astype(int) * 255
         else:
             pass
             # print("no visualization:", bbox)

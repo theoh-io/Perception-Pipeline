@@ -5,6 +5,7 @@ from charset_normalizer import detect
 import openpifpaf
 from PIL import Image
 import time 
+import logging
 import cv2
 import matplotlib.pyplot as plt
 
@@ -37,7 +38,7 @@ class PifPafKeyPoints(Enum):
 class PoseDetector(BaseDetector):
     def __init__(self, checkpoint="shufflenetv2k16", verbose=False) -> None:
         super().__init__(verbose)
-        self.predictor = openpifpaf.Predictor(checkpoint=checkpoint)
+        self.predictor = openpifpaf.Predictor(checkpoint=checkpoint, visualize_processed_image=True)
     
     def predict(self, img: np.ndarray) -> list:
         

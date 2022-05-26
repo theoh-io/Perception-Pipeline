@@ -143,21 +143,3 @@ if __name__ == "__main__":
     
     cv2.destroyAllWindows()
     del grab
-
-
-
-
-
-
-# Other
-        # if bbox_color is not None and bbox_pifpaf is not None:
-        #     IoU = Utils.bb_intersection_over_union(bbox_pifpaf,bbox_color)
-        #     print(IoU)
-        #     if IoU > 0.4:
-        #         print(f"DETECTED")
-        #         #FIXME Get all blue bboxes larger than a specific area and check with all
-
-        
-        # pifpaf.plot_key_points(image)
-        # plt.imshow(image)
-        # plt.show()

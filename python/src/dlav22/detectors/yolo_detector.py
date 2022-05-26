@@ -13,12 +13,15 @@ import numpy as np
 from dlav22.detectors.base_detector import BaseDetector
 
 class YoloDetector():
-    def __init__(self, model='default', verbose = False):
+    def __init__(self, cfg, model='default', verbose = False):
+        verbose = cfg.PERCEPTION.VERBOSE
+        yolo_version = cfg.DETECTOR.YOLO.MODEL_VERSION
         if model=='default':
-            self.model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
+            self.model = torch.hub.load('ultralytics/yolov5', yolo_version)
+            print(f"-> Using {yolo_version} for multi bbox detection.")
         else:
             #loading the fine-tuned model
-            self.model=torch.hub.load('ultralytics/yolov5','custom',path='/content/drive/MyDrive/dlav_2022/src/trackers{}'.format(model))
+            self.model=torch.hub.load('ultralytics/yolov5','custom',path='/content/drive/MyDrive/dlav_2022/src/trackers{}'.format(model)) #FIXME Add correct path??
         self.model.classes=0 #running only person detection
         self.detection=np.array([0, 0, 0, 0])
         self.verbose=verbose

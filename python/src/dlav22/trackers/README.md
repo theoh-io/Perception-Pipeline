@@ -19,11 +19,12 @@ name of the class: Detector G16 need to change
 Forward method
 
 ## To Do
-same IO for reid_tracker ✅
-Create top level file + config file: running pifpaf frequency
-Add ds_custom_reid + compatibility with other ReID weights
-config file
-make the check clean_tracking script working
-check client.py and add it in python/scripts
-[benchmarking performance IoU]
-add comment (documenting code)
+- [x] same IO for reid_tracker
+- [x] Create top level file + config file: running pifpaf frequency
+- [] Add ds_custom_reid + compatibility with other ReID weights
+- [x] config file
+- [] make the check clean_tracking script working at Theos Laptop
+- [] check client.py and add it in python/scripts
+- [] [benchmarking performance IoU]
+- [] add comment (documenting code)
+- [] Use logging instead of verbose

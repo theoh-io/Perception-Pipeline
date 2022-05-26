@@ -20,26 +20,36 @@ class DetectorG16():
 
         self.detector = Utils.import_from_string(cfg.DETECTOR.DETECTOR_CLASS)(cfg) #PoseYoloDetector(verbose=verbose)
         print(f"-> Using {cfg.DETECTOR.DETECTOR_CLASS} as detector.")
-        
+
         self.tracker = Utils.import_from_string(cfg.TRACKER.TRACKER_CLASS)(cfg) #FusedDsReid(cfg)
         print(f"-> Using {cfg.TRACKER.TRACKER_CLASS} as tracker.")
         self.verbose = verbose
+
+        if callable(getattr(self.tracker, "image_preprocessing", None)):
+            self.img_processing = self.tracker.image_preprocessing
+        elif callable(getattr(self.tracker.reid_tracker, "image_preprocessing", None)):
+            self.img_processing = self.tracker.reid_tracker.image_preprocessing
+        else:
+            raise NotImplementedError("image_preprocessing seems not to be implemented in this class.")
 
     def forward(self, img: np.ndarray):
 
         # Detection
         bbox_list = self.detector.predict(img)
         if bbox_list is not None and bbox_list[0] is not None:
-            tensor_img = Utils.crop_img_parts_from_bboxes(bbox_list,img,self.tracker.reid_tracker.image_preprocessing)
-            if self.verbose and tensor_img is not None: print("in preprocessing: ", bbox_list)
+            cut_imgs = Utils.crop_img_parts_from_bboxes(bbox_list,img,self.img_processing)
+            if self.verbose and cut_imgs is not None: print("in preprocessing: ", bbox_list)
         else:
             #if self.verbose is True: 
             print("no detection")
 
         # Tracking
         if bbox_list is not None and len(bbox_list)!=0 and bbox_list[0] is not None:
-            bbox = self.tracker.track(tensor_img, bbox_list,img)
+            bbox = self.tracker.track(cut_imgs, bbox_list,img)
         else:
-            self.tracker.increment_ds_ages()
+            invert_op = getattr(self, "tracker.increment_ds_ages", None)
+            if callable(invert_op):
+                self.tracker.increment_ds_ages()
+                print('Not existing')
             bbox = None
         return bbox
