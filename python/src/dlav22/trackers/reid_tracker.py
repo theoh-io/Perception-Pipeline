@@ -386,4 +386,7 @@ class ReIdTracker():
         if return_idx:
             return idx
         else:
-            return bbox_list[idx]
+            if idx is None:
+                return None
+            else:
+                return bbox_list[idx]
