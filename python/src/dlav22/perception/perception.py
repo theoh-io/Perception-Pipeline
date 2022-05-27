@@ -13,9 +13,9 @@ class DetectorG16():
         
         file_path = os.path.dirname(os.path.realpath(__file__))
         
-        cfg = YamlParser(config_file=file_path + "\..\configs\cfg_perception.yaml")
-        cfg.merge_from_file(file_path + "\..\configs\cfg_detector.yaml")
-        cfg.merge_from_file(file_path + "\..\configs\cfg_tracker.yaml")
+        cfg = YamlParser(config_file=file_path + "/../configs/cfg_perception.yaml")
+        cfg.merge_from_file(file_path + "/../configs/cfg_detector.yaml")
+        cfg.merge_from_file(file_path + "/../configs/cfg_tracker.yaml")
 
         self.cfg = cfg 
 
