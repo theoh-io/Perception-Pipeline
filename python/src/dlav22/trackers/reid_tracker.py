@@ -64,7 +64,9 @@ class ReIdTracker():
 
     def load_pretrained(self):
         path=self.path
-        checkpoint = torch.load(path, map_location=torch.device('cpu'))
+        cuda = torch.cuda.is_available()
+        device = torch.device('cuda:0' if cuda else 'cpu')
+        checkpoint = torch.load(path, map_location=torch.device(device))
         pretrain_dict = checkpoint['state_dict']
         ReID_model_dict = self.ReID_model.state_dict()
         #define a dictionary, k=key, v=values, defined using :
