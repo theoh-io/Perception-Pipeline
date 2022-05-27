@@ -1,7 +1,11 @@
 PERCEPTION:
+  EXPID: 1
+  SAVE_RESULTS: true
   VERBOSE: False
   IP: 128.179.280.74
   DOWNSCALE: 4
   RECORDING: "../../Results/test.avi"
   USE_PIFPAF_UPDATE: false
   PIFPAF_UPDATE_FREQUENCY: 10
+  FOLDER_FOR_PREDICTION: "predictions"
+  BENCHMARK_FILE: "../Benchmark/Loomo/Demo3/theo_Indoor.avi" #starting at python/

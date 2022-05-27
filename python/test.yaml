@@ -1,0 +1,127 @@
+&id019 !!python/object/new:dlav22.deep_sort.utils.parser.YamlParser
+dictitems:
+  DEEPSORT: &id001 !!python/object/new:dlav22.deep_sort.utils.parser.YamlParser
+    dictitems:
+      MAX_AGE: 30
+      MAX_DIST: 0.4
+      MAX_IOU_DISTANCE: 0.6
+      MODEL_TYPE: osnet_x0_25
+      NN_BUDGET: 600
+      N_INIT: 15
+      merge_from_dict: &id002 !!python/object/apply:builtins.getattr
+      - *id001
+      - merge_from_dict
+      merge_from_file: &id003 !!python/object/apply:builtins.getattr
+      - *id001
+      - merge_from_file
+    state:
+      MAX_AGE: 30
+      MAX_DIST: 0.4
+      MAX_IOU_DISTANCE: 0.6
+      MODEL_TYPE: osnet_x0_25
+      NN_BUDGET: 600
+      N_INIT: 15
+      merge_from_dict: *id002
+      merge_from_file: *id003
+  DETECTOR: &id007 !!python/object/new:dlav22.deep_sort.utils.parser.YamlParser
+    dictitems:
+      DETECTOR_CLASS: dlav22.detectors.pose_yolo_detector.PoseYoloDetector
+      POSE_DETECTOR_CLASS: dlav22.detectors.pose_detectors.PoseDetector
+      YOLO: &id004 !!python/object/new:dlav22.deep_sort.utils.parser.YamlParser
+        dictitems:
+          MODEL_VERSION: yolov5s
+          merge_from_dict: &id005 !!python/object/apply:builtins.getattr
+          - *id004
+          - merge_from_dict
+          merge_from_file: &id006 !!python/object/apply:builtins.getattr
+          - *id004
+          - merge_from_file
+        state:
+          MODEL_VERSION: yolov5s
+          merge_from_dict: *id005
+          merge_from_file: *id006
+      merge_from_dict: &id008 !!python/object/apply:builtins.getattr
+      - *id007
+      - merge_from_dict
+      merge_from_file: &id009 !!python/object/apply:builtins.getattr
+      - *id007
+      - merge_from_file
+    state:
+      DETECTOR_CLASS: dlav22.detectors.pose_yolo_detector.PoseYoloDetector
+      POSE_DETECTOR_CLASS: dlav22.detectors.pose_detectors.PoseDetector
+      YOLO: *id004
+      merge_from_dict: *id008
+      merge_from_file: *id009
+  PERCEPTION: &id010 !!python/object/new:dlav22.deep_sort.utils.parser.YamlParser
+    dictitems:
+      BENCHMARK_FILE: ../Benchmark/Loomo/Demo3/theo_Indoor.avi
+      DOWNSCALE: 4
+      EXPID: 1
+      FOLDER_FOR_PREDICTION: predictions
+      IP: 128.179.280.74
+      PIFPAF_UPDATE_FREQUENCY: 10
+      RECORDING: ../../Results/test.avi
+      SAVE_RESULTS: true
+      USE_PIFPAF_UPDATE: false
+      VERBOSE: false
+      merge_from_dict: &id011 !!python/object/apply:builtins.getattr
+      - *id010
+      - merge_from_dict
+      merge_from_file: &id012 !!python/object/apply:builtins.getattr
+      - *id010
+      - merge_from_file
+    state:
+      BENCHMARK_FILE: ../Benchmark/Loomo/Demo3/theo_Indoor.avi
+      DOWNSCALE: 4
+      EXPID: 1
+      FOLDER_FOR_PREDICTION: predictions
+      IP: 128.179.280.74
+      PIFPAF_UPDATE_FREQUENCY: 10
+      RECORDING: ../../Results/test.avi
+      SAVE_RESULTS: true
+      USE_PIFPAF_UPDATE: false
+      VERBOSE: false
+      merge_from_dict: *id011
+      merge_from_file: *id012
+  REID: &id013 !!python/object/new:dlav22.deep_sort.utils.parser.YamlParser
+    dictitems:
+      MODEL_PATH: \ReID_model.pth.tar
+      SIMILARITY_MEASURE: cosine
+      SIMILARITY_THRESHOLD: 0.87
+      merge_from_dict: &id014 !!python/object/apply:builtins.getattr
+      - *id013
+      - merge_from_dict
+      merge_from_file: &id015 !!python/object/apply:builtins.getattr
+      - *id013
+      - merge_from_file
+    state:
+      MODEL_PATH: \ReID_model.pth.tar
+      SIMILARITY_MEASURE: cosine
+      SIMILARITY_THRESHOLD: 0.87
+      merge_from_dict: *id014
+      merge_from_file: *id015
+  TRACKER: &id016 !!python/object/new:dlav22.deep_sort.utils.parser.YamlParser
+    dictitems:
+      TRACKER_CLASS: dlav22.trackers.fused_ds_reid.FusedDsReid
+      merge_from_dict: &id017 !!python/object/apply:builtins.getattr
+      - *id016
+      - merge_from_dict
+      merge_from_file: &id018 !!python/object/apply:builtins.getattr
+      - *id016
+      - merge_from_file
+    state:
+      TRACKER_CLASS: dlav22.trackers.fused_ds_reid.FusedDsReid
+      merge_from_dict: *id017
+      merge_from_file: *id018
+state:
+  DEEPSORT: *id001
+  DETECTOR: *id007
+  PERCEPTION: *id010
+  REID: *id013
+  TRACKER: *id016
+  merge_from_dict: !!python/object/apply:builtins.getattr
+  - *id019
+  - merge_from_dict
+  merge_from_file: !!python/object/apply:builtins.getattr
+  - *id019
+  - merge_from_file

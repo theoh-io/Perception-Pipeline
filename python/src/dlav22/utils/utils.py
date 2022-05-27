@@ -156,14 +156,13 @@ class Utils():
 
 
 class FrameGrab:
-    def __init__(self, mode: str ="webcam", video: str = "Loomo/Demo3/theo_Indoor.avi") -> None:
+    def __init__(self, mode: str ="webcam", video: str = "../Benchmark/Loomo/Demo3/theo_Indoor.avi") -> None:
         self.cap = None
         if mode == "webcam": #FIXME Do it as enum
             self.cap = cv2.VideoCapture(0) 
         elif mode == "video":
-            FOLDER = "../Benchmark/"
             # self.cap = cv2.VideoCapture(FILDER + "Loomo/video.avi")
-            self.cap = cv2.VideoCapture(FOLDER + video)
+            self.cap = cv2.VideoCapture(video)
         
     def read_cap(self) -> np.ndarray:
         success, image =  self.cap.read()
