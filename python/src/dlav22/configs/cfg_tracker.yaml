@@ -8,6 +8,6 @@ DEEPSORT:
   N_INIT: 15 # Number of frames that a track remains in initialization phase
   NN_BUDGET: 600 # Maximum size of the appearance descriptors gallery
 REID:
-  MODEL_PATH: 'ReID_model.pth.tar' #starting at directory of reid_tracker.py
+  MODEL_PATH: '/ReID_model.pth.tar' #starting at directory of reid_tracker.py
   SIMILARITY_MEASURE: 'cosine'
   SIMILARITY_THRESHOLD: 0.87
