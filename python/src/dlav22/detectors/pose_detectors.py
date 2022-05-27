@@ -36,9 +36,14 @@ class PifPafKeyPoints(Enum):
 
 
 class PoseDetector(BaseDetector):
-    def __init__(self, checkpoint="shufflenetv2k16", verbose=False) -> None:
+    def __init__(self, cfg) -> None:
+        verbose = cfg.PERCEPTION.VERBOSE
+        checkpoint = cfg.DETECTOR.POSE_DETECTOR.PIFPAF_CHECKPOINT
+
         super().__init__(verbose)
         self.predictor = openpifpaf.Predictor(checkpoint=checkpoint, visualize_processed_image=True)
+
+        self.detect_pose = getattr(self,cfg.DETECTOR.POSE_DETECTOR.DETECT_POSE)
     
     def predict(self, img: np.ndarray) -> list:
         
@@ -102,7 +107,9 @@ class PoseDetector(BaseDetector):
         # detected = detected & self.check_if_ellbows_are_left_right_boundaries(relevant_keypoints)
         # detected = detected & self.check_if_arms_sprawled_out(relevant_keypoints)
         # detected = detected & self.check_if_wrists_at_the_head(relevant_keypoints)
-        detected = detected & self.check_if_wrists_in_the_middle(relevant_keypoints)
+        # detected = detected & self.check_if_wrists_in_the_middle(relevant_keypoints)
+        if self.detect_pose is not None:
+            detected = detected & self.detect_pose(relevant_keypoints)
 
         if self.verbose and detected:
              print(f"Detected a person in desired pose.")

@@ -8,7 +8,7 @@ class PoseYoloDetector():
     def __init__(self, cfg, verbose: bool = False) -> None:
         verbose = cfg.PERCEPTION.VERBOSE
         self.detector = yolo_detector.YoloDetector(cfg) #simple yolo
-        self.first_detector = Utils.import_from_string(cfg.DETECTOR.POSE_DETECTOR_CLASS)() #pose_detectors.PoseDetector() #detector combining color detection and PifPaf
+        self.first_detector = Utils.import_from_string(cfg.DETECTOR.POSE_DETECTOR_CLASS)(cfg) #pose_detectors.PoseDetector() #detector combining color detection and PifPaf
         self.start = True
 
     def predict(self, img: np.ndarray):
