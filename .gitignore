@@ -23,7 +23,8 @@ __pycache__/
 .vscode
 
 #Pycharm
-.idea
+.idea/
+*.iml
 
 # Distribution / packaging
 .Python

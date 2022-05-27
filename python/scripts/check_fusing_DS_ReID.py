@@ -8,8 +8,11 @@ import matplotlib.pyplot as plt
 import logging
 import importlib
 import os 
+if str(os.getcwd())[-5:] == "loomo":
+    os.chdir("python")
 if str(os.getcwd())[-7:] == "scripts":
     os.chdir("..")
+
 print(f"Current WD: {os.getcwd()}")
 
 import torch
@@ -31,16 +34,19 @@ if __name__ == "__main__":
     logger_pifpaf = logging.getLogger("openpifpaf.predictor")
     logger_pifpaf.setLevel(logging.WARNING)
 
-    # start streaming video from webcam
-    grab = FrameGrab(mode="video")
 
     detector = perception.DetectorG16(verbose=verbose)
+    # start streaming video from webcam
+    grab = FrameGrab(mode="video", video="../Benchmark/Loomo/Demo3/theo_Indoor.avi")
 
     # Change the logging level
     logger = logging.getLogger()
     logger.setLevel(logging.WARNING)
 
-    while(1):
+    bboxes_to_save = []
+    iters = 0
+    while(True):
+        iters += 1
 
         img = grab.read_cap()
         if img is None:
@@ -49,6 +55,7 @@ if __name__ == "__main__":
 
         bbox = detector.forward(img)
 
+        bboxes_to_save.append(bbox)
         ###################
         #  Visualization  #
         ###################
@@ -68,6 +75,14 @@ if __name__ == "__main__":
             break
         
         sleep(0.05)
-    
+
+    bboxes_to_save = [b if b is not None else -np.ones(4) for b in bboxes_to_save]
+    bboxes_to_save = np.array(bboxes_to_save, dtype=np.int16)
+
+    folder_str = detector.cfg.PERCEPTION.FOLDER_FOR_PREDICTION
+    save_str = f"{folder_str}/{detector.cfg.PERCEPTION.BENCHMARK_FILE.replace('.','').replace('/','').replace('_','')}_tracker_{detector.cfg.TRACKER.TRACKER_CLASS[-11:]}.txt"
+    print(f"Saving predicted bboxes to {save_str}.")
+    np.savetxt(save_str, bboxes_to_save, fmt='%.i',delimiter=' , ')
+
     cv2.destroyAllWindows()
     del grab
