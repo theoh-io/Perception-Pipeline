@@ -119,7 +119,7 @@ class PoseDetector(BaseDetector):
     #FIXME Update pose is different
     # check that wrists are higher than legs (if confidence for all is high)
     
-    def get_wrists_elbows_shoulders(keypoints: List[np.ndarray]) -> List[np.ndarray]:
+    def get_wrists_elbows_shoulders(self, keypoints: List[np.ndarray]) -> List[np.ndarray]:
 
         left_wrist = keypoints[PifPafKeyPoints.LEFT_WRIST.value]
         right_wrist = keypoints[PifPafKeyPoints.RIGHT_WRIST.value]
