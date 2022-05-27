@@ -1,6 +1,7 @@
 import numpy as np
 import os 
 import logging
+import time
 # from dlav22.detectors.pose_detectors import PoseDetector
 from dlav22.detectors.pose_yolo_detector import PoseYoloDetector
 from dlav22.trackers.fused_ds_reid import FusedDsReid
@@ -39,7 +40,11 @@ class DetectorG16():
     def forward(self, img: np.ndarray):
 
         # Detection
+        tic = time.perf_counter()
         bbox_list = self.detector.predict(img)
+        toc = time.perf_counter()
+        print(f"Elapsed time for detector forward pass: {(toc - tic) * 1e3:.1f}ms")
+
         if bbox_list is not None and bbox_list[0] is not None:
             if self.use_img_transform:
                 cut_imgs = Utils.crop_img_parts_from_bboxes(bbox_list,img,self.img_processing)
@@ -52,7 +57,10 @@ class DetectorG16():
 
         # Tracking
         if bbox_list is not None and len(bbox_list)!=0 and bbox_list[0] is not None:
+            tic = time.perf_counter()
             bbox = self.tracker.track(cut_imgs, bbox_list,img)
+            toc = time.perf_counter()
+            print(f"Elapsed time for tracker forward pass: {(toc - tic) * 1e3:.1f}ms")
         else:
             invert_op = getattr(self, "tracker.increment_ds_ages", None)
             if callable(invert_op):

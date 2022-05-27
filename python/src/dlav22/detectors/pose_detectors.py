@@ -46,7 +46,7 @@ class PoseDetector(BaseDetector):
         self.detect_pose = getattr(self,cfg.DETECTOR.POSE_DETECTOR.DETECT_POSE)
     
     def predict(self, img: np.ndarray) -> list:
-        
+
         bboxes, confidences = self.predict_all_bboxes(img)
 
         # Assume there is only one detection
@@ -94,14 +94,7 @@ class PoseDetector(BaseDetector):
 
         detected = True
 
-        left_wrist = keypoints[PifPafKeyPoints.LEFT_WRIST.value]
-        right_wrist = keypoints[PifPafKeyPoints.RIGHT_WRIST.value]
-        left_elbow = keypoints[PifPafKeyPoints.LEFT_ELBOW.value]
-        right_elbow = keypoints[PifPafKeyPoints.RIGHT_ELBOW.value]
-        left_shoulder = keypoints[PifPafKeyPoints.LEFT_SHOULDER.value]
-        right_shoulder = keypoints[PifPafKeyPoints.RIGHT_SHOULDER.value]
-
-        relevant_keypoints = [left_wrist,right_wrist,left_elbow,right_elbow,left_shoulder,right_shoulder]
+        relevant_keypoints = self.get_wrists_elbows_shoulders(keypoints)
 
         #FIXME Check confidence and exclude if necessary -> FIXME Do this nicer
         MIN_CONF = 0.4
@@ -122,7 +115,22 @@ class PoseDetector(BaseDetector):
              print(f"Detected a person in desired pose.")
 
         return detected
+
+    #FIXME Update pose is different
+    # check that wrists are higher than legs (if confidence for all is high)
     
+    def get_wrists_elbows_shoulders(self, keypoints: List[np.ndarray]) -> List[np.ndarray]:
+
+        left_wrist = keypoints[PifPafKeyPoints.LEFT_WRIST.value]
+        right_wrist = keypoints[PifPafKeyPoints.RIGHT_WRIST.value]
+        left_elbow = keypoints[PifPafKeyPoints.LEFT_ELBOW.value]
+        right_elbow = keypoints[PifPafKeyPoints.RIGHT_ELBOW.value]
+        left_shoulder = keypoints[PifPafKeyPoints.LEFT_SHOULDER.value]
+        right_shoulder = keypoints[PifPafKeyPoints.RIGHT_SHOULDER.value]
+
+        relevant_keypoints = [left_wrist,right_wrist,left_elbow,right_elbow,left_shoulder,right_shoulder]
+
+        return relevant_keypoints
 
 
     def check_if_ellbows_are_left_right_boundaries(self, relevant_keypoints: List[np.ndarray]) -> bool:
