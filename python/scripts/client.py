@@ -102,12 +102,14 @@ while True:
         #######################
         # Visualization
         #######################
-        if bbox is not None:
-            Utils.visualization(opencvImage, bbox)
-
         #Video recording adding the bounding boxes
         if rec is not None:
             output_vid.write(opencvImage)
+            
+        if bbox is not None:
+            Utils.visualization(opencvImage, bbox)
+
+        
 
 
 
