@@ -4,6 +4,7 @@ import cv2
 from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 
 from pathlib import Path
 import yaml
@@ -55,27 +56,32 @@ if __name__ == "__main__":
             print("Stop reading.")
             break
 
+        tic = time.perf_counter()
         bbox = detector.forward(img)
+        toc = time.perf_counter()
+        print(f"Elapsed time for whole fordward pass: {(toc-tic)*1e3:.1f}ms")
 
         bboxes_to_save.append(bbox)
         ###################
         #  Visualization  #
         ###################
         if bbox is not None:
-            if verbose is True: print("Visualization bbox:", bbox)
+            if verbose is True:
+                print("Visualization bbox:", bbox)
             top_left=(int(bbox[0]-bbox[2]/2), int(bbox[1]+bbox[3]/2))  #top-left corner
             bot_right= (int(bbox[0]+bbox[2]/2), int(bbox[1]-bbox[3]/2)) #bottom right corner
-            bbox_array = cv2.rectangle(img,top_left,bot_right,(255,0,0),2)
+            bbox_array = cv2.rectangle(img, top_left, bot_right, (255, 0, 0), 2)
         else:
             pass
-            # print("no visualization:", bbox)
-        cv2.imshow('result', img)
-  
+
+        print("bbox:", bbox)
+        # cv2.imshow('result', img)
+
         k = cv2.waitKey(10) & 0xFF
         # press 'q' to exit
         if k == ord('q'):
             break
-        
+
         sleep(0.05)
 
     if detector.cfg.PERCEPTION.SAVE_RESULTS:
@@ -84,13 +90,13 @@ if __name__ == "__main__":
 
         folder_str = detector.cfg.PERCEPTION.FOLDER_FOR_PREDICTION
         # save_str = f"{folder_str}/{detector.cfg.PERCEPTION.BENCHMARK_FILE.replace('.','').replace('/','').replace('_','')}_tracker_{detector.cfg.TRACKER.TRACKER_CLASS[-11:]}.txt"
-        save_str = f"{folder_str}/Prediction_ID_{detector.cfg.PERCEPTION.EXPID:04d}.txt"
+        save_str = f"{folder_str}/Prediction_ID_{detector.cfg.PERCEPTION.EXPID:04d}"
         path = Path(f"{save_str}.txt")
         if path.is_file():
             logging.warning("File already exists. Did not store it.")
         else:
-            print(f"Saving predicted bboxes to {save_str}.")
-            np.savetxt(save_str, bboxes_to_save, fmt='%.i',delimiter=' , ')
+            print(f"Saving predicted bboxes to {save_str}.txt.")
+            np.savetxt(f"{save_str}.txt", bboxes_to_save, fmt='%.i',delimiter=' , ')
 
             # FIXME Specify all parameters that are varied for a specif configuration
             config_dict = {"EXP_ID": detector.cfg.PERCEPTION.EXPID, "DS_MAX_DIST": detector.cfg.DEEPSORT.MAX_DIST}

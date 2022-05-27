@@ -6,7 +6,7 @@ import os
 from PIL import Image
 import cv2
 
-from dlav22.perception import DetectorG16
+from dlav22.detectors.final_detector import DetectorG16
 
         
 class Detector(object):

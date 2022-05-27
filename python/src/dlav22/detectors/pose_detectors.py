@@ -46,7 +46,7 @@ class PoseDetector(BaseDetector):
         self.detect_pose = getattr(self,cfg.DETECTOR.POSE_DETECTOR.DETECT_POSE)
     
     def predict(self, img: np.ndarray) -> list:
-        
+
         bboxes, confidences = self.predict_all_bboxes(img)
 
         # Assume there is only one detection

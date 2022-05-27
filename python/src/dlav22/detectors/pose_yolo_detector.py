@@ -1,6 +1,6 @@
 
 import numpy as np
-
+import logging
 from dlav22.detectors import pose_detectors, yolo_detector
 from dlav22.utils.utils import Utils
 import dlav22
@@ -18,5 +18,5 @@ class PoseYoloDetector():
                 self.start = False
         else:
             bbox_list= self.detector.predict_multiple(img)
-        
+
         return bbox_list
