@@ -5,6 +5,8 @@ from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
 
+from pathlib import Path
+import yaml
 import logging
 import importlib
 import os 
@@ -76,13 +78,25 @@ if __name__ == "__main__":
         
         sleep(0.05)
 
-    bboxes_to_save = [b if b is not None else -np.ones(4) for b in bboxes_to_save]
-    bboxes_to_save = np.array(bboxes_to_save, dtype=np.int16)
+    if detector.cfg.PERCEPTION.SAVE_RESULTS:
+        bboxes_to_save = [b if b is not None else -np.ones(4) for b in bboxes_to_save]
+        bboxes_to_save = np.array(bboxes_to_save, dtype=np.int16)
 
-    folder_str = detector.cfg.PERCEPTION.FOLDER_FOR_PREDICTION
-    save_str = f"{folder_str}/{detector.cfg.PERCEPTION.BENCHMARK_FILE.replace('.','').replace('/','').replace('_','')}_tracker_{detector.cfg.TRACKER.TRACKER_CLASS[-11:]}.txt"
-    print(f"Saving predicted bboxes to {save_str}.")
-    np.savetxt(save_str, bboxes_to_save, fmt='%.i',delimiter=' , ')
+        folder_str = detector.cfg.PERCEPTION.FOLDER_FOR_PREDICTION
+        # save_str = f"{folder_str}/{detector.cfg.PERCEPTION.BENCHMARK_FILE.replace('.','').replace('/','').replace('_','')}_tracker_{detector.cfg.TRACKER.TRACKER_CLASS[-11:]}.txt"
+        save_str = f"{folder_str}/Prediction_ID_{detector.cfg.PERCEPTION.EXPID:04d}.txt"
+        path = Path(f"{save_str}.txt")
+        if path.is_file():
+            logging.warning("File already exists. Did not store it.")
+        else:
+            print(f"Saving predicted bboxes to {save_str}.")
+            np.savetxt(save_str, bboxes_to_save, fmt='%.i',delimiter=' , ')
+
+            # FIXME Specify all parameters that are varied for a specif configuration
+            config_dict = {"EXP_ID": detector.cfg.PERCEPTION.EXPID, "DS_MAX_DIST": detector.cfg.DEEPSORT.MAX_DIST}
+            file = open(f"{save_str}.yaml", "w")
+            yaml.dump(config_dict,file)
+            file.close()
 
     cv2.destroyAllWindows()
     del grab
