@@ -9,3 +9,4 @@ PERCEPTION:
   PIFPAF_UPDATE_FREQUENCY: 10
   FOLDER_FOR_PREDICTION: "predictions"
   BENCHMARK_FILE: "../Benchmark/Loomo/Demo3/theo_Indoor.avi" #starting at python/
+  REPORT_ELPASED_TIME_FOLDER: "predictions"
