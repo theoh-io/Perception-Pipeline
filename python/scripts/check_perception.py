@@ -37,8 +37,11 @@ if __name__ == "__main__":
     logger_pifpaf = logging.getLogger("openpifpaf.predictor")
     logger_pifpaf.setLevel(logging.WARNING)
 
-
     detector = perception.DetectorG16(verbose=verbose)
+
+    detector.cfg.DEEPSORT.MAX_DIST = 0.5
+    detector.initialize_detector()
+
     # start streaming video from webcam
     grab = FrameGrab(mode="video", video="../Benchmark/Loomo/Demo3/theo_Indoor.avi")
 
