@@ -21,7 +21,7 @@ verbose=detector.cfg.PERCEPTION.VERBOSE
 ip=detector.cfg.PERCEPTION.IP
 downscale=detector.cfg.PERCEPTION.DOWNSCALE
 rec= detector.cfg.PERCEPTION.RECORDING
-bbox_factor=detector.cfg.PERCEPTION.BBOX_FACTOR
+
 print("verbose :", verbose)
 print("value of downscale parameter :", downscale)
 print("ip adress of Loomo: ", ip)
@@ -122,12 +122,9 @@ while True:
             bbox=[0,0,0,0]
             bbox_label=False
         else:
-            bbox0 = bbox_factor*bbox[0]
-            bbox1 = bbox_factor*bbox[1]
-            bbox2 = bbox_factor*bbox[2]
-            bbox3 = bbox_factor*bbox[3]
             bbox_label=True
-        values = (bbox0, bbox1, bbox2, bbox3, float(bbox_label))
+
+        values = (bbox[0], bbox[1], bbox[2], bbox[3], float(bbox_label))
         packer = struct.Struct('f f f f f')
         packed_data = packer.pack(*values)
         # Send data
