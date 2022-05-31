@@ -2,11 +2,11 @@ TRACKER:
   TRACKER_CLASS: dlav22.trackers.reid_tracker.ReIdTracker #dlav22.trackers.ds_custom_reid.DsCustomReid #'dlav22.trackers.reid_tracker.ReIdTracker' #'dlav22.trackers.fused_ds_reid.FusedDsReid' #'dlav22.trackers.reid_tracker.ReIdTracker' #dlav22.trackers.ds_custom_reid.DsCustomReid #
 DEEPSORT:
   MODEL_TYPE: "resnet50_AGWmarket.pth"   #osnet_x0_25 # resnet50_AGWmarket  #resnet50_SBSduke.pth  #resnet50_SBSmsmt17
-  MAX_DIST: 0.4 # The matching threshold. Samples with larger distance are considered an invalid match
+  MAX_DIST: 0.1 # The matching threshold. Samples with larger distance are considered an invalid match
   MAX_IOU_DISTANCE: 0.6 # Gating threshold. Associations with cost larger than this value are disregarded.
   MAX_AGE: 30 # Maximum number of missed misses before a track is deleted
-  N_INIT: 15 # Number of frames that a track remains in initialization phase
-  NN_BUDGET: 600 # Maximum size of the appearance descriptors gallery
+  N_INIT: 20 # Number of frames that a track remains in initialization phase
+  NN_BUDGET: 500 # Maximum size of the appearance descriptors gallery
 REID:
   MODEL_PATH: '/ReID_model.pth.tar' #starting at directory of reid_tracker.py
   SIMILARITY_MEASURE: 'cosine'
