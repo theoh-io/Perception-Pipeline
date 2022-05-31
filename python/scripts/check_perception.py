@@ -25,6 +25,7 @@ from dlav22.utils.utils import FrameGrab
 
 from dlav22.perception import perception
 from dlav22.utils.utils import Utils
+from dlav22.utils.utils import YamlInteract
 
 from dlav22.deep_sort.utils.parser import get_config
 
@@ -103,9 +104,13 @@ if __name__ == "__main__":
 
             # FIXME Specify all parameters that are varied for a specif configuration
             config_dict = {"EXP_ID": detector.cfg.PERCEPTION.EXPID, "DS_MAX_DIST": detector.cfg.DEEPSORT.MAX_DIST}
+
             file = open(f"{save_str}.yaml", "w")
             yaml.dump(config_dict,file)
             file.close()
+
+
+
 
     cv2.destroyAllWindows()
     del grab
