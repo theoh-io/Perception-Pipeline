@@ -54,6 +54,8 @@ if __name__ == "__main__":
     iters = 0
     while(True):
         iters += 1
+        if iters > 5:
+            break
 
         img = grab.read_cap()
         if img is None:
@@ -94,7 +96,7 @@ if __name__ == "__main__":
 
         folder_str = detector.cfg.PERCEPTION.FOLDER_FOR_PREDICTION
         # save_str = f"{folder_str}/{detector.cfg.PERCEPTION.BENCHMARK_FILE.replace('.','').replace('/','').replace('_','')}_tracker_{detector.cfg.TRACKER.TRACKER_CLASS[-11:]}.txt"
-        save_str = f"{folder_str}/Prediction_ID_{detector.cfg.PERCEPTION.EXPID:04d}"
+        save_str = f"{folder_str}/ID_{detector.cfg.PERCEPTION.EXPID:04d}_prediction"
         path = Path(f"{save_str}.txt")
         if path.is_file():
             logging.warning("File already exists. Did not store it.")
@@ -108,6 +110,7 @@ if __name__ == "__main__":
             file = open(f"{save_str}.yaml", "w")
             yaml.dump(config_dict,file)
             file.close()
+            detector.store_elapsed_time()
 
 
 

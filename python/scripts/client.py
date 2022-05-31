@@ -11,7 +11,7 @@ import argparse
 from PIL import Image
 
 from dlav22.detectors.pose_detectors import PoseColorGuidedDetector
-from dlav22.perception import DetectorG16
+from dlav22.perception.perception import DetectorG16
 from dlav22.utils.utils import Utils
 
 detector=DetectorG16()
@@ -97,17 +97,19 @@ while True:
         recvd_image = b''
         mismatch=0
 
-        bbox=detector.forward()
+        bbox=detector.forward(opencvImage)
 
         #######################
         # Visualization
         #######################
-        if bbox is not None:
-            Utils.visualization(opencvImage, bbox)
-
         #Video recording adding the bounding boxes
         if rec is not None:
             output_vid.write(opencvImage)
+            
+        if bbox is not None:
+            Utils.visualization(opencvImage, bbox)
+
+        
 
 
 
