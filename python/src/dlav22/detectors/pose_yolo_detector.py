@@ -16,6 +16,7 @@ class PoseYoloDetector():
             bbox_list = self.first_detector.predict(img)
             if bbox_list is not None and bbox_list[0] is not None:
                 self.start = False
+                print("[pose_yolo_detector] PifPaf detected person with desired pose.")
         else:
             bbox_list= self.detector.predict_multiple(img)
 

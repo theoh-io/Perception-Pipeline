@@ -59,8 +59,8 @@ if __name__ == "__main__":
 
         img = grab.read_cap()
 
-        if iters > 10 and iters < 30:
-            img = np.zeros_like(img)
+        # if iters > 10 and iters < 30:
+        #     img = np.zeros_like(img)
 
         if img is None:
             print("Stop reading.")

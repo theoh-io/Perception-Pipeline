@@ -10,4 +10,4 @@ DEEPSORT:
 REID:
   MODEL_PATH: '/ReID_model.pth.tar' #starting at directory of reid_tracker.py
   SIMILARITY_MEASURE: 'cosine'
-  SIMILARITY_THRESHOLD: 0.90
+  SIMILARITY_THRESHOLD: 0.88

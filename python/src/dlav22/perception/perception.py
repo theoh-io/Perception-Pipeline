@@ -66,6 +66,7 @@ class DetectorG16():
     def forward(self, img: np.ndarray):
 
         if self.count_none_tracked > self.cfg.PERCEPTION.REINIT_WITH_PIFPAF_AFTER_TIMES:
+            print("Reinitialize with PifPaf...")
             self.detector.start = True # Relevant for Pifpaf YOLO detector
             self.count_none_tracked = 0
 
@@ -85,7 +86,7 @@ class DetectorG16():
                 cut_imgs = None
         else:
             #if self.verbose is True: 
-            print("no detection")
+            print("No person detected.")
 
         # Tracking
         tic = time.perf_counter()

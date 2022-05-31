@@ -43,7 +43,10 @@ class PoseDetector(BaseDetector):
         super().__init__(verbose)
         self.predictor = openpifpaf.Predictor(checkpoint=checkpoint, visualize_processed_image=True)
 
-        self.detect_pose = getattr(self,cfg.DETECTOR.POSE_DETECTOR.DETECT_POSE)
+        if cfg.DETECTOR.POSE_DETECTOR.DETECT_POSE != "None":
+            self.detect_pose = getattr(self,cfg.DETECTOR.POSE_DETECTOR.DETECT_POSE)
+        else:
+            self.detect_pose = None
     
     def predict(self, img: np.ndarray) -> list:
 
