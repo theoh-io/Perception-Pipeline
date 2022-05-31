@@ -11,23 +11,28 @@ from dlav22.deep_sort.utils.parser import YamlParser
 class DetectorG16():
 
     def __init__(self, verbose=False) -> None:
-        
+        self.verbose = verbose
+        self.loaf_cfg()
+        self.initialize_detector()
+
+    def loaf_cfg(self):
         file_path = os.path.dirname(os.path.realpath(__file__))
-        
+
         cfg = YamlParser(config_file=file_path + "/../configs/cfg_perception.yaml")
         cfg.merge_from_file(file_path + "/../configs/cfg_detector.yaml")
         cfg.merge_from_file(file_path + "/../configs/cfg_tracker.yaml")
 
-        self.cfg = cfg 
+        self.cfg = cfg
+
+    def initialize_detector(self):
 
         self.use_img_transform = True
 
-        self.detector = Utils.import_from_string(cfg.DETECTOR.DETECTOR_CLASS)(cfg) #PoseYoloDetector(verbose=verbose)
-        print(f"-> Using {cfg.DETECTOR.DETECTOR_CLASS} as detector.")
+        self.detector = Utils.import_from_string(self.cfg.DETECTOR.DETECTOR_CLASS)(self.cfg) #PoseYoloDetector(verbose=verbose)
+        print(f"-> Using {self.cfg.DETECTOR.DETECTOR_CLASS} as detector.")
 
-        self.tracker = Utils.import_from_string(cfg.TRACKER.TRACKER_CLASS)(cfg) #FusedDsReid(cfg)
-        print(f"-> Using {cfg.TRACKER.TRACKER_CLASS} as tracker.")
-        self.verbose = verbose
+        self.tracker = Utils.import_from_string(self.cfg.TRACKER.TRACKER_CLASS)(self.cfg) #FusedDsReid(cfg)
+        print(f"-> Using {self.cfg.TRACKER.TRACKER_CLASS} as tracker.")
         try:
             if callable(getattr(self.tracker, "image_preprocessing", None)):
                 self.img_processing = self.tracker.image_preprocessing

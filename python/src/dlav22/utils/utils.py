@@ -1,3 +1,5 @@
+from easydict import EasyDict
+import yaml
 import numpy as np
 import cv2
 from abc import ABC, abstractmethod
@@ -175,7 +177,6 @@ class FrameGrab:
         self.cap.release()
         print('Released cap.')
 
-        
 class BBox:
     def __init__(self, x, y, w, h):
         self.x = x
@@ -216,6 +217,37 @@ class dotdict(dict):
     __getattr__ = dict.get
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
+
+class YamlInteract():
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def load_dict_cfg_from_yaml_file(file_path: str) -> dict:
+        file = open(file_path, "r")
+        dictionary = yaml.safe_load(file)
+        file.close()
+        return dictionary
+
+    @staticmethod
+    def save_dict_cfg_from_yaml_file(cfg: dict, file_path: str):
+        file = open(file_path, "w")
+        yaml.dump(cfg, file)
+        file.close()
+
+    @staticmethod
+    def load_easy_dict_cfg_from_yaml_file(file_path: str ) -> EasyDict:
+        dictionary = YamlInteract.load_dict_cfg_from_yaml_file(file_path)
+        easy_dict = EasyDict(dictionary)
+        return easy_dict
+
+    @staticmethod
+    def merge_cfgs(cfg_1: dict, cfg_2: dict) -> EasyDict:
+        return EasyDict({**cfg_1, **cfg_2})
+
+    @staticmethod
+    def save_cfgs():
+        pass
 
 
 class Interval(ABC):
