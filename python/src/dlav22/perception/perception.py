@@ -89,7 +89,7 @@ class DetectorG16():
                 print('Not existing')
             bbox = None
 
-        # FIXME Add threshold
+        # FIXME Add threshold -> calculate what should be the minium distance before changing this.
         if bbox is not None:
             bbox = self.scale_bbox_size(bbox)
 
