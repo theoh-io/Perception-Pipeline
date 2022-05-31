@@ -50,8 +50,8 @@ if __name__ == "__main__":
     iters = 0
     while(True):
         iters += 1
-        if iters > 5:
-            break
+        # if iters > 5:
+        #     break
 
         img = grab.read_cap()
         if img is None:
