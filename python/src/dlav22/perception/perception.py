@@ -2,6 +2,7 @@ import numpy as np
 import os 
 import logging
 import time
+from typing import List
 # from dlav22.detectors.pose_detectors import PoseDetector
 from dlav22.detectors.pose_yolo_detector import PoseYoloDetector
 from dlav22.trackers.fused_ds_reid import FusedDsReid
@@ -21,6 +22,8 @@ class DetectorG16():
         self.cfg = cfg 
 
         self.use_img_transform = True
+
+        self.fac_bbox_downscale = cfg.PERCEPTION.BBOX_FACTOR
 
         self.detector = Utils.import_from_string(cfg.DETECTOR.DETECTOR_CLASS)(cfg) #PoseYoloDetector(verbose=verbose)
         print(f"-> Using {cfg.DETECTOR.DETECTOR_CLASS} as detector.")
@@ -47,6 +50,11 @@ class DetectorG16():
         print(self.log_elapsed_times)
         np.savetxt(f"{save_str}.txt", self.log_elapsed_times*1e3, fmt='%.3f', delimiter=' , ')
         print(f"Saved log files to {save_str}.txt")
+
+    def scale_bbox_size(self, bbox: List[float]):
+        bbox[2] *= self.fac_bbox_downscale
+        bbox[3] *= self.fac_bbox_downscale
+        return bbox
 
     def forward(self, img: np.ndarray):
 
@@ -80,6 +88,10 @@ class DetectorG16():
                 self.tracker.increment_ds_ages()
                 print('Not existing')
             bbox = None
+
+        # FIXME Add threshold
+        if bbox is not None:
+            bbox = self.scale_bbox_size(bbox)
 
         toc = time.perf_counter()
         self.log_elapsed_times.append(toc - tic)
