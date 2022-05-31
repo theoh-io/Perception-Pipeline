@@ -1,5 +1,5 @@
 TRACKER:
-  TRACKER_CLASS: 'dlav22.trackers.ds_custom_reid.DsCustomReid' #'dlav22.trackers.reid_tracker.ReIdTracker' #'dlav22.trackers.fused_ds_reid.FusedDsReid' #'dlav22.trackers.reid_tracker.ReIdTracker' #dlav22.trackers.ds_custom_reid.DsCustomReid #
+  TRACKER_CLASS: dlav22.trackers.reid_tracker.ReIdTracker #dlav22.trackers.ds_custom_reid.DsCustomReid #'dlav22.trackers.reid_tracker.ReIdTracker' #'dlav22.trackers.fused_ds_reid.FusedDsReid' #'dlav22.trackers.reid_tracker.ReIdTracker' #dlav22.trackers.ds_custom_reid.DsCustomReid #
 DEEPSORT:
   MODEL_TYPE: "resnet50_AGWmarket.pth"   #osnet_x0_25 # resnet50_AGWmarket  #resnet50_SBSduke.pth  #resnet50_SBSmsmt17
   MAX_DIST: 0.4 # The matching threshold. Samples with larger distance are considered an invalid match
@@ -10,4 +10,4 @@ DEEPSORT:
 REID:
   MODEL_PATH: '/ReID_model.pth.tar' #starting at directory of reid_tracker.py
   SIMILARITY_MEASURE: 'cosine'
-  SIMILARITY_THRESHOLD: 0.88
+  SIMILARITY_THRESHOLD: 0.90

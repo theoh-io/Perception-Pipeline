@@ -44,6 +44,8 @@ class DetectorG16():
 
         self.log_elapsed_times = []
 
+        self.count_none_tracked = 0
+
     def store_elapsed_time(self):
         # Save logs of elapsed time
         self.log_elapsed_times = np.array(self.log_elapsed_times)
@@ -54,6 +56,10 @@ class DetectorG16():
         print(f"Saved log files to {save_str}.txt")
 
     def forward(self, img: np.ndarray):
+
+        if self.count_none_tracked > self.cfg.PERCEPTION.REINIT_WITH_PIFPAF_AFTER_TIMES:
+            self.detector.start = True # Relevant for Pifpaf YOLO detector
+            self.count_none_tracked = 0
 
         # Detection
         tic = time.perf_counter()
@@ -85,6 +91,12 @@ class DetectorG16():
                 self.tracker.increment_ds_ages()
                 print('Not existing')
             bbox = None
+
+        # FIXME Add threshold -> calculate what should be the minium distance before changing this.
+        if bbox is not None:
+            bbox = self.scale_bbox_size(bbox)
+        else:
+            self.count_none_tracked += 1
 
         toc = time.perf_counter()
         self.log_elapsed_times.append(toc - tic)
