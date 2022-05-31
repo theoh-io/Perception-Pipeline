@@ -127,5 +127,11 @@ while True:
         packed_data = packer.pack(*values)
         # Send data
         send_info = s.send(packed_data)
+
+        k=cv2.waitKey(10) & 0xFF
+        if k == ord('q'):
+            break
     else:
         size_adjust()
+
+detector.store_elapsed_time()
