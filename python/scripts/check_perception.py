@@ -50,8 +50,8 @@ if __name__ == "__main__":
     iters = 0
     while(True):
         iters += 1
-        if iters > 5:
-            break
+        # if iters > 5:
+        #     break
 
         img = grab.read_cap()
         if img is None:
@@ -77,7 +77,7 @@ if __name__ == "__main__":
             pass
 
         print("bbox:", bbox)
-        # cv2.imshow('result', img)
+        cv2.imshow('result', img)
 
         k = cv2.waitKey(10) & 0xFF
         # press 'q' to exit
