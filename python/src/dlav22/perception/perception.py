@@ -12,8 +12,8 @@ from dlav22.deep_sort.utils.parser import YamlParser
 class DetectorG16():
 
     def __init__(self, verbose=False) -> None:
-        self.verbose = verbose
         self.loaf_cfg()
+        self.verbose=self.cfg.PERCEPTION.VERBOSE
         self.initialize_detector()
 
     def loaf_cfg(self):
@@ -51,11 +51,10 @@ class DetectorG16():
         self.count_none_tracked = 0
 
     def store_elapsed_time(self):
-        # Save logs of elapsed time
+        # Save logs of elapsed time first time: detection, second time: tracking
         self.log_elapsed_times = np.array(self.log_elapsed_times)
-        folder_str = self.cfg.PERCEPTION.REPORT_ELPASED_TIME_FOLDER
-        save_str = f"{folder_str}/ID_{self.cfg.PERCEPTION.EXPID:04d}_elapsed_time_detector_tracker"
-        print(self.log_elapsed_times)
+        folder_str = self.cfg.RECORDING.REPORT_ELPASED_TIME_FOLDER
+        save_str = f"{folder_str}/ID_{self.cfg.RECORDING.EXPID:04d}_elapsed_time_detector_tracker"
         np.savetxt(f"{save_str}.txt", self.log_elapsed_times*1e3, fmt='%.3f', delimiter=' , ')
         print(f"Saved log files to {save_str}.txt")
 

@@ -1,14 +1,18 @@
 PERCEPTION:
-  EXPID: 7
-  SAVE_RESULTS: false
   VERBOSE: False
-  IP: 128.179.184.252
-  DOWNSCALE: 4
+  BENCHMARK_FILE: "../Benchmark/Loomo/Demo3/theo_Indoor.avi" #starting at python/
   BBOX_FACTOR: 1
   REINIT_WITH_PIFPAF_AFTER_TIMES:  40
-  RECORDING: "../../Results/ID_0007_d2.avi"
   USE_PIFPAF_UPDATE: false
   PIFPAF_UPDATE_FREQUENCY: 10
-  FOLDER_FOR_PREDICTION: "../../Results"
-  BENCHMARK_FILE: "../Benchmark/Loomo/Demo3/theo_Indoor.avi" #starting at python/
-  REPORT_ELPASED_TIME_FOLDER: "../../Results"
+  
+LOOMO:
+  IP: 128.179.184.252
+  DOWNSCALE: 4
+  RECORDING: "../Results/test.avi"
+  
+RECORDING:
+  SAVE_RESULTS: True
+  EXPID: 1
+  FOLDER_FOR_PREDICTION: "../Results"
+  REPORT_ELPASED_TIME_FOLDER: "../Results"
