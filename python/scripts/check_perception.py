@@ -43,8 +43,10 @@ if __name__ == "__main__":
     #detector.cfg.DEEPSORT.MAX_DIST = 0.5
     detector.initialize_detector()
 
-    # start streaming video from webcam
-    grab = FrameGrab(mode="video", video="../Benchmark/Loomo/Demo3/theo_Indoor.avi")
+    # start streaming video
+    video_path=detector.cfg.PERCEPTION.BENCHMARK_FILE
+    print(f"Using the video: {video_path} as input")
+    grab = FrameGrab(mode="video", video=video_path)
 
     # Change the logging level
     logger = logging.getLogger()
