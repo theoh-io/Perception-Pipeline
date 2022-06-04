@@ -31,11 +31,12 @@ class DetectorG16():
 
         self.fac_bbox_downscale = self.cfg.PERCEPTION.BBOX_FACTOR
 
-        self.detector = Utils.import_from_string(self.cfg.DETECTOR.DETECTOR_CLASS)(self.cfg) #PoseYoloDetector(verbose=verbose)
         print(f"-> Using {self.cfg.DETECTOR.DETECTOR_CLASS} as detector.")
-
-        self.tracker = Utils.import_from_string(self.cfg.TRACKER.TRACKER_CLASS)(self.cfg) #FusedDsReid(cfg)
+        self.detector = Utils.import_from_string(self.cfg.DETECTOR.DETECTOR_CLASS)(self.cfg) #Ex: PoseYoloDetector(verbose=verbose)
+        
         print(f"-> Using {self.cfg.TRACKER.TRACKER_CLASS} as tracker.")
+        self.tracker = Utils.import_from_string(self.cfg.TRACKER.TRACKER_CLASS)(self.cfg) #Ex: FusedDsReid(cfg)
+        
         try:
             if callable(getattr(self.tracker, "image_preprocessing", None)):
                 self.img_processing = self.tracker.image_preprocessing

@@ -142,7 +142,7 @@ def custom_load_pretrained_weights(model, weight_path):
         >>> load_pretrained_weights(model, weight_path)
     """
 
-    print("weight_path is", weight_path)
+    #print("weight_path is", weight_path)
     #print("model is :", model)
     checkpoint = load_checkpoint(weight_path)
     
@@ -152,7 +152,7 @@ def custom_load_pretrained_weights(model, weight_path):
         state_dict = checkpoint
 
     if os.path.basename(weight_path)=="resnet50_theo.pth.tar":
-        print("successfully in theo's custom Reid")
+        #print("successfully in theo's custom Reid")
         model=CustomResNet50(751)
         model_dict=model.state_dict()
 

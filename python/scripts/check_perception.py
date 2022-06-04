@@ -40,8 +40,6 @@ if __name__ == "__main__":
 
     detector = perception.DetectorG16(verbose=verbose)
 
-    detector.initialize_detector()
-
     # start streaming video
     video_path=detector.cfg.PERCEPTION.BENCHMARK_FILE
     print(f"Using the video: {video_path} as input")
