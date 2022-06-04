@@ -51,7 +51,7 @@ class DetectorG16():
         self.count_none_tracked = 0
 
     def store_elapsed_time(self):
-        # Save logs of elapsed time first time: detection, second time: tracking
+        # Save logs of elapsed time for the whole forward
         self.log_elapsed_times = np.array(self.log_elapsed_times)
         folder_str = self.cfg.RECORDING.REPORT_ELPASED_TIME_FOLDER
         save_str = f"{folder_str}/ID_{self.cfg.RECORDING.EXPID:04d}_elapsed_time_detector_tracker"
@@ -71,12 +71,11 @@ class DetectorG16():
             self.count_none_tracked = 0
 
         # Detection
-        tic = time.perf_counter()
+        tic1 = time.perf_counter()
         bbox_list = self.detector.predict(img)
-        toc = time.perf_counter()
-        self.log_elapsed_times.append(toc-tic)
+        toc1 = time.perf_counter()
         if self.verbose:
-            print(f"Elapsed time for detector forward pass: {(toc - tic) * 1e3:.1f}ms")
+            print(f"Elapsed time for detector forward pass: {(toc1 - tic1) * 1e3:.1f}ms")
 
         if bbox_list is not None and bbox_list[0] is not None:
             if self.use_img_transform:
@@ -89,12 +88,15 @@ class DetectorG16():
             print("No person detected.")
 
         # Tracking
-        tic = time.perf_counter()
+        tic2 = time.perf_counter()
         if bbox_list is not None and len(bbox_list)!=0 and bbox_list[0] is not None:
             bbox = self.tracker.track(cut_imgs, bbox_list,img)
+            toc2 = time.perf_counter()
             if self.verbose:
-                print(f"Elapsed time for tracker forward pass: {(toc - tic) * 1e3:.1f}ms")
+                print(f"Elapsed time for tracker forward pass: {(toc2 - tic2) * 1e3:.1f}ms")
         else:
+            if self.verbose:
+                print(f"tracking failed")
             invert_op = getattr(self, "tracker.increment_ds_ages", None)
             if callable(invert_op):
                 self.tracker.increment_ds_ages()
@@ -107,7 +109,7 @@ class DetectorG16():
         else:
             self.count_none_tracked += 1
 
-        toc = time.perf_counter()
-        self.log_elapsed_times.append(toc - tic)
+        toc3 = time.perf_counter()
+        self.log_elapsed_times.append(toc3 - tic1)
 
         return bbox
