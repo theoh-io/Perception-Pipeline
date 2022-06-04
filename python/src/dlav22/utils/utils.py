@@ -149,9 +149,10 @@ class Utils():
 
     @staticmethod 
     def visualization(img, bbox: list, color=(0,0,255), thickness=2):
-        start=(int(bbox[0]-bbox[2]/2), int(bbox[1]+bbox[3]/2)) #top-left corner
-        stop= (int(bbox[0]+bbox[2]/2), int(bbox[1]-bbox[3]/2)) #bottom right corner
-        cv2.rectangle(img, start, stop, (0,0,255), 2)
+        if bbox is not None:
+            start=(int(bbox[0]-bbox[2]/2), int(bbox[1]+bbox[3]/2)) #top-left corner
+            stop= (int(bbox[0]+bbox[2]/2), int(bbox[1]-bbox[3]/2)) #bottom right corner
+            cv2.rectangle(img, start, stop, (0,0,255), 2)
         cv2.imshow('Camera Loomo',img)
         cv2.waitKey(1)
 
