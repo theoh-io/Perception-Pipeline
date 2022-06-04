@@ -18,6 +18,6 @@ class PoseYoloDetector():
                 self.start = False
                 print("[pose_yolo_detector] PifPaf detected person with desired pose.")
         else:
-            bbox_list= self.detector.predict_multiple(img)
+            bbox_list= self.detector.predict(img)
 
         return bbox_list

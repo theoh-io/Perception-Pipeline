@@ -10,6 +10,7 @@ import numpy as np
 #      max_det = 1000  # maximum number of detections per image
 #      amp = False  # Automatic Mixed Precision (AMP) inference
 #results = model(imgs, size=320)  # custom inference size
+
 from dlav22.detectors.base_detector import BaseDetector
 
 class YoloDetector():
@@ -78,7 +79,7 @@ class YoloDetector():
             #self.detection=np.squeeze(self.detection)
 
 
-    def predict(self, image, thresh=0.01):
+    def unique_predict(self, image, thresh=0.01):
         #threshold for confidence detection
         # Inference
         results = self.model(image) #might need to specify the size
@@ -101,7 +102,7 @@ class YoloDetector():
             return bbox, label
         return None,False
 
-    def predict_multiple(self, image, thresh=0.01):
+    def predict(self, image, thresh=0.01):
         #threshold for confidence detection
         # Inference
         results = self.model(image) #might need to specify the size
