@@ -1,6 +1,16 @@
 #!/bin/bash
 
-cd ../src/dlav22/deep_sort/deep/checkpoint/
+#copy theo ReID model inside Deepsort folder with correct name
+cd ../src/dlav22
+FILE="deep_sort/deep/checkpoint/resnet50_theo.pth.tar"
+if [ -f "$FILE" ]; then
+    echo "$FILE already exists"
+fi
+if [ ! -f "$FILE" ]; then
+cp trackers/ReID_model.pth.tar deep_sort/deep/checkpoint/resnet50_theo.pth.tar
+fi
+
+cd deep_sort/deep/checkpoint/
 
 #downloading the models and renaming to fit with deepsort convention
 FILE="resnet50_AGWmarket.pth"
