@@ -40,7 +40,7 @@ if __name__ == "__main__":
 
     detector = perception.DetectorG16(verbose=verbose)
 
-    detector.cfg.DEEPSORT.MAX_DIST = 0.5
+    #detector.cfg.DEEPSORT.MAX_DIST = 0.5
     detector.initialize_detector()
 
     # start streaming video from webcam
@@ -51,16 +51,10 @@ if __name__ == "__main__":
     logger.setLevel(logging.WARNING)
 
     bboxes_to_save = []
-    iters = 0
+    elapsed_time_list=[]
     while(True):
-        iters += 1
-        # if iters > 5:
-        #     break
 
         img = grab.read_cap()
-
-        # if iters > 10 and iters < 30:
-        #     img = np.zeros_like(img)
 
         if img is None:
             print("Stop reading.")
@@ -72,12 +66,11 @@ if __name__ == "__main__":
         print(f"Elapsed time for whole fordward pass: {(toc-tic)*1e3:.1f}ms")
 
         bboxes_to_save.append(bbox)
+        elapsed_time_list.append((toc-tic)*1e3)
         ###################
         #  Visualization  #
         ###################
         if bbox is not None:
-            if verbose is True:
-                print("Visualization bbox:", bbox)
             top_left=(int(bbox[0]-bbox[2]/2), int(bbox[1]+bbox[3]/2))  #top-left corner
             bot_right= (int(bbox[0]+bbox[2]/2), int(bbox[1]-bbox[3]/2)) #bottom right corner
             bbox_array = cv2.rectangle(img, top_left, bot_right, (255, 0, 0), 2)
@@ -87,6 +80,7 @@ if __name__ == "__main__":
         print("bbox:", bbox)
         cv2.imshow('result', img)
 
+        #To get result before the end quit the program with q instead of Ctrl+C
         k = cv2.waitKey(10) & 0xFF
         # press 'q' to exit
         if k == ord('q'):
@@ -95,7 +89,7 @@ if __name__ == "__main__":
         sleep(0.05)
 
     if detector.cfg.PERCEPTION.SAVE_RESULTS:
-        bboxes_to_save = [b if b is not None else -np.ones(4) for b in bboxes_to_save]
+        bboxes_to_save = [b if b is not None else np.zeros(4) for b in bboxes_to_save]
         bboxes_to_save = np.array(bboxes_to_save, dtype=np.int16)
 
         folder_str = detector.cfg.PERCEPTION.FOLDER_FOR_PREDICTION
@@ -115,6 +109,9 @@ if __name__ == "__main__":
             yaml.dump(config_dict,file)
             file.close()
             detector.store_elapsed_time()
+
+    average_forward_time=np.mean(elapsed_time_list)
+    print(f"Average time for a forward pass is {average_forward_time:.1f}ms")
 
 
 
