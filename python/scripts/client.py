@@ -18,9 +18,9 @@ detector=DetectorG16()
 #General Configs
 print(detector.cfg)
 verbose=detector.cfg.PERCEPTION.VERBOSE
-ip=detector.cfg.PERCEPTION.IP
-downscale=detector.cfg.PERCEPTION.DOWNSCALE
-rec= detector.cfg.PERCEPTION.RECORDING
+ip=detector.cfg.LOOMO.IP
+downscale=detector.cfg.LOOMO.DOWNSCALE
+rec= detector.cfg.LOOMO.RECORDING
 
 print("verbose :", verbose)
 print("value of downscale parameter :", downscale)
@@ -136,4 +136,4 @@ while True:
     else:
         size_adjust()
 
-detector.store_elapsed_time()
+#detector.store_elapsed_time()
