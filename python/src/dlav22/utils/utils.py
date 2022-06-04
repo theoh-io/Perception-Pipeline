@@ -9,6 +9,7 @@ import logging
 from PIL import Image
 import torch
 from importlib import import_module
+from pathlib import Path
 
 class Utils():
     @staticmethod
@@ -153,6 +154,30 @@ class Utils():
         cv2.rectangle(img, start, stop, (0,0,255), 2)
         cv2.imshow('Camera Loomo',img)
         cv2.waitKey(1)
+
+    @staticmethod 
+    def save_results(detector, bboxes_to_save):
+        if detector.cfg.RECORDING.SAVE_RESULTS:
+            bboxes_to_save = [b if b is not None else np.zeros(4) for b in bboxes_to_save]
+            bboxes_to_save = np.array(bboxes_to_save, dtype=np.int16)
+
+            folder_str = detector.cfg.RECORDING.FOLDER_FOR_PREDICTION
+            # save_str = f"{folder_str}/{detector.cfg.PERCEPTION.BENCHMARK_FILE.replace('.','').replace('/','').replace('_','')}_tracker_{detector.cfg.TRACKER.TRACKER_CLASS[-11:]}.txt"
+            save_str = f"{folder_str}/ID_{detector.cfg.RECORDING.EXPID:04d}_prediction"
+            path = Path(f"{save_str}.txt")
+            if path.is_file():
+                print("File already exists. Did not store it.")
+            else:
+                print(f"Saving predicted bboxes to {save_str}.txt.")
+                np.savetxt(f"{save_str}.txt", bboxes_to_save, fmt='%.i',delimiter=' , ')
+
+                # FIXME Specify all parameters that are varied for a specif configuration
+                config_dict = {"EXP_ID": detector.cfg.RECORDING.EXPID, "DS_MAX_DIST": detector.cfg.DEEPSORT.MAX_DIST}
+
+                file = open(f"{save_str}.yaml", "w")
+                yaml.dump(config_dict,file)
+                file.close()
+                detector.store_elapsed_time()
 
 
 
