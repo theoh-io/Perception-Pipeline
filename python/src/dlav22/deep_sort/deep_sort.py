@@ -14,6 +14,9 @@ sys.path.append('deep_sort/deep/reid')
 from torchreid.utils import FeatureExtractor
 from torchreid.utils.tools import download_url
 
+import os
+from dlav22.deep_sort.custom_feature_extractor import CustomFeatureExtractor
+
 show_downloadeable_models()
 
 __all__ = ['DeepSort']
@@ -37,9 +40,12 @@ class DeepSort(object):
         else:
             if is_model_type_in_model_path(model):
                 model_name = get_model_type(model)
-                self.extractor = FeatureExtractor(
+                print("Deepsort custom model")
+                path_ = os.getcwd()
+                model_path = path_ + "/src/dlav22/deep_sort/deep/checkpoint/" + model
+                self.extractor = CustomFeatureExtractor(
                     model_name=model_name,
-                    model_path=model,
+                    model_path=model_path,
                     device=str(device)
                 )
             else:
