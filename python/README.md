@@ -19,3 +19,7 @@ $ pip install -e .
 $ pip install -r requirements.txt FIXME -> Write that!
 ``
 To use deepsort, you need the deepsort repository cloned (https://github.com/KaiyangZhou/deep-person-reid). In this folder, do ´pip install -e´ to install torchreid that is used in deepsort.
+
+
+download theo's weights into deepsort/deep/checkpoint
+run SOTA weights script

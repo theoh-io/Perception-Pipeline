@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 import numpy as np
-from torchreid.utils import load_checkpoint 
+from torchreid.utils import load_checkpoint
+from torchreid.models import build_model 
 
 #imports for CustomResNet50
 import torch
@@ -15,13 +16,21 @@ from torch.nn import functional as F
 from collections import OrderedDict
 import warnings
 
+
+
 def info_pretrained(weights):
     global verbose
     # Print model's state_dict
     checkpoint=load_checkpoint(weights)
     print(f"the type of checkpoint is {type(checkpoint)}")
     print(checkpoint.keys())
-    weights_dict=checkpoint['state_dict']
+    if 'state_dict' in checkpoint:
+        print("name of the key is state_dict")
+        weights_dict=checkpoint['state_dict']
+    elif 'model' in checkpoint:
+        print("name of the key is model")
+        weights_dict=checkpoint['model']
+
     if verbose is True: print("weights's state_dict:")
     for param_tensor in weights_dict:
         if verbose is True:
@@ -29,6 +38,7 @@ def info_pretrained(weights):
     return weights_dict
 
 def info_model(model_dict):
+    verbose=False
     if verbose is True: print("Model's state_dict:")
     for param_tensor in model_dict:
         if verbose is True:
@@ -104,13 +114,28 @@ class CustomResNet50(nn.Module):
 
 
 if __name__ == "__main__":
-    verbose=False #if activate verbose will print the 2 state dict must redirect to a txt file
+    verbose=True #if activate verbose will print the 2 state dict must redirect to a txt file
     path_weights="../src/dlav22/deep_sort/deep/checkpoint"
-    weights_name="/resnet50_theo.pth.tar"
+    #weights_name="/resnet50_theo.pth.tar"
+    weights_name="/resnet50_AGWmarket.pth"
     weights=path_weights+weights_name
     weights_state_dict=info_pretrained(weights)
-    model=CustomResNet50(751)
-    model_dict=model.state_dict()
+    if weights_name=="/resnet50_theo.pth.tar":
+        model=CustomResNet50(751)
+        model.eval()
+        model_dict=model.state_dict()
+    else:
+        #create usual resnet50 backbone
+        model_name='resnet50'
+        device=str('cpu')
+        model = build_model(
+            model_name,
+            num_classes=1,
+            pretrained=False,
+            use_gpu=device.startswith('cuda')
+        )
+        model.eval()
+        model_dict=model.state_dict()
     info_model(model_dict)
     #print(model_dict)
     loading_pretrained(weights_state_dict, model_dict)
