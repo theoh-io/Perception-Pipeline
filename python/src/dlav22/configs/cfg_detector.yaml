@@ -1,8 +1,0 @@
-DETECTOR:
-  DETECTOR_CLASS: 'dlav22.detectors.yolo_detector.YoloDetector' #'dlav22.detectors.pose_yolo_detector.PoseYoloDetector' 'dlav22.detectors.yolo_detector.YoloDetector'
-  POSE_DETECTOR_CLASS: 'None' #'dlav22.detectors.pose_detectors.PoseDetector' #only used if we need the pose
-  YOLO:
-    MODEL_VERSION: 'yolov5s' #l,m,n,x
-  POSE_DETECTOR:
-    DETECT_POSE: "check_if_wrists_in_the_middle" # put "None" if not initial checking desired
-    PIFPAF_CHECKPOINT: "shufflenetv2k16"

@@ -10,9 +10,9 @@ import torch
 import argparse
 from PIL import Image
 
-from dlav22.detectors.pose_detectors import PoseColorGuidedDetector
-from dlav22.perception.perception import DetectorG16
-from dlav22.utils.utils import Utils
+from perceptionloomo.detectors.pose_detectors import PoseColorGuidedDetector
+from perceptionloomo.perception.perception import DetectorG16
+from perceptionloomo.utils.utils import Utils
 
 detector=DetectorG16()
 #General Configs

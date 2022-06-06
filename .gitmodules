@@ -1,3 +1,1 @@
-[submodule "python/src/dlav22/libs/deep-person-reid"]
-	path = python/src/dlav22/libs/deep-person-reid
-	url = git@github.com:KaiyangZhou/deep-person-reid.git
+

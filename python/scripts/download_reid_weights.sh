@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #copy theo ReID model inside Deepsort folder with correct name
-cd ../src/dlav22
+cd ../src/perceptionloomo
 FILE="deep_sort/deep/checkpoint/resnet50_theo.pth.tar"
 if [ -f "$FILE" ]; then
     echo "$FILE already exists"

@@ -1,9 +1,9 @@
 
 
-from dlav22.perception import DetectorG16
-import dlav22
-from dlav22.utils.utils import Utils
-from dlav22 import detectors
+from perceptionloomo.perception import DetectorG16
+import perceptionloomo
+from perceptionloomo.utils.utils import Utils
+from perceptionloomo import detectors
 
 
 det = DetectorG16()
@@ -17,7 +17,7 @@ print('-----')
 
 # from importlib import import_module
 
-# class_str: str = 'dlav22.detectors.pose_yolo_detector.PoseYoloDetector'
+# class_str: str = 'perceptionloomo.detectors.pose_yolo_detector.PoseYoloDetector'
 
 # try:
 #     module_path, class_name = class_str.rsplit('.', 1)

@@ -9,10 +9,10 @@ if str(os.getcwd())[-7:] == "scripts":
 print(f"Current WD: {os.getcwd()}")
 
 
-from dlav22.utils.utils import FrameGrab
-from dlav22.perception import perception
-from dlav22.utils.utils import Utils
-from dlav22.deep_sort.utils.parser import get_config
+from perceptionloomo.utils.utils import FrameGrab
+from perceptionloomo.perception import perception
+from perceptionloomo.utils.utils import Utils
+from perceptionloomo.deep_sort.utils.parser import get_config
 
 if __name__ == "__main__":
     detector = perception.DetectorG16()

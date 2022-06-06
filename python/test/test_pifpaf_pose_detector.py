@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from dlav22.detectors.pose_detectors  import PifPafDetector, PifPafKeyPoints
+from perceptionloomo.detectors.pose_detectors  import PifPafDetector, PifPafKeyPoints
 import numpy as np
 
 def test_check_if_desired_pose():

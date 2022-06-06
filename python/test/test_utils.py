@@ -3,7 +3,7 @@
 import os
 import cv2
 from distutils.command.config import config
-from dlav22.utils.utils import FrameGrab
+from perceptionloomo.utils.utils import FrameGrab
 import numpy as np
 
 import time

@@ -5,14 +5,14 @@ import setuptools
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-setuptools.setup(name='dlav22',
-      version='0.01',
-      description='Deep Learning for Autonomous Vehicles',
-      author='FIXME',
-      author_email='FIXME',
+setuptools.setup(name='perceptionloomo',
+      version='1.0',
+      description='Perception Pipeline',
+      author='theo hermann',
+      author_email='theo.hermann@epfl.ch',
       long_description=long_description,
       long_description_content_type="text/markdown",
-      url='https://github.com/odunkel/dlav_project_olaf',
+      url='https://github.com/theoh-io/Perception-Pipeline',
       package_dir={"": "src"},
       packages=setuptools.find_packages(where="src"),
       python_requires=">=3.7",

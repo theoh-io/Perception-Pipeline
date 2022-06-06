@@ -115,7 +115,7 @@ class CustomResNet50(nn.Module):
 
 if __name__ == "__main__":
     verbose=True #if activate verbose will print the 2 state dict must redirect to a txt file
-    path_weights="../src/dlav22/deep_sort/deep/checkpoint"
+    path_weights="../src/perceptionloomo/deep_sort/deep/checkpoint"
     #weights_name="/resnet50_theo.pth.tar"
     weights_name="/resnet50_AGWmarket.pth"
     weights=path_weights+weights_name
