@@ -2,3 +2,6 @@
 [submodule "libs/deep-person-reid"]
 	path = libs/deep-person-reid
 	url = git@github.com:KaiyangZhou/deep-person-reid.git
+[submodule "libs/mmtracking"]
+	path = libs/mmtracking
+	url = git@github.com:open-mmlab/mmtracking.git
