@@ -19,6 +19,7 @@ class StarkTracker():
         self.device = torch.device('cuda:0' if cuda else 'cpu')
         self.tracker = init_model(path_config, path_model, self.device) 
         #prog_bar = mmcv.ProgressBar(len(imgs))
+        self.conf_thresh=cfg.MMTRACKING.CONF
         self.frame=0
 
 
@@ -48,12 +49,21 @@ class StarkTracker():
 
         #input of the bbox format is x1, y1, x2, y2
         result = inference_sot(self.tracker, img, self.new_bbox, frame_id=self.frame)
-        self.frame+=1
-        test_bbox=result['track_bboxes']
-        #remove last index -1
-        bbox=test_bbox[:4]#[test_bbox[0], test_bbox[1], test_bbox[2]-test_bbox[0], test_bbox[3]-test_bbox[1]]
         
-        #changing back format from (x1, y1, x2, y2) to (xcenter, ycenter, width, height) before writing
-        bbox=Utils.bbox_x1y1x2y2_to_xcentycentwh(bbox)
-        bbox = [int(x) for x in bbox]
+        self.frame+=1
+        track_bbox=result['track_bboxes']
+        #remove last index -1
+        confidence=track_bbox[4]
+        print(f"conf: {confidence}")
+        bbox=track_bbox[:4]#[test_bbox[0], test_bbox[1], test_bbox[2]-test_bbox[0], test_bbox[3]-test_bbox[1]]
+        
+        if confidence>self.conf_thresh:
+            #changing back format from (x1, y1, x2, y2) to (xcenter, ycenter, width, height) before writing
+            bbox=Utils.bbox_x1y1x2y2_to_xcentycentwh(bbox)
+            bbox = [int(x) for x in bbox]
+        else:
+            print("!! Under Tracking threshold")
+            bbox=[0, 0, 0, 0]
+
+        
         return bbox
