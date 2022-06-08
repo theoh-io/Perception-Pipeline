@@ -105,8 +105,7 @@ def count_det(df):
             
     return det_count
 
-def single_result(path_results, path_gt, thresh_iou=0.5):
-    #global precision_list, recall_list
+def single_result(path_results, path_gt, thresh_iou=0.5, precision_list=np.array([]), recall_list=np.array([])):
     df_gt, df_det=read_data(path_results, path_gt)
     nb_det=count_det(df_det)
     nb_gt=count_det(df_gt)
@@ -117,11 +116,14 @@ def single_result(path_results, path_gt, thresh_iou=0.5):
     #if verbose is True: print(list_iou)
     precision, recall = precision_recall(list_iou, nb_det, nb_gt, thresh_iou)
 
-    print("precision:", precision)
-    print("recall :", recall )
-    #precision_list=np.append(precision_list, precision)
-    #recall_list=np.append(recall_list, recall)
-    #print("mean IoU :", np.mean(np.asarray(list_iou), axis=0))
+    if verbose is True: print("precision:", precision)
+    if verbose is True: print("recall :", recall )
+    if precision_list.size and recall_list.size !=0:
+        precision_list=np.append(precision_list, precision)
+        recall_list=np.append(recall_list, recall)
+        print("mean IoU :", np.mean(np.asarray(list_iou), axis=0))
+        return precision_list, recall_list
+
     return precision, recall
 
 def filter_files(folder_path, filter, sep, nb_split=1):
@@ -141,7 +143,7 @@ def filter_files(folder_path, filter, sep, nb_split=1):
     return list_files
 
 
-def average_results(path_folder_det, path_folder_gt):
+def average_results(path_folder_det, path_folder_gt, iou_thresh):
     #list all the files in the folder
     #check if need to sort
     #for loop based on the number of files
@@ -150,23 +152,23 @@ def average_results(path_folder_det, path_folder_gt):
     #do it for multiple thresh iou values
 
     list_det=filter_files(path_folder_det, "prediction.txt", "_")
-    print(list_det)
+    if verbose is True: print(list_det)
     list_gt=filter_files(path_folder_gt, "gt.txt", "_")
-    print(list_gt)
+    if verbose is True: print(list_gt)
     precision_across_vids=[]
     recall_across_vids=[]
     for vid in range(len(list_det)):
         path_det=path_folder_det+"/"+list_det[vid]
         path_gt=path_folder_gt+"/"+list_gt[vid]
-        precision, recall= single_result(path_det, path_gt)
+        precision, recall= single_result(path_det, path_gt, thresh_iou)
         if verbose is True:
             print(f"for vid nb{vid}, pr={precision}, recall={recall}")
         precision_across_vids.append(precision)
         recall_across_vids.append(recall)
-    print(precision_across_vids)
+    #print(precision_across_vids)
     av_precision=np.mean(np.asarray(precision_across_vids), axis=0)
     av_recall=np.mean(np.asarray(recall_across_vids), axis=0)
-    print(f"Average precision = {av_precision}, Average recall={av_recall}")
+    print(f"AP@{iou_thresh} Average precision = {av_precision}, Average recall={av_recall}")
 
 
 
@@ -180,11 +182,11 @@ if __name__ == "__main__":
     precision_list=np.array([])
     recall_list=np.array([])
     #thresh_iou_list=[0.5, 0.6, 0.7, 0.8, 0.9]
-    #thresh_iou_list=[0.5, 0.75, 0.9]
-    thresh_iou_list=[0.5]
+    thresh_iou_list=[0.5, 0.75, 0.9]
+    #thresh_iou_list=[0.5]
     for thresh_iou in thresh_iou_list:
-        #single_result(path_results, path_gt, thresh_iou)
-        average_results(path_results, path_gt)
+        #precision_list, recall_list =single_result(path_results, path_gt, thresh_iou, precision_list, recall_list)
+        average_results(path_results, path_gt, thresh_iou)
     #print(f"list of precision scores for different iou thresh{precision_list}")
     #print(f"list of recall scores for different iou thresh{recall_list}")
     

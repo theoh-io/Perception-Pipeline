@@ -1,9 +1,15 @@
 #!/bin/bash
 
 #Unitary test
-path_gt="../../Benchmark/LoomoBenchmark2/Loomo6_gt.txt"
-path_det="../../Results/stark/ID_0006_prediction.txt"
+# path_gt="../../Benchmark/LoomoBenchmark2/Loomo006_gt.txt"
+# path_det="../../Results/stark/ID_0006_prediction.txt"
+# python3 benchmark.py -gt $path_gt -det $path_det 
+
+# #Test with Averaging on multiple videos
+path_gt="../../Benchmark/LoomoBenchmark2"
+path_det="../../Results/stark"
 python3 benchmark.py -gt $path_gt -det $path_det 
+
 
 # #Benchmarking only stark on all Loomo videos
 # path_gt="Benchmark/LoomoBenchmark2"
