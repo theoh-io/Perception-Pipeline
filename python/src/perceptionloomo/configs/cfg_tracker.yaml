@@ -15,3 +15,4 @@ MMTRACKING:
   DEVICE: None
   CONFIG: src/perceptionloomo/mmtracking/configs/sot/stark/stark_st2_r50_50e_lasot.py  # stark/stark_st2_r50_50e_trackingnet.py ,siamese/siamese_rpn_r50_20e_trackingnet.py
   MODEL: src/perceptionloomo/mmtracking/checkpoints/stark_st2_r50_50e_lasot_20220416_170201-b1484149.pth # stark_st2_r50_50e_lasot_20220416_170201-b1484149.pth, siamese_rpn_r50_20e_lasot_20220420_181845-dd0f151e.pth
+  CONF: 0.01

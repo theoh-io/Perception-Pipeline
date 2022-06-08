@@ -1,6 +1,7 @@
 PERCEPTION:
   VERBOSE: False
-  BENCHMARK_FILE: "../data/loomo/loomobenchmark2/Loomo1.avi" #starting at python/  "../Benchmark/Loomo/Demo3/theo_Indoor.avi"
+
+  BENCHMARK_FILE: "../Benchmark/LoomoBenchmark2/Loomo11.avi" #starting at python/  "../Benchmark/Loomo/Demo3/theo_Indoor.avi"
   BBOX_FACTOR: 1
   REINIT_WITH_PIFPAF_AFTER_TIMES:  40
   USE_PIFPAF_UPDATE: false
@@ -13,6 +14,6 @@ LOOMO:
   
 RECORDING:
   SAVE_RESULTS: True
-  EXPID: 1
+  EXPID: 11
   FOLDER_FOR_PREDICTION: "../Results"
   REPORT_ELPASED_TIME_FOLDER: None #"../Results"
