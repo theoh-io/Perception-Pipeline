@@ -17,11 +17,13 @@ def init_parser():
     return args
 
 
-os.chdir("../src/perceptionloomo/configs")
+os.chdir("../src/perceptionloomo/configs/")
 print(f"Current WD: {os.getcwd()}")
 args=init_parser()
-with open("cfg_perception.yaml") as f:
+dict={}
+with open("cfg_perception.yaml", "r") as f:
     y = yaml.safe_load(f)
+    print(y)
     path_benchmark=y['PERCEPTION']['BENCHMARK_FILE'] 
     path, old_id=path_benchmark.rsplit('/', 1)
     print(f"path is {path} and old_id: {old_id}")
@@ -29,5 +31,8 @@ with open("cfg_perception.yaml") as f:
     new_path=path+new_id
     y['PERCEPTION']['BENCHMARK_FILE'] = new_path
     y['RECORDING']['EXPID'] = args.id
-    print(yaml.dump(y, default_flow_style=False, sort_keys=False))
+    dict=y
+with open("cfg_perception.yaml", "w") as f:
+    output=yaml.dump(dict, f)
+    print(output)
 

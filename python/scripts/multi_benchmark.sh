@@ -10,5 +10,5 @@ for i in $(seq 1 $END)
     name_file="Loomo${i}"
     echo "name of file: ${name_file}"
     python3 modif_cfg.py -id $i -v
-    python3 run.py 
+    python3 -W ignore run.py 
     done
