@@ -119,6 +119,29 @@ class Utils():
         return ret
 
     @staticmethod
+    def bbox_xcentycentwh_to_x1y1x2y2(bbox):
+        #convert from (xcenter,y_center, width, height) to (x1,y1,x2,y2)
+        offset_x=int(bbox[2]/2)
+        offset_y=int(bbox[3]/2)
+        new_bbox=[0, 0, 0, 0]
+        new_bbox[0]=bbox[0]-offset_x
+        new_bbox[1]=bbox[1]-offset_y
+        new_bbox[2]=bbox[0]+offset_x
+        new_bbox[3]=bbox[1]+offset_y
+        return new_bbox
+
+    @staticmethod
+    def bbox_x1y1x2y2_to_xcentycentwh(bbox):
+        #convert from (x1,y1,x2,y2) to (xcenter,y_center, width, height)
+        offset_x=int((bbox[2]-bbox[0])/2)
+        offset_y=int((bbox[3]-bbox[1])/2)
+        bbox[0]=bbox[0]+offset_x
+        bbox[1]=bbox[1]+offset_y
+        bbox[2]=offset_x*2
+        bbox[3]=offset_y*2
+        return bbox
+
+    @staticmethod
     def crop_img_parts_from_bboxes(bbox_list: list, img: np.ndarray, image_processing: Callable):
         img_list=[]
         if bbox_list is not None and bbox_list[0] is not None:
