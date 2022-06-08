@@ -30,9 +30,10 @@ with open("cfg_perception.yaml", "r") as f:
     new_id="/Loomo"+args.id+".avi"
     new_path=path+new_id
     y['PERCEPTION']['BENCHMARK_FILE'] = new_path
-    y['RECORDING']['EXPID'] = args.id
+    y['RECORDING']['EXPID'] = int(args.id)
     dict=y
-with open("cfg_perception.yaml", "w") as f:
-    output=yaml.dump(dict, f)
-    print(output)
+    print(" dict:", dict)
+with open("cfg_perception.yaml", "w") as f2:
+    yaml.dump(dict, f2)
+    print(yaml.dump(dict))
 
