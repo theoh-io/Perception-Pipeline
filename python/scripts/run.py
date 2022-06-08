@@ -44,10 +44,11 @@ if __name__ == "__main__":
         if k == ord('q'):
             break
 
-    Utils.save_results(detector, bboxes_to_save)
-
     average_forward_time=np.mean(elapsed_time_list)
     print(f"Average time for a forward pass is {average_forward_time:.1f}ms")
+    Utils.save_results(detector, bboxes_to_save)
+
+    
 
 
 

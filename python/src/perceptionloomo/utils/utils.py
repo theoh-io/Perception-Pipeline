@@ -196,11 +196,11 @@ class Utils():
                 np.savetxt(f"{save_str}.txt", bboxes_to_save, fmt='%.i',delimiter=' , ')
 
                 # FIXME Specify all parameters that are varied for a specif configuration
-                config_dict = {"EXP_ID": detector.cfg.RECORDING.EXPID, "DS_MAX_DIST": detector.cfg.DEEPSORT.MAX_DIST}
+                #config_dict = {"EXP_ID": detector.cfg.RECORDING.EXPID, "DS_MAX_DIST": detector.cfg.DEEPSORT.MAX_DIST}
 
-                file = open(f"{save_str}.yaml", "w")
-                yaml.dump(config_dict,file)
-                file.close()
+                #file = open(f"{save_str}.yaml", "w")
+                #yaml.dump(config_dict,file)
+                #file.close()
                 detector.store_elapsed_time()
 
 
