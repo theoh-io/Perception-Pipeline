@@ -15,5 +15,5 @@ setuptools.setup(name='perceptionloomo',
       url='https://github.com/theoh-io/Perception-Pipeline',
       package_dir={"": "src"},
       packages=setuptools.find_packages(where="src"),
-      python_requires=">=3.7",
+      python_requires=">=3",
      )
