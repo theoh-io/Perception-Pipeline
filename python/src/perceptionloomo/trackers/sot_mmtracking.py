@@ -65,10 +65,5 @@ class StarkTracker():
             print("!! Under Tracking threshold")
             bbox=[0, 0, 0, 0]
 
-        
-
-        #changing back format from (x1, y1, x2, y2) to (xcenter, ycenter, width, height) before writing
-        bbox=Utils.bbox_x1y1x2y2_to_xcentycentwh(bbox)
-        bbox = [int(x) for x in bbox]
         return bbox
 
