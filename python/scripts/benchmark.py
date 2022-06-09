@@ -31,8 +31,8 @@ def read_data(path_det, path_gt):
     df_gt=pd.read_csv(path_gt, header=None)
     df_det.columns=name_col
     df_gt.columns=name_col
-    if verbose is True: print(df_det)
-    if verbose is True: print(df_gt)
+    # if verbose is True: print(df_det)
+    # if verbose is True: print(df_gt)
     return df_gt, df_det 
 
 def IoU(df_det, df_gt):
@@ -42,6 +42,7 @@ def IoU(df_det, df_gt):
     if verbose is True: print(f"size detection : {nb_frame}, size gt : {df_gt.shape[0]}")
     if nb_frame != df_gt.shape[0]:
         print("error in dimensions")
+        return None
     for i in range(nb_frame):
         #if verbose is True: print(i)
         det_bbox=df_det.iloc[i,:]
@@ -113,18 +114,22 @@ def single_result(path_results, path_gt, thresh_iou=0.5, precision_list=np.array
 
     #Replace with built-in functions
     list_iou=IoU(df_det, df_gt)
-    #if verbose is True: print(list_iou)
-    precision, recall = precision_recall(list_iou, nb_det, nb_gt, thresh_iou)
+    if list_iou is not None:
+        #if verbose is True: print(list_iou)
+        precision, recall = precision_recall(list_iou, nb_det, nb_gt, thresh_iou)
 
-    if verbose is True: print("precision:", precision)
-    if verbose is True: print("recall :", recall )
-    if precision_list.size and recall_list.size !=0:
-        precision_list=np.append(precision_list, precision)
-        recall_list=np.append(recall_list, recall)
-        print("mean IoU :", np.mean(np.asarray(list_iou), axis=0))
-        return precision_list, recall_list
+        if verbose is True: print("precision:", precision)
+        if verbose is True: print("recall :", recall )
+        if precision_list.size and recall_list.size !=0:
+            precision_list=np.append(precision_list, precision)
+            recall_list=np.append(recall_list, recall)
+            print("mean IoU :", np.mean(np.asarray(list_iou), axis=0))
+            return precision_list, recall_list
 
-    return precision, recall
+        return precision, recall
+    else:
+        return None, None
+    
 
 def filter_files(folder_path, filter, sep, nb_split=1):
     list_files=os.listdir(folder_path)
@@ -163,8 +168,9 @@ def average_results(path_folder_det, path_folder_gt, iou_thresh):
         precision, recall= single_result(path_det, path_gt, thresh_iou)
         if verbose is True:
             print(f"for vid nb{vid}, pr={precision}, recall={recall}")
-        precision_across_vids.append(precision)
-        recall_across_vids.append(recall)
+        if precision and recall is not None:
+            precision_across_vids.append(precision)
+            recall_across_vids.append(recall)
     #print(precision_across_vids)
     av_precision=np.mean(np.asarray(precision_across_vids), axis=0)
     av_recall=np.mean(np.asarray(recall_across_vids), axis=0)
