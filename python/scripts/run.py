@@ -17,9 +17,9 @@ from perceptionloomo.deep_sort.utils.parser import get_config
 if __name__ == "__main__":
     detector = perception.DetectorG16()
     # start video stream
-    video_path=detector.cfg.PERCEPTION.BENCHMARK_FILE
-    print(f"Using the video: {video_path} as input")
-    grab = FrameGrab(mode="video", video=video_path)
+    path_benchmark=detector.cfg.PERCEPTION.BENCHMARK_FILE
+    print(f"Using: {path_benchmark} as input")
+    grab = FrameGrab(mode="webcam", path=path_benchmark)
 
     bboxes_to_save = []
     elapsed_time_list=[]
