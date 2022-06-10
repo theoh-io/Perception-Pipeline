@@ -19,7 +19,7 @@ if __name__ == "__main__":
     # start video stream
     video_path=detector.cfg.PERCEPTION.BENCHMARK_FILE
     print(f"Using the video: {video_path} as input")
-    grab = FrameGrab(mode="video", video=video_path)
+    grab = FrameGrab(mode="img", path=video_path)
 
     bboxes_to_save = []
     elapsed_time_list=[]
@@ -37,7 +37,7 @@ if __name__ == "__main__":
         bboxes_to_save.append(bbox)
         elapsed_time_list.append((toc-tic)*1e3)
         #Visualization
-        Utils.visualization(img, bbox, (255, 0, 0), 2)
+        #Utils.visualization(img, bbox, (255, 0, 0), 2)
         print("bbox:", bbox)
         #To get result before the end quit the program with q instead of Ctrl+C
         k = cv2.waitKey(10) & 0xFF

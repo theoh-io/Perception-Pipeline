@@ -25,9 +25,11 @@ with open("cfg_perception.yaml", "r") as f:
     y = yaml.safe_load(f)
     print(y)
     path_benchmark=y['PERCEPTION']['BENCHMARK_FILE'] 
-    path, old_id=path_benchmark.rsplit('/', 1)
+    path, old_id =path_benchmark.rsplit('/', 1)
+    new_id="/person-"+args.id
+    #path, old_id=path_benchmark.rsplit('/', 1)
     print(f"path is {path} and old_id: {old_id}")
-    new_id="/Loomo"+args.id+".avi"
+    #new_id="/Loomo"+args.id+".avi"
     new_path=path+new_id
     y['PERCEPTION']['BENCHMARK_FILE'] = new_path
     y['RECORDING']['EXPID'] = int(args.id)

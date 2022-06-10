@@ -1,7 +1,7 @@
 TRACKER:
-  TRACKER_CLASS: perceptionloomo.trackers.sot_mmtracking.StarkTracker #perceptionloomo.trackers.ds_custom_reid.DsCustomReid #'perceptionloomo.trackers.reid_tracker.ReIdTracker' #'perceptionloomo.trackers.fused_ds_reid.FusedDsReid' #'perceptionloomo.trackers.reid_tracker.ReIdTracker' #perceptionloomo.trackers.ds_custom_reid.DsCustomReid #perceptionloomo.trackers.sot_mmtracking.StarkTracker
+  TRACKER_CLASS: perceptionloomo.trackers.sot_mmtracking.StarkTracker  #'perceptionloomo.trackers.fused_ds_reid.FusedDsReid' #'perceptionloomo.trackers.reid_tracker.ReIdTracker' #perceptionloomo.trackers.ds_custom_reid.DsCustomReid #perceptionloomo.trackers.sot_mmtracking.StarkTracker
 DEEPSORT:
-  MODEL_TYPE: "resnet50_theo.pth.tar"   #osnet_x0_25 # resnet50_AGWmarket  #resnet50_SBSduke.pth  #resnet50_SBSmsmt17
+  MODEL_TYPE: "osnet_x0_25"   #osnet_x0_25 # resnet50_AGWmarket  #resnet50_SBSduke.pth  #resnet50_SBSmsmt17
   MAX_DIST: 0.1 # The matching threshold. Samples with larger distance are considered an invalid match
   MAX_IOU_DISTANCE: 0.6 # Gating threshold. Associations with cost larger than this value are disregarded.
   MAX_AGE: 30 # Maximum number of missed misses before a track is deleted
@@ -13,6 +13,6 @@ REID:
   SIMILARITY_THRESHOLD: 0.88
 MMTRACKING:
   DEVICE: None
-  CONFIG: src/perceptionloomo/mmtracking/configs/sot/stark/stark_st2_r50_50e_lasot.py  # stark/stark_st2_r50_50e_trackingnet.py ,siamese/siamese_rpn_r50_20e_trackingnet.py
-  MODEL: src/perceptionloomo/mmtracking/checkpoints/stark_st2_r50_50e_lasot_20220416_170201-b1484149.pth # stark_st2_r50_50e_lasot_20220416_170201-b1484149.pth, siamese_rpn_r50_20e_lasot_20220420_181845-dd0f151e.pth
+  CONFIG: src/perceptionloomo/mmtracking/configs/sot/siamese_rpn/siamese_rpn_r50_20e_lasot.py  # stark/stark_st2_r50_50e_trackingnet.py ,siamese_rpn/siamese_rpn_r50_20e_lasot.py
+  MODEL: src/perceptionloomo/mmtracking/checkpoints/siamese_rpn_r50_20e_lasot_20220420_181845-dd0f151e.pth # stark_st2_r50_50e_lasot_20220416_170201-b1484149.pth, siamese_rpn_r50_20e_lasot_20220420_181845-dd0f151e.pth
   CONF: 0.01
