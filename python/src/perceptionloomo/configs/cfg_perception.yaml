@@ -1,7 +1,7 @@
 LOOMO:
   DOWNSCALE: 4
-  IP: 128.179.184.252
-  RECORDING: ../Results/test.avi
+  IP: 128.179.157.205
+  RECORDING: ../Results/loomostark.avi
 PERCEPTION:
   BBOX_FACTOR: 1
   BENCHMARK_FILE: ../Benchmark/Woman
