@@ -14,6 +14,9 @@ from perceptionloomo.detectors.pose_detectors import PoseColorGuidedDetector
 from perceptionloomo.perception.perception import DetectorG16
 from perceptionloomo.utils.utils import Utils
 
+if str(os.getcwd())[-7:] == "scripts":
+    os.chdir("..")
+
 detector=DetectorG16()
 #General Configs
 print(detector.cfg)
