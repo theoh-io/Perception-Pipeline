@@ -23,48 +23,54 @@ def init_parser():
     args = parser.parse_args()
     return args
 
+def read_data(path_det, path_gt):
+
+    name_col=["x_center", "y_center", "width", "height"]
+    #read data into dataframe and get list of missdetection
+    df_det=pd.read_csv(path_det, header=None, comment='#')
+    df_gt=pd.read_csv(path_gt, header=None)
+    df_det.columns=name_col
+    df_gt.columns=name_col
+    # if verbose is True: print(df_det)
+    # if verbose is True: print(df_gt)
+    return df_gt, df_det 
 
 def IoU(df_det, df_gt):
     global verbose
     list_iou=[]
     nb_frame=df_det.shape[0]
-    if verbose is True: print("size detection :", nb_frame)
-    if verbose is True: print("size gt :", df_gt.shape[0])
-
+    if verbose is True: print(f"size detection : {nb_frame}, size gt : {df_gt.shape[0]}")
     if nb_frame != df_gt.shape[0]:
         print("error in dimensions")
+        return None
     for i in range(nb_frame):
         #if verbose is True: print(i)
         det_bbox=df_det.iloc[i,:]
         truthbbox=df_gt.iloc[i,:]
-        #convert format from [xcenter, ycenter, width, height] to top left, bottom right
-        boxA=Utils.bbox_xcentycentwh_to_x1y1x2y2(truthbbox)
-        #if verbose is True: print(f"gt bbox: {truthbbox}")
-        #if verbose is True: print(f"new gt bbox: {boxA}")
-        boxB=Utils.bbox_xcentycentwh_to_x1y1x2y2(det_bbox)
-        #if verbose is True: print(f"detection bbox: {det_bbox}")
-        #if verbose is True: print(f"new detection bbox: {boxB}")
-        #boxA=[truthbbox[0]-truthbbox[2]/2, truthbbox[1]+truthbbox[3]/2, truthbbox[0]+truthbbox[2]/2, truthbbox[1]-truthbbox[3]/2]
-        #boxB=[det_bbox[0]-det_bbox[2]/2, det_bbox[1]+det_bbox[3]/2, det_bbox[0]+det_bbox[2]/2, det_bbox[1]-det_bbox[3]/2]
-        # determine the (x, y)-coordinates of the intersection rectangle
-        xA = max(boxA[0], boxB[0])
-        yA = max(boxA[1], boxB[1])
-        xB = min(boxA[2], boxB[2])
-        yB = min(boxA[3], boxB[3])
-        #if verbose is True: print(f"xA: {xA}, xB: {xB}, yA: {yA},yB: {yB}")
-        # compute the area of intersection rectangle
-        interArea = max(0, xB - xA + 1) * max(0, yB - yA + 1)
-        #if verbose is True: print(f"interArea: {interArea}")
-        # compute the area of both the prediction and ground-truth rectangles
-        boxAArea = (boxA[2] - boxA[0] + 1) * ( boxA[3]- boxA[1]  + 1)
-        boxBArea = (boxB[2] - boxB[0] + 1) * (boxB[3] - boxB[1] + 1)
-        # compute the intersection over union by taking the intersection area and dividing it by the sum of prediction + ground-truth areas - the interesection area
-        iou = interArea / float(boxAArea + boxBArea - interArea)
-        #if verbose is True: print(f"Iou value:{iou}")
-        #Fix IoU > 1
-        if iou>1:
-            iou=1
-        list_iou.append(iou)
+        if truthbbox.to_numpy().any() :
+            #convert format from [xcenter, ycenter, width, height] to top left, bottom right
+            boxA=Utils.bbox_xcentycentwh_to_x1y1x2y2(truthbbox)
+            boxB=Utils.bbox_xcentycentwh_to_x1y1x2y2(det_bbox)
+            xA = max(boxA[0], boxB[0])
+            yA = max(boxA[1], boxB[1])
+            xB = min(boxA[2], boxB[2])
+            yB = min(boxA[3], boxB[3])
+            #if verbose is True: print(f"xA: {xA}, xB: {xB}, yA: {yA},yB: {yB}")
+            # compute the area of intersection rectangle
+            interArea = max(0, xB - xA + 1) * max(0, yB - yA + 1)
+            #if verbose is True: print(f"interArea: {interArea}")
+            # compute the area of both the prediction and ground-truth rectangles
+            boxAArea = (boxA[2] - boxA[0] + 1) * ( boxA[3]- boxA[1]  + 1)
+            boxBArea = (boxB[2] - boxB[0] + 1) * (boxB[3] - boxB[1] + 1)
+            # compute the intersection over union by taking the intersection area and dividing it by the sum of prediction + ground-truth areas - the interesection area
+            iou = interArea / float(boxAArea + boxBArea - interArea)
+            #if verbose is True: print(f"Iou value:{iou}")
+            if iou>1:
+                iou=1
+            list_iou.append(iou)
+        else:
+            list_iou.append(0)
+
     # return the intersection over union value
     #if verbose is True: print("iou value:", iou)
     return list_iou
@@ -81,67 +87,13 @@ def precision_recall(iou_list, nb_det, nb_gt, thresh_iou):
     for i in range(nb_frame):
         if iou_list[i]>= thresh_iou:
             true_pos+=1
-        else:
+        elif iou_list[i] != 0:
             false_pos+=1
 
     if verbose is True: print(f"nb of true positives :{true_pos}, nb false pos {false_pos}, nb_det:{nb_det}, nb_gt:{nb_gt}")
     precision=true_pos/nb_det
     recall=true_pos/nb_gt
     return precision, recall
-
-# def _compute_ap_recall(scores, matched, NP, recall_thresholds=None):
-#     """ This curve tracing method has some quirks that do not appear when only unique confidence thresholds
-#     are used (i.e. Scikit-learn's implementation), however, in order to be consistent, the COCO's method is reproduced. """
-#     if NP == 0:
-#         return {
-#             "precision": None,
-#             "recall": None,
-#             "AP": None,
-#             "interpolated precision": None,
-#             "interpolated recall": None,
-#             "total positives": None,
-#             "TP": None,
-#             "FP": None
-#         }
-
-#     # by default evaluate on 101 recall levels
-#     if recall_thresholds is None:
-#         recall_thresholds = np.linspace(0.0,
-#                                         1.00,
-#                                         int(np.round((1.00 - 0.0) / 0.01)) + 1,
-#                                         endpoint=True)
-
-#     # sort in descending score order
-#     inds = np.argsort(-scores, kind="stable")
-
-#     scores = scores[inds]
-#     matched = matched[inds]
-
-#     tp = np.cumsum(matched)
-#     fp = np.cumsum(~matched)
-
-#     rc = tp / NP
-#     pr = tp / (tp + fp)
-
-#     # make precision monotonically decreasing
-#     i_pr = np.maximum.accumulate(pr[::-1])[::-1]
-
-#     rec_idx = np.searchsorted(rc, recall_thresholds, side="left")
-#     n_recalls = len(recall_thresholds)
-
-#     # get interpolated precision values at the evaluation thresholds
-#     i_pr = np.array([i_pr[r] if r < len(i_pr) else 0 for r in rec_idx])
-
-#     return {
-#         "precision": pr,
-#         "recall": rc,
-#         "AP": np.mean(i_pr),
-#         "interpolated precision": i_pr,
-#         "interpolated recall": recall_thresholds,
-#         "total positives": NP,
-#         "TP": tp[-1] if len(tp) != 0 else 0,
-#         "FP": fp[-1] if len(fp) != 0 else 0
-#     }
 
 
 
@@ -154,6 +106,78 @@ def count_det(df):
             
     return det_count
 
+def single_result(path_results, path_gt, thresh_iou=0.5, precision_list=np.array([]), recall_list=np.array([])):
+    df_gt, df_det=read_data(path_results, path_gt)
+    nb_det=count_det(df_det)
+    nb_gt=count_det(df_gt)
+    if verbose is True: print(f"det count:  {nb_det}, gt count: {nb_gt}")
+
+    #Replace with built-in functions
+    list_iou=IoU(df_det, df_gt)
+    if list_iou is not None:
+        #if verbose is True: print(list_iou)
+        precision, recall = precision_recall(list_iou, nb_det, nb_gt, thresh_iou)
+
+        if verbose is True: print("precision:", precision)
+        if verbose is True: print("recall :", recall )
+        if precision_list.size and recall_list.size !=0:
+            precision_list=np.append(precision_list, precision)
+            recall_list=np.append(recall_list, recall)
+            print("mean IoU :", np.mean(np.asarray(list_iou), axis=0))
+            return precision_list, recall_list
+
+        return precision, recall
+    else:
+        return None, None
+    
+
+def filter_files(folder_path, filter, sep, nb_split=1):
+    list_files=os.listdir(folder_path)
+    remove_list=[]
+    for i in range(len(list_files)):
+        try:
+            name, type=list_files[i].rsplit(sep, nb_split)
+            if type != filter:
+                remove_list.append(list_files[i])
+        except:
+            remove_list.append(list_files[i])
+        
+    for j in range(len(remove_list)):
+        list_files.remove(remove_list[j])
+    list_files.sort()
+    return list_files
+
+
+def average_results(path_folder_det, path_folder_gt, iou_thresh):
+    #list all the files in the folder
+    #check if need to sort
+    #for loop based on the number of files
+    #compute performance for each video and store in list
+    #average perf
+    #do it for multiple thresh iou values
+
+    list_det=filter_files(path_folder_det, "prediction.txt", "_")
+    if verbose is True: print(list_det)
+    list_gt=filter_files(path_folder_gt, "gt.txt", "_")
+    if verbose is True: print(list_gt)
+    precision_across_vids=[]
+    recall_across_vids=[]
+    for vid in range(len(list_det)):
+        path_det=path_folder_det+"/"+list_det[vid]
+        path_gt=path_folder_gt+"/"+list_gt[vid]
+        precision, recall= single_result(path_det, path_gt, thresh_iou)
+        if verbose is True:
+            print(f"for vid nb{vid}, pr={precision}, recall={recall}")
+        if precision and recall is not None:
+            precision_across_vids.append(precision)
+            recall_across_vids.append(recall)
+    #print(precision_across_vids)
+    av_precision=np.mean(np.asarray(precision_across_vids), axis=0)
+    av_recall=np.mean(np.asarray(recall_across_vids), axis=0)
+    print(f"AP@{iou_thresh} Average precision = {av_precision}, Average recall={av_recall}")
+
+
+
 
 if __name__ == "__main__":
   
@@ -161,39 +185,16 @@ if __name__ == "__main__":
     path_gt=args.ground_truth
     path_results=args.detections
     verbose = args.verbose
-    #thresh_iou=args.iou_thresh
     precision_list=np.array([])
     recall_list=np.array([])
     #thresh_iou_list=[0.5, 0.6, 0.7, 0.8, 0.9]
-    thresh_iou_list=[0.5]
+    thresh_iou_list=[0.5, 0.75, 0.9]
+    #thresh_iou_list=[0.5]
     for thresh_iou in thresh_iou_list:
-        #list_results=[]
-        name_col=["x_center", "y_center", "width", "height"]
-
-        #read data into dataframe and get list of missdetection
-        df_det=pd.read_csv(path_results, header=None, comment='#')
-        df_gt=pd.read_csv(path_gt, header=None)
-        df_det.columns=name_col
-        df_gt.columns=name_col
-        if verbose is True: print(df_det)
-        if verbose is True: print(df_gt)
-        nb_det=count_det(df_det)
-        if verbose is True: print("nb_det: ", nb_det)
-        nb_gt=count_det(df_gt)
-
-        #Replace with built-in functions
-        list_iou=IoU(df_det, df_gt)
-        if verbose is True: print(list_iou)
-        precision, recall = precision_recall(list_iou, nb_det, nb_gt, thresh_iou)
-
-        print("precision:", precision)
-        print("recall :", recall )
-        precision_list=np.append(precision_list, precision)
-        recall_list=np.append(recall_list, recall)
-        #print("mean IoU :", np.mean(np.asarray(list_iou), axis=0))
-    
-    print(f"list of precision scores for different iou thresh{precision_list}")
-    print(f"list of recall scores for different iou thresh{recall_list}")
+        #precision_list, recall_list =single_result(path_results, path_gt, thresh_iou, precision_list, recall_list)
+        average_results(path_results, path_gt, thresh_iou)
+    #print(f"list of precision scores for different iou thresh{precision_list}")
+    #print(f"list of recall scores for different iou thresh{recall_list}")
     
     # # plot
     # fig, ax = plt.subplots()
