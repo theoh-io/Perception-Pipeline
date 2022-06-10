@@ -1,7 +1,7 @@
 TRACKER:
   TRACKER_CLASS: perceptionloomo.trackers.sot_mmtracking.SotaTracker #perceptionloomo.trackers.ds_custom_reid.DsCustomReid #'perceptionloomo.trackers.reid_tracker.ReIdTracker' #'perceptionloomo.trackers.fused_ds_reid.FusedDsReid' #'perceptionloomo.trackers.reid_tracker.ReIdTracker' #perceptionloomo.trackers.ds_custom_reid.DsCustomReid #perceptionloomo.trackers.sot_mmtracking.SotaTracker
 DEEPSORT:
-  MODEL_TYPE: "resnet50_theo.pth.tar"   #osnet_x0_25 # resnet50_AGWmarket  #resnet50_SBSduke.pth  #resnet50_SBSmsmt17
+  MODEL_TYPE: osnet_x0_25   #osnet_x0_25 # resnet50_AGWmarket  #resnet50_SBSduke.pth  #resnet50_SBSmsmt17 "resnet50_theo.pth.tar"
   MAX_DIST: 0.1 # The matching threshold. Samples with larger distance are considered an invalid match
   MAX_IOU_DISTANCE: 0.6 # Gating threshold. Associations with cost larger than this value are disregarded.
   MAX_AGE: 30 # Maximum number of missed misses before a track is deleted

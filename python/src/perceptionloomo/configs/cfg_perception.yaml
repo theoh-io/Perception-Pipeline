@@ -4,13 +4,14 @@ LOOMO:
   RECORDING: ../Results/test.avi
 PERCEPTION:
   BBOX_FACTOR: 1
-  BENCHMARK_FILE: ../Benchmark/LoomoBenchmark2/Loomo6.avi
+  BENCHMARK_FILE: ../Benchmark/Woman
+  GROUNDTRUTH: ../Benchmark/Woman/groundtruth_rect.txt
   PIFPAF_UPDATE_FREQUENCY: 10
   REINIT_WITH_PIFPAF_AFTER_TIMES: 40
   USE_PIFPAF_UPDATE: false
   VERBOSE: false
 RECORDING:
-  EXPID: 6
-  FOLDER_FOR_PREDICTION: ../Results/stark
-  REPORT_ELPASED_TIME_FOLDER: ../Results/stark
+  EXPID: 3
+  FOLDER_FOR_PREDICTION: ../Results/OTB100/stark
+  REPORT_ELPASED_TIME_FOLDER: ../Results/OTB100/stark
   SAVE_RESULTS: true

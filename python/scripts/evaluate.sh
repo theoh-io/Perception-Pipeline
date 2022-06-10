@@ -6,9 +6,11 @@
 # python3 benchmark.py -gt $path_gt -det $path_det 
 
 # #Test with Averaging on multiple videos
-path_gt="../../Benchmark/LoomoBenchmark2"
-path_det="../../Results/stark"
-python3 benchmark.py -gt $path_gt -det $path_det 
+# path_gt="../../Benchmark/LoomoBenchmark2"
+# path_det="../../Results/deepsort"
+path_gt="../../Benchmark/Skater/groundtruth_rect.txt"
+path_det="../../Results/OTB100/stark/ID_0002_prediction.txt"
+python3 benchmark.py -gt $path_gt -det $path_det -s -v -x1y1
 
 
 # #Benchmarking only stark on all Loomo videos
