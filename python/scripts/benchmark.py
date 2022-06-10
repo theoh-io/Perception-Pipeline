@@ -20,6 +20,12 @@ def init_parser():
                     help='IoU threshold to consider a detection as correct')
     parser.add_argument('-v', '--verbose', action='store_true',
                     help=('Silent Mode if Verbose is False'))
+    parser.add_argument('-s', '--single', action='store_true',
+                    help=('single file Mode'))
+    parser.add_argument('-x1y1', action='store_true',
+                    help=('convert gt from x1w1wh to xcenter, ycenter,w, h'))
+            
+
     args = parser.parse_args()
     return args
 
@@ -28,7 +34,7 @@ def read_data(path_det, path_gt):
     name_col=["x_center", "y_center", "width", "height"]
     #read data into dataframe and get list of missdetection
     df_det=pd.read_csv(path_det, header=None, comment='#')
-    df_gt=pd.read_csv(path_gt, header=None)
+    df_gt=pd.read_csv(path_gt, header=None,  delimiter='\t')
     df_det.columns=name_col
     df_gt.columns=name_col
     # if verbose is True: print(df_det)
@@ -39,7 +45,8 @@ def IoU(df_det, df_gt):
     global verbose
     list_iou=[]
     nb_frame=df_det.shape[0]
-    if verbose is True: print(f"size detection : {nb_frame}, size gt : {df_gt.shape[0]}")
+    #if verbose is True: 
+    print(f"size detection : {nb_frame}, size gt : {df_gt.shape[0]}")
     if nb_frame != df_gt.shape[0]:
         print("error in dimensions")
         return None
@@ -106,8 +113,10 @@ def count_det(df):
             
     return det_count
 
-def single_result(path_results, path_gt, thresh_iou=0.5, precision_list=np.array([]), recall_list=np.array([])):
+def single_result(path_results, path_gt, thresh_iou=0.5, precision_list=np.array([]), recall_list=np.array([]), x1y1_gt=False):
     df_gt, df_det=read_data(path_results, path_gt)
+    if x1y1_gt:
+        df_gt=df_gt.apply(Utils.bbox_x1y1wh_to_xcentycentwh, axis=1)
     nb_det=count_det(df_det)
     nb_gt=count_det(df_gt)
     if verbose is True: print(f"det count:  {nb_det}, gt count: {nb_gt}")
@@ -123,7 +132,7 @@ def single_result(path_results, path_gt, thresh_iou=0.5, precision_list=np.array
         if precision_list.size and recall_list.size !=0:
             precision_list=np.append(precision_list, precision)
             recall_list=np.append(recall_list, recall)
-            print("mean IoU :", np.mean(np.asarray(list_iou), axis=0))
+            #print("mean IoU :", np.mean(np.asarray(list_iou), axis=0))
             return precision_list, recall_list
 
         return precision, recall
@@ -155,7 +164,7 @@ def average_results(path_folder_det, path_folder_gt, iou_thresh):
     #compute performance for each video and store in list
     #average perf
     #do it for multiple thresh iou values
-
+    #verbose=True
     list_det=filter_files(path_folder_det, "prediction.txt", "_")
     if verbose is True: print(list_det)
     list_gt=filter_files(path_folder_gt, "gt.txt", "_")
@@ -167,7 +176,7 @@ def average_results(path_folder_det, path_folder_gt, iou_thresh):
         path_gt=path_folder_gt+"/"+list_gt[vid]
         precision, recall= single_result(path_det, path_gt, thresh_iou)
         if verbose is True:
-            print(f"for vid nb{vid}, pr={precision}, recall={recall}")
+            print(f"for vid nb{vid+1}, pr={precision}, recall={recall}")
         if precision and recall is not None:
             precision_across_vids.append(precision)
             recall_across_vids.append(recall)
@@ -180,21 +189,29 @@ def average_results(path_folder_det, path_folder_gt, iou_thresh):
 
 
 if __name__ == "__main__":
-  
+    print(f" Corrent WD is: {os.getcwd()}")
     args=init_parser()
     path_gt=args.ground_truth
     path_results=args.detections
     verbose = args.verbose
+    single_file=args.single
+    x1y1_gt=args.x1y1
     precision_list=np.array([])
     recall_list=np.array([])
     #thresh_iou_list=[0.5, 0.6, 0.7, 0.8, 0.9]
-    thresh_iou_list=[0.5, 0.75, 0.9]
+    thresh_iou_list=[0.01, 0.5, 0.75, 0.9]
     #thresh_iou_list=[0.5]
     for thresh_iou in thresh_iou_list:
-        #precision_list, recall_list =single_result(path_results, path_gt, thresh_iou, precision_list, recall_list)
-        average_results(path_results, path_gt, thresh_iou)
-    #print(f"list of precision scores for different iou thresh{precision_list}")
-    #print(f"list of recall scores for different iou thresh{recall_list}")
+        if single_file:
+            precision, recall =single_result(path_results, path_gt, thresh_iou, precision_list, recall_list, x1y1_gt)
+            precision_list=np.append(precision_list, precision)
+            recall_list=np.append(recall_list, recall)
+        else:
+            average_results(path_results, path_gt, thresh_iou)
+        
+        
+    # print(f"list of precision scores for different iou thresh{precision_list}")
+    # print(f"list of recall scores for different iou thresh{recall_list}")
     
     # # plot
     # fig, ax = plt.subplots()

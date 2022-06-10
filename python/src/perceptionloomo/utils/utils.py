@@ -143,6 +143,15 @@ class Utils():
         return bbox
 
     @staticmethod
+    def bbox_x1y1wh_to_xcentycentwh(bbox):
+        #convert from (x1,y1,x2,y2) to (xcenter,y_center, width, height)
+        offset_x=int(bbox[2]/2)
+        offset_y=int(bbox[3]/2)
+        bbox[0]=bbox[0]+offset_x
+        bbox[1]=bbox[1]+offset_y
+        return bbox
+
+    @staticmethod
     def crop_img_parts_from_bboxes(bbox_list: list, img: np.ndarray, image_processing: Callable):
         img_list=[]
         if bbox_list is not None and bbox_list[0] is not None:
@@ -176,7 +185,7 @@ class Utils():
         if bbox is not None:
             start=(int(bbox[0]-bbox[2]/2), int(bbox[1]+bbox[3]/2)) #top-left corner
             stop= (int(bbox[0]+bbox[2]/2), int(bbox[1]-bbox[3]/2)) #bottom right corner
-            cv2.rectangle(img, start, stop, (0,0,255), 2)
+            cv2.rectangle(img, start, stop, color, thickness)
         cv2.imshow('Camera Loomo',img)
         cv2.waitKey(1)
 
@@ -203,6 +212,53 @@ class Utils():
                 #yaml.dump(config_dict,file)
                 #file.close()
                 detector.store_elapsed_time()
+
+    @staticmethod
+    def load_groundtruth(path_ground_truth, verbose=False):
+        try:
+            path_current=os.getcwd()
+            path_txt=os.path.join(path_current, path_ground_truth)      
+            data = pd.read_csv(path_txt, header=None, names= ["x_center", "y_center", "width", "height"], index_col=None)  
+            data.index = np.arange(1, len(data) + 1)  #start frame index at 1
+            #if verbose is True: print(data)
+            data=data.to_numpy()
+            #only if needed bbox format
+            #for i in data.shape[0]:
+            #    bbox=data[i]
+            #    data[i]=[(bbox[0]+bbox[2])/2, (bbox[1]+bbox[3])/2, bbox[2]-bbox[0], bbox[1]-bbox[3]]
+            
+            if verbose is True: print("in load gt :", data)
+            print("successfully loaded gt")
+        except:
+            print("path provided to ground_truth is not Working.")
+            return None
+        return data
+
+
+def img_seq2vid(path_source, fps=15, verbose=False):
+    #global  path_seq, path_source, seq_vid_fps, path_vid
+    path_seq=path_source + '/img'
+    sequences = os.listdir(path_seq)
+    sequences=sorted(sequences)
+    #if the video from the sequence of images doesn't exist => create it
+    path_vid=os.path.join(path_source, "video.avi")
+    exists=os.path.exists(path_vid)
+    if exists is False:
+        if verbose is True: print("creating video from img sequence")
+        if verbose is True: print("first img name", sequences[0])
+        if verbose is True: print("init image", os.path.join(path_seq, sequences[0]))
+        init_img=cv2.imread(os.path.join(path_seq, sequences[0]))
+        height, width, layers =init_img.shape
+        size=(width, height)
+        if verbose is True: print("Size of the input seq:", size)
+        seq_vid=cv2.VideoWriter(path_vid, cv2.VideoWriter_fourcc(*'MJPG'), fps , size)
+        for sequence in sequences:
+            if verbose is True: print("Running sequence %s" % sequence)
+            sequence_dir = os.path.join(path_seq, sequence)
+            cvimg=cv2.imread(sequence_dir)
+            seq_vid.write(cvimg)
+        seq_vid.release()
+    return path_vid
 
 
 def img_seq2vid(path_source, fps=30, verbose=True):

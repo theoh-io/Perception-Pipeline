@@ -5,7 +5,7 @@ from mmtrack.apis import inference_sot, init_model
 from perceptionloomo.utils.utils import Utils
 
 
-class StarkTracker():
+class SotaTracker():
     def __init__(self, cfg) -> None:
         '''
         init_model parameters: path to config, path to checkpoints_weights, desired device to specify cpu
