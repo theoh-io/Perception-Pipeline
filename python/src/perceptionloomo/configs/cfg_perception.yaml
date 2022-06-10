@@ -1,16 +1,16 @@
 LOOMO:
   DOWNSCALE: 4
-  IP: 128.179.184.252
-  RECORDING: ../Results/test.avi
+  IP: 128.179.157.205
+  RECORDING: ../Results/loomostark.avi
 PERCEPTION:
   BBOX_FACTOR: 1
-  BENCHMARK_FILE: ../Benchmark/LoomoBenchmark2/Loomo6.avi
+  BENCHMARK_FILE: ../data/lasot/LaSOTBenchmark/person/person-1/img
   PIFPAF_UPDATE_FREQUENCY: 10
   REINIT_WITH_PIFPAF_AFTER_TIMES: 40
   USE_PIFPAF_UPDATE: false
   VERBOSE: false
 RECORDING:
-  EXPID: 6
-  FOLDER_FOR_PREDICTION: ../Results/stark
-  REPORT_ELPASED_TIME_FOLDER: ../Results/stark
+  EXPID: 1
+  FOLDER_FOR_PREDICTION: ../Results/lasot/siam
+  REPORT_ELPASED_TIME_FOLDER: ../Results/lasot/siam
   SAVE_RESULTS: true
