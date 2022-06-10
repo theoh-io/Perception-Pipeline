@@ -146,6 +146,15 @@ class Utils():
         return bbox
 
     @staticmethod
+    def bbox_x1y1wh_to_xcentycentwh(bbox):
+        #convert from (x1,y1,x2,y2) to (xcenter,y_center, width, height)
+        offset_x=int(bbox[2]/2)
+        offset_y=int(bbox[3]/2)
+        bbox[0]=bbox[0]+offset_x
+        bbox[1]=bbox[1]+offset_y
+        return bbox
+
+    @staticmethod
     def crop_img_parts_from_bboxes(bbox_list: list, img: np.ndarray, image_processing: Callable):
         img_list=[]
         if bbox_list is not None and bbox_list[0] is not None:
@@ -212,7 +221,7 @@ class Utils():
         try:
             path_current=os.getcwd()
             path_txt=os.path.join(path_current, path_ground_truth)      
-            data = pd.read_csv(path_txt, delimiter='\t', header=None, names= ["x_center", "y_center", "width", "height"], index_col=None)  
+            data = pd.read_csv(path_txt, header=None, names= ["x_center", "y_center", "width", "height"], index_col=None)  
             data.index = np.arange(1, len(data) + 1)  #start frame index at 1
             #if verbose is True: print(data)
             data=data.to_numpy()

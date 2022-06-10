@@ -22,6 +22,9 @@ def init_parser():
                     help=('Silent Mode if Verbose is False'))
     parser.add_argument('-s', '--single', action='store_true',
                     help=('single file Mode'))
+    parser.add_argument('-x1y1', action='store_true',
+                    help=('convert gt from x1w1wh to xcenter, ycenter,w, h'))
+            
 
     args = parser.parse_args()
     return args
@@ -110,8 +113,10 @@ def count_det(df):
             
     return det_count
 
-def single_result(path_results, path_gt, thresh_iou=0.5, precision_list=np.array([]), recall_list=np.array([])):
+def single_result(path_results, path_gt, thresh_iou=0.5, precision_list=np.array([]), recall_list=np.array([]), x1y1_gt=False):
     df_gt, df_det=read_data(path_results, path_gt)
+    if x1y1_gt:
+        df_gt=df_gt.apply(Utils.bbox_x1y1wh_to_xcentycentwh, axis=1)
     nb_det=count_det(df_det)
     nb_gt=count_det(df_gt)
     if verbose is True: print(f"det count:  {nb_det}, gt count: {nb_gt}")
@@ -190,6 +195,7 @@ if __name__ == "__main__":
     path_results=args.detections
     verbose = args.verbose
     single_file=args.single
+    x1y1_gt=args.x1y1
     precision_list=np.array([])
     recall_list=np.array([])
     #thresh_iou_list=[0.5, 0.6, 0.7, 0.8, 0.9]
@@ -197,7 +203,7 @@ if __name__ == "__main__":
     #thresh_iou_list=[0.5]
     for thresh_iou in thresh_iou_list:
         if single_file:
-            precision, recall =single_result(path_results, path_gt, thresh_iou, precision_list, recall_list)
+            precision, recall =single_result(path_results, path_gt, thresh_iou, precision_list, recall_list, x1y1_gt)
             precision_list=np.append(precision_list, precision)
             recall_list=np.append(recall_list, recall)
         else:

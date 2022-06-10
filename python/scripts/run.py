@@ -44,6 +44,7 @@ if __name__ == "__main__":
         if df_gt is not None:
             print("here")
             truth=df_gt[frame_number]
+            truth=Utils.bbox_x1y1wh_to_xcentycentwh(truth)
             Utils.visualization(img, truth, (0, 255, 0), 1)
 
         print("bbox:", bbox)
