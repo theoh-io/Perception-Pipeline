@@ -11,6 +11,9 @@ import torch
 from importlib import import_module
 from pathlib import Path
 import os
+import urllib
+import pandas as pd
+  
 
 class Utils():
     @staticmethod
@@ -176,7 +179,7 @@ class Utils():
         if bbox is not None:
             start=(int(bbox[0]-bbox[2]/2), int(bbox[1]+bbox[3]/2)) #top-left corner
             stop= (int(bbox[0]+bbox[2]/2), int(bbox[1]-bbox[3]/2)) #bottom right corner
-            cv2.rectangle(img, start, stop, (0,0,255), 2)
+            cv2.rectangle(img, start, stop, color, thickness)
         cv2.imshow('Camera Loomo',img)
         cv2.waitKey(1)
 
@@ -204,8 +207,29 @@ class Utils():
                 #file.close()
                 detector.store_elapsed_time()
 
+    @staticmethod
+    def load_groundtruth(path_ground_truth, verbose=False):
+        try:
+            path_current=os.getcwd()
+            path_txt=os.path.join(path_current, path_ground_truth)      
+            data = pd.read_csv(path_txt, delimiter='\t', header=None, names= ["x_center", "y_center", "width", "height"], index_col=None)  
+            data.index = np.arange(1, len(data) + 1)  #start frame index at 1
+            #if verbose is True: print(data)
+            data=data.to_numpy()
+            #only if needed bbox format
+            #for i in data.shape[0]:
+            #    bbox=data[i]
+            #    data[i]=[(bbox[0]+bbox[2])/2, (bbox[1]+bbox[3])/2, bbox[2]-bbox[0], bbox[1]-bbox[3]]
+            
+            if verbose is True: print("in load gt :", data)
+            print("successfully loaded gt")
+        except:
+            print("path provided to ground_truth is not Working.")
+            return None
+        return data
 
-def img_seq2vid(path_source, fps=15, verbose=True):
+
+def img_seq2vid(path_source, fps=15, verbose=False):
     #global  path_seq, path_source, seq_vid_fps, path_vid
     path_seq=path_source + '/img'
     sequences = os.listdir(path_seq)
@@ -230,19 +254,20 @@ def img_seq2vid(path_source, fps=15, verbose=True):
         seq_vid.release()
     return path_vid
 
+
+
+
 class FrameGrab:
     def __init__(self, mode: str ="webcam", path: str = None) -> None:
         self.cap = None
         if mode == "webcam": #FIXME Do it as enum
             self.cap = cv2.VideoCapture(0) 
         elif mode == "video":
-            # self.cap = cv2.VideoCapture(FILDER + "Loomo/video.avi")
             self.cap = cv2.VideoCapture(path)
         elif mode == "img":
-            # self.cap = cv2.VideoCapture(FILDER + "Loomo/video.avi")
-            print("here")
             path_vid=img_seq2vid(path)
             self.cap = cv2.VideoCapture(path_vid)
+
         
     def read_cap(self) -> np.ndarray:
         success, image =  self.cap.read()

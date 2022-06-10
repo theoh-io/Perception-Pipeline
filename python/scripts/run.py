@@ -18,11 +18,14 @@ if __name__ == "__main__":
     detector = perception.DetectorG16()
     # start video stream
     path_benchmark=detector.cfg.PERCEPTION.BENCHMARK_FILE
+    path_groundtruth=detector.cfg.PERCEPTION.GROUNDTRUTH
+    df_gt=Utils.load_groundtruth(path_groundtruth)
     print(f"Using: {path_benchmark} as input")
-    grab = FrameGrab(mode="webcam", path=path_benchmark)
+    grab = FrameGrab(mode="img", path=path_benchmark)
 
     bboxes_to_save = []
     elapsed_time_list=[]
+    frame_number=0
     while(True):
         img = grab.read_cap()
         if img is None:
@@ -38,11 +41,17 @@ if __name__ == "__main__":
         elapsed_time_list.append((toc-tic)*1e3)
         #Visualization
         Utils.visualization(img, bbox, (255, 0, 0), 2)
+        if df_gt is not None:
+            print("here")
+            truth=df_gt[frame_number]
+            Utils.visualization(img, truth, (0, 255, 0), 1)
+
         print("bbox:", bbox)
         #To get result before the end quit the program with q instead of Ctrl+C
         k = cv2.waitKey(10) & 0xFF
         if k == ord('q'):
             break
+        frame_number+=1
 
     average_forward_time=np.mean(elapsed_time_list)
     print(f"Average time for a forward pass is {average_forward_time:.1f}ms")
