@@ -19,10 +19,22 @@ if __name__ == "__main__":
     # start video stream
     path_benchmark=detector.cfg.PERCEPTION.BENCHMARK_FILE
     path_groundtruth=detector.cfg.PERCEPTION.GROUNDTRUTH
+    path_output_vid=detector.cfg.RECORDING.PATH_VIDEO_BBOX
     df_gt=Utils.load_groundtruth(path_groundtruth)
     print(f"Using: {path_benchmark} as input")
     grab = FrameGrab(mode="img", path=path_benchmark)
 
+    #create a video writer
+    #Video writersize
+    #framerate=15
+    if path_output_vid:
+        # get vcap property 
+        width  = int(grab.cap.get(cv2.CAP_PROP_FRAME_WIDTH))   # float `width`
+        height = int(grab.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))  # float `height`
+        fps = int(grab.cap.get(cv2.CAP_PROP_FPS))
+        print(f"width: {width}, height: {height}, fps: {fps}")
+        output_vid = cv2.VideoWriter(path_output_vid, cv2.VideoWriter_fourcc(*'MJPG'), fps, (width, height))
+   
     bboxes_to_save = []
     elapsed_time_list=[]
     frame_number=0
@@ -40,13 +52,17 @@ if __name__ == "__main__":
         bboxes_to_save.append(bbox)
         elapsed_time_list.append((toc-tic)*1e3)
         #Visualization
-        #Utils.visualization(img, bbox, (255, 0, 0), 2)
+        Utils.visualization(img, bbox, (255, 0, 0), 2)
         if df_gt is not None:
             truth=df_gt[frame_number]
             truth=Utils.bbox_x1y1wh_to_xcentycentwh(truth)
             Utils.visualization(img, truth, (0, 255, 0), 1)
 
         print("bbox:", bbox)
+
+        if path_output_vid is not None:
+            output_vid.write(img)
+
         #To get result before the end quit the program with q instead of Ctrl+C
         k = cv2.waitKey(10) & 0xFF
         if k == ord('q'):

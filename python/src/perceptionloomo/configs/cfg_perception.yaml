@@ -4,14 +4,15 @@ LOOMO:
   RECORDING: ../Results/loomostark.avi
 PERCEPTION:
   BBOX_FACTOR: 1
-  BENCHMARK_FILE: ../data/lasot/LaSOTBenchmark/person/person-20
-  GROUNDTRUTH:
+  BENCHMARK_FILE: ../Benchmark/Basketball
+  GROUNDTRUTH: 
   PIFPAF_UPDATE_FREQUENCY: 10
   REINIT_WITH_PIFPAF_AFTER_TIMES: 40
   USE_PIFPAF_UPDATE: false
   VERBOSE: false
 RECORDING:
-  EXPID: 20
-  FOLDER_FOR_PREDICTION: ../Results/lasot/siam
-  REPORT_ELPASED_TIME_FOLDER: ../Results/lasot/siam
+  EXPID: 1
+  FOLDER_FOR_PREDICTION: ../Results
+  REPORT_ELPASED_TIME_FOLDER: #../Results/lasot/siam
+  PATH_VIDEO_BBOX: ../Results/basketball.avi
   SAVE_RESULTS: true
