@@ -10,6 +10,7 @@ from PIL import Image
 import torch
 from importlib import import_module
 from pathlib import Path
+import pandas as pd
 import os
 
 class Utils():
@@ -217,7 +218,7 @@ class Utils():
     def load_groundtruth(path_ground_truth, verbose=False):
         try:
             path_current=os.getcwd()
-            path_txt=os.path.join(path_current, path_ground_truth)      
+            path_txt=os.path.join(path_current, path_ground_truth)   
             data = pd.read_csv(path_txt, header=None, names= ["x_center", "y_center", "width", "height"], index_col=None)  
             data.index = np.arange(1, len(data) + 1)  #start frame index at 1
             #if verbose is True: print(data)
