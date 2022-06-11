@@ -1,55 +1,53 @@
-# Deep Learning for Autonomous Vehicles
+# Modular Pipeline Configurations & User Guide
+
+## Structure perceptionloomo package
+
+    ├── scripts     # run inference on Benchmark or Loomo and others...
+    ├── src/perceptionloomo     # Folder for the package perceptionloomo
+        ├---- configs           # Config files to customize the pipeline
+        ├---- detectors         # Code for Yolo and PifPaf detectors
+        ├---- trackers          # Code for the Trackers
+        ├---- perception        # Code for the High level Detector class
+        ├---- deep_sort         # Modified code implementing deepsort 
+        ├---- mmtracking        # ressources used for siam and stark 
 
 
-## Getting started
+## Options Available
 
-#### Venv Setup
-First set up a python >= 3.7 virtual environment:
-```
-$ cd <desired-dir>
-$ python3 -m venv <desired venv name>
-$ activate desired venv name
-```
-Make sure to install python 3 in case you do not have it.
+### Detection
+To customize the Detection module modify cfg_detector.yaml
 
-#### Module Installation
-Execute in this directory:
-```
-$ pip install -r requirements.txt 
-#download libs and install it
-$ git submodule update --init #to download submodule for deep-person-reid
-$ cd libs
-$ cd deep-person-reid
-$ pip install -e .
-$ cd ../ #go back at libs/ level
-$ git clone git@github.com:open-mmlab/mmtracking.git
-$ cd mmtracking 
-# be sure follow the install instructions from official documentation: https://mmtracking.readthedocs.io/en/latest/install.html
-$ pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu102/torch1.10.0/index.html
-$ pip install mmdet
-$ pip install -r requirements/build.txt
-$ pip install -v -e .
-#installing our custom package perceptionloomo
-$ cd .../../python
-$ pip install -e .
+- Detection Module:
+    - Yolov5 Only (YoloDetector)
+    - Initialization with Pifpaf and then Yolo (PoseYoloDetector)
+- Type of Yolov5 architecture (s, m, l, x)
+- Pose being used by Openpifpaf
 
+### Tracking
+To customize the Detection module modify cfg_trackers.yaml
 
-```
+- Tracker Module:
+    - Custom ReID Tracker (ReIdTracker)
+    - Deepsort (DSCustomReid)
+    - Stark (SotaTracker)
+    - SiamRPN++ (SotaTracker)
 
-#### Downloading pretrained models
-```
-#stark: https://github.com/open-mmlab/mmtracking/tree/master/configs/sot/stark
-$ cd src/perceptionloomo
-$ mkdir checkpoints
-$ wget https://download.openmmlab.com/mmtracking/sot/stark/stark_st2_r50_50e_lasot/stark_st2_r50_50e_lasot_20220416_170201-b1484149.pth
+- Deepsort:
+    - ReID model to use: by default osnet_x0_25 (a lot already implemented and proposed for download)
+    - Other Deepsort parameters: max_dist, max_iou, max_age, n_init, nn_budget
 
-#siamese: https://github.com/open-mmlab/mmtracking/tree/master/configs/sot/siamese_rpn
-wget https://download.openmmlab.com/mmtracking/sot/siamese_rpn/siamese_rpn_r50_1x_lasot/siamese_rpn_r50_20e_lasot_20220420_181845-dd0f151e.pth
+- ReID Tracker:
+    - Weights to use: default trained on market1501 with confidence loss penalty (see [here](https://github.com/vita-epfl/Deep-Visual-Re-Identification-with-Confidence))
+    - distance metric: L2 or cosine
+    - Similarity threshold: above/under (cosine/L2) the defined distance 2 embeddings should represent same person
 
-```
+- MMTRACKING:
+    - Device: default None to use GPU if available, can specify cpu
+    - Config: path to the config file for the specific model (configs can be found in src/perceptionloomo/mmtracking/configs)
+    - Model: Downloaded Models (siamese and stark)
+    - Conf: Confidence threshold, below this number tracking will not be taken into account
 
 
 
 
-download theo's weights into deepsort/deep/checkpoint
-run SOTA weights script
+
