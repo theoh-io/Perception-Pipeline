@@ -11,8 +11,25 @@
         ├---- deep_sort         # Modified code implementing deepsort 
         ├---- mmtracking        # ressources used for siam and stark 
 
+## Scripts Userguide
 
-## Options Available
+(Before running those scripts check the configuration files.)
+
+Principal Scripts
+- run.py => Run this script for inference on benchmarking data.
+- loomo.py => Run this script to test on Loomo.
+
+Secondary Scripts
+- benchmark.py => Script used to compute Precision and Recall score based on detection file and groundtruth provided.
+- evaluate.sh => Script to call benchmark.py with more convenience.
+- time_perf.py => Average all the runtime measured.
+- multi_benchmark.py => used to run a method on all file in a specific benchmar folder.
+- modif_cfg.py => script used by multi_benchmark to change the config file to take a new input.
+- download_reid_weights.sh => script to download SOTA ReID weights from fastreid model zoo and rename it to fit with deepsort standard names.
+
+
+
+## Options Available for Configuration
 
 ### Detection
 To customize the Detection module modify cfg_detector.yaml

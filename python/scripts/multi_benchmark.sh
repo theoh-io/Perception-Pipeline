@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# #Benchmarking only stark on all Loomo videos
-# path_gt="Benchmark/LoomoBenchmark2"
-# path_det="Results/stark"
-
 END=20
 for i in $(seq 1 $END)
     do
