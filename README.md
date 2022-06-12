@@ -42,7 +42,7 @@ Check the other ReadMe file (add link) to get more info about the perception mod
 
 [Stark](https://github.com/open-mmlab/mmtracking/tree/master/configs/sot/stark): Learning Spatio-Temporal Transformer for Visual Tracking
 
-    cd src/perceptionloomo
+    cd src/perceptionloomo/mmtracking
     mkdir checkpoints
     wget https://download.openmmlab.com/mmtracking/sot/stark/stark_st2_r50_50e_lasot/stark_st2_r50_50e_lasot_20220416_170201-b1484149.pth
 
@@ -60,7 +60,9 @@ To download data to the Benchmark folder use the command:  `wget <link_data>`  i
 - **Loomo Dataset** provides 8 + 16 Videos with provided ground truth from real-life experiments recordings. The Dataset is available for download at this [link](https://drive.google.com/drive/folders/1r9-GRIsfojvwlljnHovZ5SvlmbUzsZtZ?usp=sharing)
 
 ### Inference on Benchmark Data
-Launch the `benchmark.py` script (python/scripts) to try the default perception module configuration
+Launch the `run.py` script (python/scripts) to try the default perception module configuration
+
+    - In case you decide to use the Stark tracker use pythonn -W ignore run.py to avoid printing the warning messages.
 
 (To get more details on how to change the configurations and input file check the ReadMe.md inside python directory)
 
@@ -83,11 +85,11 @@ Easiest way to start is to change the ip-adress of loomo in the config file (`py
 
 ### Virtual environment Setup
 First set up a python >= 3.7 virtual environment:
-```
-$ cd <desired-dir>
-$ python3 -m venv <desired venv name>
-$ activate desired venv name
-```
+
+    cd <desired-dir>
+    python3 -m venv <desired venv name>
+    source <name_venv>/bin/activate
+
 Make sure to install python 3 in case you do not have it.
 
 ### Modules Install
@@ -99,7 +101,8 @@ In the root directory do to the libs directory and install the following reposit
 
     cd libs
     cd deep-person-reid/
-    pip install -e . (real install procedure)
+    pip install -r requirements.txt
+    python setup.py develop
 
     cd ../
     git clone git@github.com:open-mmlab/mmtracking.git

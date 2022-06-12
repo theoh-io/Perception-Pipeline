@@ -4,15 +4,15 @@ LOOMO:
   RECORDING: ../Results/loomostark.avi
 PERCEPTION:
   BBOX_FACTOR: 1
-  BENCHMARK_FILE: ../Benchmark/Basketball
-  GROUNDTRUTH: 
-  PIFPAF_UPDATE_FREQUENCY: 10
+  BENCHMARK_FILE: ../Benchmark/Human3
+  GROUNDTRUTH: ../Benchmark/Human3/groundtruth_rect.txt
+  PIFPAF_UPDATE_FREQUENCY: 10  
   REINIT_WITH_PIFPAF_AFTER_TIMES: 40
   USE_PIFPAF_UPDATE: false
   VERBOSE: false
 RECORDING:
   EXPID: 1
   FOLDER_FOR_PREDICTION: ../Results
-  REPORT_ELPASED_TIME_FOLDER: #../Results/lasot/siam
-  PATH_VIDEO_BBOX: ../Results/basketball.avi
+  REPORT_ELPASED_TIME_FOLDER: ../Results
+  PATH_VIDEO_BBOX: ../Results/Human3_bbox.avi
   SAVE_RESULTS: true
