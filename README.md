@@ -1,7 +1,10 @@
 # **Perception-Pipeline SOT**
 
-<img src=./others/GIF1.gif width="275" />
-<img src=./others/GIF2.gif width="275" />
+<p float="left">
+  <img src="./others/GIF1.gif" width="275" />
+  <img src="./others/GIF2.gif" width="275" /> 
+</p>
+
 
 ---
 ## Intro
