@@ -1,5 +1,7 @@
 # **Perception-Pipeline SOT**
 
+Associated Paper: [Robust Navigation with Loomo](./others/paper.pdf)
+
 <p float="center">
   <img src="./others/GIF1.gif" width="400" />
   <img src="./others/GIF2.gif" width="400" /> 
