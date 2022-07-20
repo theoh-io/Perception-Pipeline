@@ -9,6 +9,7 @@ import time
 import torch
 import argparse
 from PIL import Image
+import os
 
 from perceptionloomo.detectors.pose_detectors import PoseColorGuidedDetector
 from perceptionloomo.perception.perception import DetectorG16
