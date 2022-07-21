@@ -1,5 +1,5 @@
 DETECTOR:
-  DETECTOR_CLASS: 'perceptionloomo.detectors.yolo_detector.YoloDetector' #'perceptionloomo.detectors.pose_yolo_detector.PoseYoloDetector' 'perceptionloomo.detectors.yolo_detector.YoloDetector'
+  DETECTOR_CLASS: 'perceptionloomo.detectors.yolov7_detector.Yolov7Detector' #'perceptionloomo.detectors.yolo_detector.YoloDetector' #'perceptionloomo.detectors.pose_yolo_detector.PoseYoloDetector' 'perceptionloomo.detectors.yolo_detector.YoloDetector'
   POSE_DETECTOR_CLASS: 'None' #'perceptionloomo.detectors.pose_detectors.PoseDetector' #only used if we need the pose
   YOLO:
     MODEL_VERSION: 'yolov5l' #l,m,n,x

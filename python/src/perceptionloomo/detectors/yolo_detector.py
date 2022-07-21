@@ -105,6 +105,7 @@ class YoloDetector():
     def predict(self, image, thresh=0.01):
         #threshold for confidence detection
         # Inference
+        print(image.shape)
         results = self.model(image) #might need to specify the size
 
         #results.xyxy: [xmin, ymin, xmax, ymax, conf, class]

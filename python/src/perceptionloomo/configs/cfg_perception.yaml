@@ -1,6 +1,6 @@
 LOOMO:
   DOWNSCALE: 4
-  IP: 128.179.157.205
+  IP: 128.179.185.157
   RECORDING: ../Results/loomostark.avi
 PERCEPTION:
   BBOX_FACTOR: 1
