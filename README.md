@@ -42,6 +42,12 @@ Check the other ReadMe file (add link) to get more info about the perception mod
 
 ## Downloading pretrained models
 
+[Yolov7](https://github.com/WongKinYiu/yolov7/releases): State-of-the-art Real-Time object detector.
+
+    cd python
+    wget https://github.com/WongKinYiu/yolov7/releases/download/v0.1/yolov7.pt
+
+
 [Stark](https://github.com/open-mmlab/mmtracking/tree/master/configs/sot/stark): Learning Spatio-Temporal Transformer for Visual Tracking
 
     cd src/perceptionloomo/mmtracking
@@ -52,6 +58,8 @@ Check the other ReadMe file (add link) to get more info about the perception mod
 
     wget https://download.openmmlab.com/mmtracking/sot/siamese_rpn/siamese_rpn_r50_1x_lasot/siamese_rpn_r50_20e_lasot_20220420_181845-dd0f151e.pth
 
+
+    
 ---
 ## Running the Pipeline on Video/Img sequence
 
@@ -86,11 +94,15 @@ Easiest way to start is to change the ip-adress of loomo in the config file (`py
 ## Install
 
 ### Virtual environment Setup
-First set up a python >= 3.7 virtual environment:
+First set up a python >= 3.7  ( /!\ ) virtual environment:
 
     cd <desired-dir>
+    #create the venv
     python3 -m venv <desired venv name>
+    #activate it 
     source <name_venv>/bin/activate
+    #upgrade basic packages
+    python -m pip install -U pip wheel setuptools 
 
 Make sure to install python 3 in case you do not have it.
 
@@ -99,7 +111,7 @@ Make sure to install python 3 in case you do not have it.
 In the root directory: after creating a virtual environment run the following commands to install pip packages
  `pip install -r requirements.txt`
 
-In the root directory do to the libs directory and install the following repositories. (In case you didn't clone with submodule run: `git submodule update --init `to download submodule for deep-person-reid)
+In the root directory go to the libs directory and install the following repositories. (In case you didn't clone with submodule run: `git submodule update --init `to download submodule for deep-person-reid)
 
     cd libs
     cd deep-person-reid/
@@ -107,8 +119,16 @@ In the root directory do to the libs directory and install the following reposit
     python setup.py develop
 
     cd ../
+    git clone https://github.com/WongKinYiu/yolov7
+    sudo apt install -y zip htop screen libgl1-mesa-glx
+    cd yolov7
+    pip install -r requirements.txt
+
+
+    cd ../
     git clone git@github.com:open-mmlab/mmtracking.git
     cd mmtracking 
+
 
 Follow the install instructions from the [official documentation](https://mmtracking.readthedocs.io/en/latest/install.html)
 
