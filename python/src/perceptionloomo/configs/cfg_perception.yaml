@@ -4,12 +4,12 @@ LOOMO:
   RECORDING: ../Results/loomostark.avi
 PERCEPTION:
   BBOX_FACTOR: 1
-  BENCHMARK_FILE: ../Benchmark/Human3
-  GROUNDTRUTH: ../Benchmark/Human3/groundtruth_rect.txt
+  BENCHMARK_FILE: ../Benchmark/BlurBody
+  GROUNDTRUTH: #../Benchmark/Human3/groundtruth_rect.txt
   PIFPAF_UPDATE_FREQUENCY: 10  
   REINIT_WITH_PIFPAF_AFTER_TIMES: 40
   USE_PIFPAF_UPDATE: false
-  VERBOSE: false
+  VERBOSE: True
 RECORDING:
   EXPID: 1
   FOLDER_FOR_PREDICTION: ../Results
