@@ -42,8 +42,8 @@ class Yolov7Detector():
         self.model = attempt_load(self.weights, map_location=self.device)  # load FP32 model
         self.stride = int(self.model.stride.max())  # model stride
         #imgsz = check_img_size(imgsz, s=stride)  # check img_size
-        #self.imgsz=640
-        self.model = TracedModel(self.model, self.device)# self.imgsz)
+        self.imgsz=640
+        self.model = TracedModel(self.model, self.device, self.imgsz)
 
         # Second-stage classifier
         self.classify = False
