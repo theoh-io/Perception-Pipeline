@@ -46,16 +46,16 @@ class Yolov7Detector():
         #print(f"device selected: {torch.device}, device is {self.device}")
         self.half = self.device.type != 'cpu'  # half precision only supported on CUDA
 
+        with torch.no_grad():
+            self.model = attempt_load(self.weights, map_location=self.device)  # load FP32 model
+            self.stride = int(self.model.stride.max())  # model stride
+            self.imgsz=640
+            self.imgsz = check_img_size(self.imgsz, s=self.stride)  # check img_size
+            self.model = TracedModel(self.model, self.device, self.imgsz)
+            if self.half:
+                self.model.half()  # to FP16
 
-        self.model = attempt_load(self.weights, map_location=self.device)  # load FP32 model
-        self.stride = int(self.model.stride.max())  # model stride
-        self.imgsz=640
-        self.imgsz = check_img_size(self.imgsz, s=self.stride)  # check img_size
-        self.model = TracedModel(self.model, self.device, self.imgsz)
-        if self.half:
-            self.model.half()  # to FP16
-
-        self.init=True
+            self.init=True
         
 
     def bbox_format(self):
@@ -95,42 +95,6 @@ class Yolov7Detector():
           return bbox_list
 
             
-
-    # def best_detection(self):
-    #     #tensor dim is now (number of detections, 7)
-    #     #output dim is (1,7)
-    #     N=self.detection.shape[0]
-    #     if(N != 1):
-    #         if self.verbose is True: print("multiple persons detected")
-    #         #extracting the detection with max confidence
-    #         idx=np.argmax(self.detection[range(N),4])
-    #         self.detection=np.expand_dims(self.detection[idx], 0)
-    #     #else: #1 detection
-    #         #self.detection=np.squeeze(self.detection)
-
-
-    # def unique_predict(self, image, thresh=0.01):
-    #     #threshold for confidence detection
-    #     # Inference
-    #     results = self.model(image) #might need to specify the size
-
-    #     #results.xyxy: [xmin, ymin, xmax, ymax, conf, class]
-    #     detect_pandas=results.pandas().xyxy
-    #     self.detection=np.array(detect_pandas)
-    #     if self.verbose is True: print(self.detection)
-    #     if (self.detection.shape[1]!=0):
-    #         #print("DETECTED SOMETHING !")
-    #         #use np.squeeze to remove 0 dim from the tensor
-    #         self.detection=np.squeeze(self.detection,axis=0) 
-
-    #         #class function to decide which detection to keep
-    #         self.best_detection()
-    #         if(self.detection[0][4]>thresh):
-    #             label=True
-    #         #modify the format of detection for bbox
-    #         bbox=self.bbox_format()
-    #         return bbox, label
-    #     return None,False
 
     def predict(self, image, thresh=0.01):
         # #threshold for confidence detection
@@ -180,61 +144,49 @@ class Yolov7Detector():
         t0 = time.time()
 
          # Run inference
+        with torch.no_grad():
+            iou_thresh=0
+            #image
+            #print(f"input shape be4 preproc: {image.shape}")
+            img=np.transpose(image)
+            #print(f"input shape after transpose: {img.shape}")
+            #for path, img, im0s, vid_cap in dataset:
+            img = torch.from_numpy(img).to(self.device)
+            img = img.half() if self.half else img.float()  # uint8 to fp16/32
+            img /= 255.0  # 0 - 255 to 0.0 - 1.0
+            if img.ndimension() == 3:
+                img = img.unsqueeze(0)
+            # Inference
+            t1 = time_synchronized()
+            pred = self.model(img)[0]
+            # Apply NMS
+            pred = non_max_suppression(pred, thresh, iou_thresh, classes=0)#self.classes)
+            t2 = time_synchronized()
 
-        iou_thresh=0
-        #image
-        #print(f"input shape be4 preproc: {image.shape}")
-        img=np.transpose(image)
-        #print(f"input shape after transpose: {img.shape}")
-        #for path, img, im0s, vid_cap in dataset:
-        img = torch.from_numpy(img).to(self.device)
-        img = img.half() if self.half else img.float()  # uint8 to fp16/32
-        img /= 255.0  # 0 - 255 to 0.0 - 1.0
-        if img.ndimension() == 3:
-            img = img.unsqueeze(0)
-        # Inference
-        t1 = time_synchronized()
-        pred = self.model(img)[0]
-        # Apply NMS
-        pred = non_max_suppression(pred, thresh, iou_thresh, classes=0)#self.classes)
-        t2 = time_synchronized()
+            # Apply Classifier
+            if self.classify:
+                pred = apply_classifier(pred, self.modelc, img, img)
 
-        # Apply Classifier
-        if self.classify:
-            pred = apply_classifier(pred, self.modelc, img, img)
-
-        gn = torch.tensor(image.shape)[[1, 0, 1, 0]]  # normalization gain whwh
-        # Process detections
-        for i, det in enumerate(pred):  # detections per image
-            if len(det):
-                # Rescale boxes from img_size to im0 size
-                print(det)
-                det[:, :4] = scale_coords(img.shape[2:], det[:, :4], image.shape).round()
-                det=det[0].cpu().detach().numpy()
-                print(det)
-                det=det[:4]
-                print(det)
-                self.detection=np.expand_dims(det, 0)
-                print(f"detection shape {self.detection.shape}, {self.detection}")
-                self.detection=self.bbox_format()
-                print(self.detection)
-                return self.detection
-            
-
-                #Print results
-                # for c in det[:, -1].unique():
-                #     n = (det[:, -1] == c).sum()  # detections per class
-                #     s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
-
-                # Write results
-                # for *xyxy, conf, cls in reversed(det):
-                #     #if save_txt:  # Write to file
-                #     xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4))/gn).view(-1).tolist()  # normalized xywh
-                #     line = (cls, *xywh, conf)  # label format
-                #     print(line)
-                        #with open(txt_path + '.txt', 'a') as f:
-                        #   f.write(('%g ' * len(line)).rstrip() % line + '\n')
-
-                    #if save_img or view_img:  # Add bbox to image
-                    #label = f'{names[int(cls)]} {conf:.2f}'
-                    #plot_one_box(xyxy, image, label=label, color=colors[int(cls)], line_thickness=3)
+            gn = torch.tensor(image.shape)[[1, 0, 1, 0]]  # normalization gain whwh
+            # Process detections
+            for i, det in enumerate(pred):  # detections per image
+                if len(det):
+                    # Rescale boxes from img_size to im0 size
+                    print(det)
+                    #det[:, :4] = scale_coords(img.shape[2:], det[:, :4], image.shape).round()
+                    det=det[0].cpu().detach().numpy()
+                    print(det)
+                    det=det[:4]
+                    print(det)
+                    det_old=det
+                    det_new=np.array([0, 0, 0, 0])
+                    det_new[0]=det_old[1]
+                    det_new[1]=det_old[0]
+                    det_new[2]=det_old[3]
+                    det_new[3]=det_old[2]
+                    print(f"det_old is {det_old} and det is {det_new}")
+                    self.detection=np.expand_dims(det_new, 0)
+                    print(f"detection shape {self.detection.shape}, {self.detection}")
+                    self.detection=self.bbox_format()
+                    print(self.detection)
+                    return self.detection
