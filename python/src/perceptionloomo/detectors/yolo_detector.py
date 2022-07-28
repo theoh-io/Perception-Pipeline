@@ -1,5 +1,6 @@
 import torch
 import numpy as np
+import time
 
 #Yolo Inference Settings
 #model.conf = 0.25  # NMS confidence threshold
@@ -45,7 +46,6 @@ class YoloDetector():
           bbox=np.expand_dims(bbox, axis=0)
           return bbox
         else:
-          if self.verbose is True: print(self.detection.shape)
           bbox_list=[]
           for i in range(self.detection.shape[0]):
             xmin=self.detection[i][0]
@@ -57,11 +57,9 @@ class YoloDetector():
             width=xmax-xmin
             height=ymax-ymin
             bbox_unit=np.array([x_center, y_center, width, height])
-            if self.verbose is True: print(bbox_unit)
             bbox_list.append(bbox_unit)
           bbox_list=np.vstack(bbox_list)
           #bbox_list=bbox_list.tolist()
-          if self.verbose is True: print("final bbox", bbox_list)
           return bbox_list
 
             
@@ -103,28 +101,20 @@ class YoloDetector():
         return None,False
 
     def predict(self, image, thresh=0.01):
-        #threshold for confidence detection
         # Inference
-        print(image.shape)
+        tic = time.perf_counter()
         results = self.model(image) #might need to specify the size
-
-        #results.xyxy: [xmin, ymin, xmax, ymax, conf, class]
-        detect_pandas=results.pandas().xyxy
-
+        toc = time.perf_counter()
+        if self.verbose is True: print(f"Elapsed time for yolov5 inference: {(toc-tic)*1e3:.1f}ms")
+        detect_pandas=results.pandas().xyxy  #results.xyxy: [xmin, ymin, xmax, ymax, conf, class]
         self.detection=np.array(detect_pandas)
         if self.verbose is True: print("shape of the detection: ", self.detection.shape)
-        #print("detection: ",self.detection)
-
         if (self.detection.shape[1]!=0):
-            if self.verbose is True: print("DETECTED SOMETHING !!!")
             #save resuts
             #results.save()
-            
-            #use np.squeeze to remove 0 dim from the tensor
-            self.detection=np.squeeze(self.detection,axis=0) 
-            if self.verbose is True: print("bbox before format: ", self.detection)
-            #modify the format of detection for bbox
-            bbox=self.bbox_format()
+            self.detection=np.squeeze(self.detection,axis=0)   #use np.squeeze to remove 0 dim from the tensor
+            #if self.verbose is True: print("bbox before format: ", self.detection)
+            bbox=self.bbox_format() #modify the format of detection for [xcenter, ycenter, width, height]
             if self.verbose is True: print("bbox after format: ", bbox)
             return bbox
         return None

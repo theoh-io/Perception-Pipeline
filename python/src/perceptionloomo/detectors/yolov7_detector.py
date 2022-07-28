@@ -6,6 +6,7 @@ import time
 import cv2
 import torch
 import torch.backends.cudnn as cudnn
+from torchvision import transforms
 from numpy import random
 from pathlib import Path
 import sys
@@ -28,17 +29,14 @@ from utils.torch_utils import select_device, load_classifier, time_synchronized,
 class Yolov7Detector():
     def __init__(self, cfg, model='default', verbose = False):
         verbose = cfg.PERCEPTION.VERBOSE
-        #yolo_version = cfg.DETECTOR.YOLO.MODEL_VERSION
-        #self.model.classes=0 #running only person detection
+        self.weights = cfg.DETECTOR.YOLO.MODEL_VERSION+".pt"
+        self.classes=0
         self.detection=np.array([0, 0, 0, 0])
         self.verbose=verbose
-        print(f"Created YOLO detector with verbose={verbose}.")
+        print(f"Created YOLOv7 detector with verbose={verbose}.")
 
         # Load model
         #self.device=1 #'cpu'
-        self.classes=0
-        self.weights="yolov7.pt"
-
         # Initialize
         set_logging()
         self.device = select_device()
@@ -75,7 +73,6 @@ class Yolov7Detector():
             bbox=np.expand_dims(bbox, axis=0)
             return bbox
         else:
-            if self.verbose is True: print(self.detection.shape)
             bbox_list=[]
             for i in range(self.detection.shape[0]):
                 xmin=self.detection[i][0]
@@ -87,26 +84,21 @@ class Yolov7Detector():
                 width=xmax-xmin
                 height=ymax-ymin
                 bbox_unit=np.array([x_center, y_center, width, height])
-                if self.verbose is True: print(bbox_unit)
                 bbox_list.append(bbox_unit)
             bbox_list=np.vstack(bbox_list)
             #bbox_list=bbox_list.tolist()
-            if self.verbose is True: print("final bbox", bbox_list)
             return bbox_list
 
             
 
-    def predict(self, image, thresh=0.01):            
-        if self.device.type != 'cpu':
+    def predict(self, image, thresh=0.01):          
+        if self.init and self.device.type != 'cpu':
             self.model(torch.zeros(1, 3, self.imgsz, self.imgsz).to(self.device).type_as(next(self.model.parameters())))  # run once
-        t0 = time.time()
+            self.init=False
 
          # Run inference
         with torch.no_grad():
             iou_thresh=0
-            #image
-            print(f"input shape be4 preproc: {image.shape}")
-
             # Padded resize (preprocessing in yolov7/datasets.py LoadIages __next__())
             img = letterbox(image, self.imgsz, stride=self.stride)[0]
             #print(f"shape after padding {img.shape}")
@@ -121,32 +113,28 @@ class Yolov7Detector():
             img /= 255.0  # 0 - 255 to 0.0 - 1.0
             if img.ndimension() == 3:
                 img = img.unsqueeze(0)
-            # Inference
-            t1 = time_synchronized()
 
-            print("bug 2")
-            print(f"input shape: {img.shape}")
-            #print(summary(self.model, (1,3,240,320)))
+            # Inference
+            tic = time.perf_counter()
 
             pred = self.model(img)[0]
             # Apply NMS
-            print("bug 3")
-            #exit()
             pred = non_max_suppression(pred, thresh, iou_thresh, classes=0)#self.classes)
-            t2 = time_synchronized()
-
-            #gn = torch.tensor(image.shape)[[1, 0, 1, 0]]  # normalization gain whwh
+           
+            toc = time.perf_counter()
+            if self.verbose is True: print(f"Elapsed time for yolov7 inference: {(toc-tic)*1e3:.1f}ms")
             # Process detections
+
+            
             for i, det in enumerate(pred):  # detections per image
+                if self.verbose is True: print("shape of the detection: ", len(det))
                 if len(det):
                     # Rescale boxes from img_size to im0 size
-                    print(det)
+                    #print(det)
                     det[:, :4] = scale_coords(img.shape[2:], det[:, :4], image.shape).round()
-                    det=det[:,:4].cpu().detach().numpy()
-                    self.detection=det
-                    print(f"detection shape {self.detection.shape}, {self.detection}")
+                    self.detection=det[:,:4].cpu().detach().numpy()
                     self.detection=self.bbox_format()
-                    print(self.detection)
+                    if self.verbose is True: print("bbox after format: ", self.detection)
                     return self.detection
                 else:
                     return None

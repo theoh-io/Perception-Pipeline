@@ -46,6 +46,9 @@ Check the other ReadMe file (add link) to get more info about the perception mod
 
     cd python
     wget https://github.com/WongKinYiu/yolov7/releases/download/v0.1/yolov7.pt
+    
+    #yolov7x weights
+    wget https://github.com/WongKinYiu/yolov7/releases/download/v0.1/yolov7x.pt
 
 
 [Stark](https://github.com/open-mmlab/mmtracking/tree/master/configs/sot/stark): Learning Spatio-Temporal Transformer for Visual Tracking

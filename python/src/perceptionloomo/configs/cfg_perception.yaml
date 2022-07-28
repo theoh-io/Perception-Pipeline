@@ -1,10 +1,10 @@
 LOOMO:
   DOWNSCALE: 4
-  IP: 128.179.185.157
-  RECORDING: ../Results/loomostark.avi
+  IP: 128.179.159.131
+  RECORDING: ../Results/loomoyolov7.avi
 PERCEPTION:
   BBOX_FACTOR: 1
-  BENCHMARK_FILE: ../Benchmark/BlurBody
+  BENCHMARK_FILE: ../data/lasot/LaSOTBenchmark/person/person-4/video.avi #../data/OTB100/Vid9/video.avi #../data/loomo/loomobenchmark2/Loomo15.avi #../Benchmark/BlurBody #../data/OTB100/Vid1 
   GROUNDTRUTH: #../Benchmark/Human3/groundtruth_rect.txt
   PIFPAF_UPDATE_FREQUENCY: 10  
   REINIT_WITH_PIFPAF_AFTER_TIMES: 40
@@ -14,5 +14,5 @@ RECORDING:
   EXPID: 1
   FOLDER_FOR_PREDICTION: ../Results
   REPORT_ELPASED_TIME_FOLDER: ../Results
-  PATH_VIDEO_BBOX: ../Results/Human3_bbox.avi
+  PATH_VIDEO_BBOX: ../Results/yolov7_lasot4_bbox.avi
   SAVE_RESULTS: true
