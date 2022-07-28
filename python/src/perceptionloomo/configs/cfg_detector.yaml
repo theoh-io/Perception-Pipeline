@@ -2,7 +2,7 @@ DETECTOR:
   DETECTOR_CLASS: 'perceptionloomo.detectors.yolov7_detector.Yolov7Detector' #'perceptionloomo.detectors.yolo_detector.YoloDetector' #'perceptionloomo.detectors.pose_yolo_detector.PoseYoloDetector' 'perceptionloomo.detectors.yolo_detector.YoloDetector'
   POSE_DETECTOR_CLASS: 'None' #'perceptionloomo.detectors.pose_detectors.PoseDetector' #only used if we need the pose
   YOLO:
-    MODEL_VERSION: 'yolov7-tiny' #v5: yolov5l,m,n,x #v7: yolov7,x,-tiny
+    MODEL_VERSION: 'yolov7' #v5: yolov5l,m,n,x #v7: yolov7,x,-tiny
   POSE_DETECTOR:
     DETECT_POSE: "check_if_wrists_in_the_middle" # put "None" if not initial checking desired
     PIFPAF_CHECKPOINT: "shufflenetv2k16"
